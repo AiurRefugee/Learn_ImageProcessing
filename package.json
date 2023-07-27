@@ -1,0 +1,32 @@
+{
+  "name": "learn-imageprocessing",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
+    "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'"
+  },
+  "dependencies": {
+    "@varlet/ui": "^2.13.4",
+    "element-plus": "^2.3.8",
+    "opencv.js": "^1.2.1",
+    "opencv4js": "^3.4.3",
+    "sass": "^1.64.1",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/test-utils": "^2.4.1",
+    "cypress": "^12.17.2",
+    "jsdom": "^22.1.0",
+    "start-server-and-test": "^2.0.0",
+    "vite": "^4.4.6",
+    "vitest": "^0.33.0"
+  }
+}

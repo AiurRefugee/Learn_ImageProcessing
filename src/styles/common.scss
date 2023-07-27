@@ -1,0 +1,22 @@
+a {
+    text-decoration: none; 
+}
+body {
+    padding: 0;
+    margin: 0;
+    transition: background-color .25s, color .25s;
+    color: var(--color-text);
+    background-color: var(--color-body);
+}
+div {
+    //border: 1px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // background-color: transparent;
+}
+.appContainer {
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+}
