@@ -6,16 +6,24 @@ import ImageModule from '@/components/ImageModule.vue';
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 const store = useStore()
-const emit = defineEmits(['outputImage'])
+const emit = defineEmits(['outputImage, toggleMode'])
 const route = useRoute() 
 const option = route.params.option
 const funcModule = ref(null)
+const Camera = ref(null)
 function outputImage() {
   funcModule.value.outputImage()
 }
+
+function toggleMode() {
+  Camera.value.switchCamera()
+}
+
 const curOpt = computed( () => store.getters.currentOption )
+const cameraStatus = computed( () => store.getters.cameraStatus )
+
 onMounted(() => {
-  console.log('aaa', curOpt.value)
+  console.log('aaa', cameraStatus.value)
 })
 
 </script>
@@ -23,8 +31,8 @@ onMounted(() => {
 <template>
   <div class="appContainer"> 
     <ImageModule  ref="funcModule" v-if="curOpt == 'image'"></ImageModule>
-    <CameraModule ref="funcModule" v-if="curOpt == 'camera'"></CameraModule>
-    <ControlBar @outputImage="outputImage"/>
+    <CameraModule ref="Camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
+    <ControlBar @outputImage="outputImage" @switchCamera="toggleMode"/>
   </div>
  
 </template>

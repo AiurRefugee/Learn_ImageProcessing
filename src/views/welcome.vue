@@ -12,7 +12,9 @@ const showOpenCV = ref(false)
 const showVue = ref(false)
 const showVarletUI = ref(false)
 const currentTheme = ref(null)
+const status = ref(-1)
 const router = useRouter()
+
 
 function changeTheme() {
   currentTheme.value = currentTheme.value ? null : Themes.dark
@@ -20,10 +22,60 @@ function changeTheme() {
 }
 function navigateTo(option) {
   store.dispatch('set_currentOption', option)
-  router.push({
-    path: `/imageProcessing/${option}`
-  })
+  if(status != "camera") {
+      router.push({
+        path: `/imageProcessing/${option}`
+      })
+  } else { 
+    switch(status.value ) {
+      case -1:
+        router.push({
+          path: `/imageProcessing/${option}`
+        })
+      case 0:      
+        router.push('/noCamera/No Camera Avaliable') 
+      case 1:
+        router.push('/noCamera/Failed to access device information')
+      case 2:
+        router.push('/noCamera/Browser does not support mediaDevices API')
+
+    }
+     
+  }
 }
+
+onMounted(() => {
+  // 检查浏览器是否支持mediaDevices API
+  if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+    // 获取设备信息
+    navigator.mediaDevices.enumerateDevices()
+      .then(devices => {
+        // 计数摄像头设备数量
+        let cameraCount = 0;
+        devices.forEach(device => {
+          if (device.kind === 'videoinput') {
+            cameraCount++;
+          }
+        });
+        if(cameraCount == 0) {
+          status.value = 0
+          store.dispatch('set_deviceStatus', 'No Camera Avaliable')
+        }
+        console.log(`设备上的摄像头数量：${cameraCount}`);
+        store.dispatch('set_cameraNum', cameraCount)
+      })
+      .catch(error => {
+        console.error('获取设备信息失败：', error);
+        store.dispatch('set_deviceStatus', 'Failed to access device information')
+        status.value = 1
+      });
+  } else {
+    console.error('浏览器不支持mediaDevices API');
+    store.dispatch('set_deviceStatus', 'Browser does not support mediaDevices API')
+    status.value = 2
+    
+  }
+})
 </script>
 
 <template>
@@ -102,6 +154,7 @@ $sidebarFontSize: 30px;
 div{
   //border: 2px solid black;
   // margin: 5px;
+  
 }
 
 @mixin center{
@@ -138,10 +191,7 @@ div{
 :deep(.var-swipe__indicators){
   bottom: 0;
 }
-:deep(.var-popup__content){
-  max-width: 50vw;
-  max-height: 60vh;
-}
+
 .appContainer{
   display: flex;
   flex-direction: column;
@@ -150,6 +200,11 @@ div{
   justify-content: space-between;
   align-items: center;
   position: relative;
+  //background-color: black;
+  :deep(.var-popup__content){
+    width: 50vw;
+    max-height: 60vh;
+  }
   .three{
     position: absolute;
     left: 0;

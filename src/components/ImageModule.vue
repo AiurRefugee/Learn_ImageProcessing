@@ -46,7 +46,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="imageWrapper">
-        <var-paper class="inoutput" :elevation="0" :radius="12">
+        <var-paper class="inoutput" :elevation="12" :radius="12">
             
             <div class="imageArea" @click="input"> 
                 <img ref="imageSrc" id="imageSrc" :src="`/src/assets/imgs/${src}`"/>
@@ -71,7 +71,7 @@ onMounted(() => {
                 </label>
             </div>
         </var-paper> 
-        <var-paper class="inoutput" :elevation="0" :radius="12">
+        <var-paper class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
                 <var-skeleton
                     title 
@@ -84,12 +84,7 @@ onMounted(() => {
                 <canvas id="canvasOutput" :style="{display: loading? 'none' : 'block'}"></canvas>
             </div>
             <div class="labelArea">
-                 <el-row justify="center" style="width: 100%;">
-                    <el-col :span="12"  >
-                        <div>Image Output</div>
-                    </el-col>
-                     
-                 </el-row>
+                <div>Image Output</div>
                  
                 <label>
                     <input type="file" id="fileInput" name="file" style="display: none;" />
@@ -99,26 +94,33 @@ onMounted(() => {
     </div>
 </template>
 <style lang="scss">
-
+div {
+    display: flex;
+}
+:deep(* .el-col-12) {
+    display: flex;
+    justify-content: center;
+}
 .imageWrapper {
     display: flex;
-    width: 90vw;
+    width: 100vw;
     height: 100vh;
-    padding-right: 10vw;
+    margin-right: 10vw;
     justify-content: space-around;
+    align-items: center;
     // background-color: green;
     .inoutput {
         flex-direction: column;
         width: 46%;
         height: 95vh;
-        padding-top: 1%;
+        padding-top: 1%; 
         background-color: rgba($color: white, $alpha: 0.8);
         .imageArea {
             width: 100%;
             height: 92%;
             flex-direction: column;
-            justify-content: space-around;
-            align-content: center;
+            justify-content: center;
+            align-items: center;
             padding-top: 10%;
             #imageSrc { 
                 //display: flex;
@@ -138,6 +140,7 @@ onMounted(() => {
         .labelArea {
             width: 100%;
             display: flex;
+            justify-content: center;
             align-content: center;
             flex: 1;
             font-size: 20px;

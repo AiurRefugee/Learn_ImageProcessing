@@ -11,6 +11,7 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "@varlet/ui": "^2.13.4",
     "element-plus": "^2.3.8",
     "hammer": "0.0.5",

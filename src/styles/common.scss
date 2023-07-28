@@ -8,14 +8,12 @@ body {
     color: var(--color-text);
     background-color: var(--color-body);
 }
-div { 
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-}
+ 
 .appContainer {
     width: 100vw;
     height: 100vh;
+    justify-content: center;
+    align-items: center;
     background-color: black;
     position: relative;
 }
