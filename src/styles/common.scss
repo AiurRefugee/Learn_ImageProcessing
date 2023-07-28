@@ -8,15 +8,14 @@ body {
     color: var(--color-text);
     background-color: var(--color-body);
 }
-div {
-    //border: 1px solid;
+div { 
     display: flex;
     justify-content: center;
-    align-items: center;
-    // background-color: transparent;
+    align-items: center; 
 }
 .appContainer {
     width: 100vw;
     height: 100vh;
     background-color: black;
+    position: relative;
 }

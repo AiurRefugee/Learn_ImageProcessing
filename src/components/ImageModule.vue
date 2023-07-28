@@ -45,7 +45,7 @@ onMounted(() => {
 
 </script>
 <template>
-    <div class="videoWrapper">
+    <div class="imageWrapper">
         <var-paper class="inoutput" :elevation="0" :radius="12">
             
             <div class="imageArea" @click="input"> 
@@ -57,7 +57,7 @@ onMounted(() => {
                     <el-col :span="6"  >
                         <div>Image Input</div>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="6" :offset="1">
                         <el-select v-model="src" placeholder="选择图片" size="large">
                             <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index">
                                  
@@ -100,7 +100,7 @@ onMounted(() => {
 </template>
 <style lang="scss">
 
-.videoWrapper {
+.imageWrapper {
     display: flex;
     width: 90vw;
     height: 100vh;

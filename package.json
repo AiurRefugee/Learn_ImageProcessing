@@ -13,6 +13,7 @@
   "dependencies": {
     "@varlet/ui": "^2.13.4",
     "element-plus": "^2.3.8",
+    "hammer": "0.0.5",
     "opencv.js": "^1.2.1",
     "opencv4js": "^3.4.3",
     "sass": "^1.64.1",

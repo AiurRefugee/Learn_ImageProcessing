@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref, computed, nextTick} from 'vue'
-import controlBar from '@/components/controlBar.vue';
-import VideoModule from '@/components/VideoModule.vue';
-import ImageModule from '../../components/ImageModule.vue';
+import ControlBar from '@/components/ControlBar.vue';
+import CameraModule from '@/components/CameraModule.vue';
+import ImageModule from '@/components/ImageModule.vue';
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 const store = useStore()
@@ -22,20 +22,13 @@ onMounted(() => {
 
 <template>
   <div class="appContainer"> 
-    <ImageModule  ref="funcModule" v-if="option == 'image'"></ImageModule>
-    <VideoModule ref="funcModule" v-if="option == 'video'"></VideoModule>
-    <controlBar @outputImage="outputImage"/>
+    <ImageModule  ref="funcModule" v-if="curOpt == 'image'"></ImageModule>
+    <CameraModule ref="funcModule" v-if="curOpt == 'camera'"></CameraModule>
+    <ControlBar @outputImage="outputImage"/>
   </div>
  
 </template>
 
 <style lang="scss" scoped>
-div {
-  display: flex;
-  // border: 1px solid black;
-}
-#canvasOut {
-  width: 100vw;
-  height: 100vh;
-}
+
 </style>
