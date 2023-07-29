@@ -2,22 +2,32 @@
 import { onMounted, ref, computed, nextTick, onUnmounted} from 'vue' 
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
+import { 
+MakeBorder,
+InRange 
+} from '@/opencv/api.js'
 const videoInput = ref(null) 
 const size = ref(Object)
 const canvasOutput = ref(null)
 const FPS = 30;
 const camerSwitch = ref(false)
+const videoWrapper = ref(null)
+let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
+
 const faceMode = computed( () => {
     return camerSwitch.value ? "user" : "environment"
 })
 
-let width, height, src, dst, cap, mediaStream
-
-let isFrontCamera = false; // 当前是否使用前置摄像头
+let width, height, src, dst, cap, mediaStream, fgmask
+ 
 
 
 defineExpose({
     toggleMode: async () => { 
+        videoWrapper.value.animate([
+            {transform: 'rotateY(0)'},
+            {transform: 'rotateY(360deg)'},
+        ], 800)
         camerSwitch.value = !camerSwitch.value
         await init()
     }
@@ -43,6 +53,7 @@ async function init() {
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     cap = new cv.VideoCapture(videoInput.value);
+    fgmask = new cv.Mat(height, width, cv.CV_8UC1);
 }
 
 async function processVideo() {
@@ -51,9 +62,11 @@ async function processVideo() {
         let begin = Date.now();
         // start processing.
         cap.read(src);
+        fgbg.apply(src, fgmask)
         cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+        // InRange(src, dst)
         await nextTick()
-        cv.imshow('canvasOutput', dst);
+        cv.imshow('canvasOutput', fgmask);
         // schedule the next one.
         let delay = 1000/FPS - (Date.now() - begin);
         setTimeout(processVideo, delay);
@@ -86,7 +99,7 @@ onUnmounted(() => {
 
 </script>
 <template>
-    <div class="videoWrapper"> 
+    <div ref="videoWrapper" class="videoWrapper"> 
         <video ref="videoInput" id="videoInput" :width="size.width" :height="size.height">
 
         </video> 

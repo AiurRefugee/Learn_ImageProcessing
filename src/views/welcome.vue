@@ -3,6 +3,7 @@ import { onMounted, ref, watch, nextTick} from 'vue'
 import { useRouter } from 'vue-router';
 import { StyleProvider, Themes } from '@varlet/ui'
 import { useStore } from 'vuex';
+import { ElMessage } from 'element-plus'
 const store = useStore()
 const iconsize = ref('200')
 const topTextSize = ref('20')
@@ -66,6 +67,7 @@ onMounted(() => {
       })
       .catch(error => {
         console.error('获取设备信息失败：', error);
+        ElMessage.error(`${error}.`)
         store.dispatch('set_deviceStatus', 'Failed to access device information')
         status.value = 1
       });
