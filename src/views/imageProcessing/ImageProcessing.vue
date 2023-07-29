@@ -31,8 +31,10 @@ onMounted(() => {
 
 <template>
   <div class="appContainer"> 
-    <Drawer></Drawer>
-    <ImageModule  ref="funcModule" v-if="curOpt == 'image'"></ImageModule>
+    <Drawer></Drawer> 
+    <keep-alive>
+      <ImageModule  ref="funcModule" v-if="curOpt == 'image'"></ImageModule> 
+    </keep-alive>
     <CameraModule ref="Camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
     <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>
   </div>

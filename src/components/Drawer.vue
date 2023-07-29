@@ -94,14 +94,14 @@ div{
     transform: translateX(-100%);
 } 
 .drawer {
-    width: 30vw;
-    height: 90vh;
+    width: 25vw;
+    height: 91vh;
     //display: flex;
     border-radius: 20px;
     box-shadow: inset 2px 2px 10px gray;
     //background-color: transparent;
     background-color: rgba($color: white, $alpha: 0.8);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     position: absolute;
     left: 0;
     z-index: 999;

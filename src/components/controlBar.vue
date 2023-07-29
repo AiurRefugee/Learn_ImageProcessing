@@ -17,7 +17,7 @@ const cameraStatus = computed( () => store.getters.cameraStatus )
 const emit = defineEmits(['outputImage', 'toggleMode']) 
 
 const options = computed(() => {
-   return ['图片', '视频', '摄像头']
+   return ['image', 'video', 'camera']
 })
 
 function outputImage() {
@@ -66,12 +66,12 @@ function toggleDrawer() {
             </div>
         <div class="spacer">
             <div class="deviceWrapper">
-                <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"
-                    >
+                <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
+                <div class="device">
                     <img src="/src/assets/icons/refresh.svg" class="refresh" ref="refresh" @click="toggleMode">
-                    <!-- {{ 'cameraStatus:' + cameraStatus }}
+                    {{ 'cameraStatus:' + cameraStatus }}
                     {{ 'curOpt:' + curOpt }}
-                    {{ 'cameraNum:' + cameraCount }} -->
+                    {{ 'cameraNum:' + cameraCount }}
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">

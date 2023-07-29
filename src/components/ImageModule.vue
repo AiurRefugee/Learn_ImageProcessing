@@ -5,7 +5,7 @@ import cv from 'opencv.js';
 defineExpose( {
     outputImage: () => {
         loading.value = false
-        cv.imshow('canvasOutput', dst);
+        cv.imshow('ImageOutput', dst);
         mat.delete();
     }
 })
@@ -25,7 +25,6 @@ function input() {
 function inputChange(e) {
     imageSrc.value.src = URL.createObjectURL(e.target.files[0]);
 }
-
 
 onMounted(() => {
        
@@ -81,7 +80,7 @@ onMounted(() => {
                     v-if="loading"
                 >
                 </var-skeleton>
-                <canvas id="canvasOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas>
+                <canvas id="ImageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas>
             </div>
             <div class="labelArea">
                 <div>Image Output</div>
@@ -116,6 +115,7 @@ onMounted(() => {
         .imageArea {
             width: 100%;
             height: 92%;
+            display: flex;
             flex-direction: column;
             justify-items: center;
             align-items: center;
@@ -134,6 +134,7 @@ onMounted(() => {
         }
         .labelArea {
             width: 100%;
+            color: black;
             display: flex;
             justify-content: center;
             align-items: center;
