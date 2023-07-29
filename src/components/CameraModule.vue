@@ -1,47 +1,65 @@
 <script setup>
 import { onMounted, ref, computed, nextTick, onUnmounted} from 'vue' 
 import cv from 'opencv.js';
+import { ROI } from '@/opencv/api'
 const videoInput = ref(null) 
 const size = ref(Object)
 const canvasOutput = ref(null)
+const videoWrapper = ref(null)
+const useBackCamera = ref(true) // true "environment" false "user"
+const FPS = 30;
 
 let width, height, src, dst, cap, mediaStream
+ 
 
-let isFrontCamera = false; // 当前是否使用前置摄像头
-
+const facingMode = computed(() => {
+    return useBackCamera.value ? "environment" : "user"
+})
 
 defineExpose({
-    switchCamera: async () => {
-    console.log('close')
+    toggleMode: async () => {
+        videoWrapper.value.animate([
+        { transform: 'rotateY(0)'},
+        { transform: 'rotateY(360deg)'}
+    ],
+    800
+    )
+        console.log('close')
       if (mediaStream) {
         // 关闭当前正在使用的媒体流
         mediaStream.getTracks().forEach(track => track.stop());
       }
 
       try {
-        // 获取新的媒体流，根据isFrontCamera判断使用前后摄像头
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: isFrontCamera ? 'environment' : 'user' }
-        });
-
-        // 更新视频元素的srcObject，实现切换摄像头
-        const videoElement = document.getElementById('videoElement');
-        videoElement.srcObject = mediaStream;
-
-        isFrontCamera = !isFrontCamera; // 切换标志位，下次切换另一个摄像头
+        useBackCamera.value = !useBackCamera.value
+        init()
       } catch (error) {
         console.error('获取媒体流失败：', error);
       }
     }
 
 })
-onMounted(async () => { 
-    size.value = {
-        width: window.innerWidth,
-        height: window.innerHeight
-    } 
-    
-    navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment"}, audio: false })
+
+async function processVideo() {
+    try {
+        canvasOutput.value.getContext('2d').clearRect(0, 0, size.width, size.height)
+        let begin = Date.now();
+        // start processing.
+        cap.read(src);
+        cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+        await nextTick()
+        dst = ROI (src, 200, 200, 400, 400) 
+        cv.imshow('canvasOutput', dst);
+        // schedule the next one.
+        let delay = 1000/FPS - (Date.now() - begin);
+        setTimeout(processVideo, delay);
+    } catch (err) {
+        console.log(err)
+    }
+};
+
+async function init() {
+    navigator.mediaDevices.getUserMedia({ video: {facingMode: facingMode.value}, audio: false })
     .then(function(stream) {
         mediaStream = stream
         videoInput.value.srcObject = stream;
@@ -51,7 +69,7 @@ onMounted(async () => {
     console.log("An error occurred! " + err);
     });
 
-    const FPS = 30;
+    
     await nextTick()
     width = videoInput.value.width
     height = videoInput.value.height
@@ -59,26 +77,18 @@ onMounted(async () => {
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     cap = new cv.VideoCapture(videoInput.value);
-     
- async function processVideo() {
-    try {
-        canvasOutput.value.getContext('2d').clearRect(0, 0, size.width, size.height)
-        let begin = Date.now();
-        // start processing.
-        cap.read(src);
-        cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
-        await nextTick()
-        cv.imshow('canvasOutput', dst);
-        // schedule the next one.
-        let delay = 1000/FPS - (Date.now() - begin);
-        setTimeout(processVideo, delay);
-    } catch (err) {
-        console.log("g")
-    }
-};
+}
 
-// schedule the first one.
-setTimeout(processVideo, 0);
+onMounted(async () => { 
+    size.value = {
+        width: window.innerWidth,
+        height: window.innerHeight
+    } 
+    await nextTick()
+    init()
+
+    // schedule the first one.
+    setTimeout(processVideo, 0);
 
 })
 
@@ -94,7 +104,7 @@ onUnmounted(() => {
 
 </script>
 <template>
-    <div class="videoWrapper">
+    <div class="videoWrapper" ref="videoWrapper">
         <video ref="videoInput" id="videoInput" :width="size.width" :height="size.height">
 
         </video> 
@@ -115,6 +125,7 @@ onUnmounted(() => {
 .videoWrapper {
     width: 100vw;
     height: 100vh;
+    background-color: black;
      #videoInput {
         display: none;
         width: 90vw;
@@ -126,6 +137,6 @@ onUnmounted(() => {
         position: relative;
         background-color: black;
      }
-     animation: rotate360 1s linear;
+     //animation: rotate360 1s linear;
 }
 </style>

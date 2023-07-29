@@ -14,7 +14,7 @@ export default defineConfig({
     }
   },
   server: {
-    host: ['127.0.0.1', '192.168.2.14', '192.168.3.127'],
+    host: ['127.0.0.1', '192.168.2.77', '192.168.3.127'],
     https: {
 
       key: 'mydomain.key',

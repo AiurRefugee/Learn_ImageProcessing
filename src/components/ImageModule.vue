@@ -49,7 +49,7 @@ onMounted(() => {
         <var-paper class="inoutput" :elevation="12" :radius="12">
             
             <div class="imageArea" @click="input"> 
-                <img ref="imageSrc" id="imageSrc" :src="`/src/assets/imgs/${src}`"/>
+                <img ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${src}`"/>
                 <!-- <img id="imageSrc" > -->
             </div>
             <div class="labelArea">
@@ -81,7 +81,7 @@ onMounted(() => {
                     v-if="loading"
                 >
                 </var-skeleton>
-                <canvas id="canvasOutput" :style="{display: loading? 'none' : 'block'}"></canvas>
+                <canvas id="canvasOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas>
             </div>
             <div class="labelArea">
                 <div>Image Output</div>
@@ -94,9 +94,7 @@ onMounted(() => {
     </div>
 </template>
 <style lang="scss">
-div {
-    display: flex;
-}
+ 
 :deep(* .el-col-12) {
     display: flex;
     justify-content: center;
@@ -119,20 +117,17 @@ div {
             width: 100%;
             height: 92%;
             flex-direction: column;
-            justify-content: center;
+            justify-items: center;
             align-items: center;
             padding-top: 10%;
-            #imageSrc { 
+            .imgInoutput { 
                 //display: flex;
                 max-height: 90%;
                 max-width: 90%;
                 min-width: 55%;
+                padding-top: 5%;
             }
-            #canvasOutput { 
-                max-height: 90%;
-                max-width: 90%;
-                min-width: 55%;
-            }
+            
         }
         .imageArea div {
             display: block;
@@ -141,7 +136,7 @@ div {
             width: 100%;
             display: flex;
             justify-content: center;
-            align-content: center;
+            align-items: center;
             flex: 1;
             font-size: 20px;
             letter-spacing: 3px;

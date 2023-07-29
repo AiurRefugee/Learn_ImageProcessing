@@ -1,5 +1,5 @@
 .inoutput .var-skeleton__card {
-    min-height: 70%;
+    min-height: 60%;
     border-radius: 20px;
     padding-top: 10%;
 }
@@ -15,16 +15,17 @@
 }
 
 .inoutput .var--box .var-skeleton {
-    height: 90vh;
+    height: 70vh;
 }
 
 .inoutput .var-skeleton__article {
-    display: flex;
+    // display: flex;
     flex: 1;
 }
 
 .inoutput .var-skeleton__content{
-    height: 95vh;
+    height: 90vh;
+    padding: 5%;
 }
 
 // .var-field-decorator{
