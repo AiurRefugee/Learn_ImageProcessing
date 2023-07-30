@@ -2,22 +2,35 @@
 import { onMounted, ref, computed, nextTick} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { configs } from '@/opencv/configs.js'
+import { classification, configs } from '@/opencv/configs.js'
 import cv from 'opencv.js' 
-import { ElMessage } from 'element-plus';
+import { ElMessage } from 'element-plus'; 
 const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
 let imgInput, src
 let dst = new cv.Mat()
-
- const drawerSwitch = computed( () => store.getters.drawerSwitch )
- const curOpt = computed( () => store.getters.currentOption )
+const selectedProcessions = ref([])
+const primaryClassnameList = classification.map( item => item.primaryClass)
  
- const value = ref(['1'])
+const drawerConfigs = ref(configs)
+const classNames = ref(classification)
+const drawerSwitch = computed( () => store.getters.drawerSwitch )
+const curOpt = computed( () => store.getters.currentOption )
+const filtredConfigs = computed( () => {
+  console.log(selectedProcessions.value)
+  if( selectedProcessions.value && selectedProcessions.value.length ) {
+    return   drawerConfigs.value.filter( (item) => selectedProcessions.value.includes(item.secondrayClass) )
+  } else {
+    return   drawerConfigs.value
+  }
+  return []
+})
 
- const drawerConfigs = ref(configs)
+function show() {
+  console.log(selectedProcessions.value)
+}
 
 function output() { 
     if(curOpt.value == 'image') {
@@ -43,18 +56,39 @@ function changeHandle(val) {
 }
  onMounted( async () => {
     // await nextTick() 
-    imgInput = document.getElementById('imageSrc') 
-
+    imgInput = document.getElementById('imageSrc')  
   })
 </script>
 <template> 
      <transition name="drawer">
         <div class="drawer" v-if="drawerSwitch" @click="output" >
             <el-scrollbar>
+              <el-row justify="start" align="middle">
+                <el-col :span="3">
+                  <h4>筛选：</h4>
+                </el-col> 
+                <el-col :span="21" >
+                  <el-select v-model="selectedProcessions" filterable @change="show"
+                    placeholder="请选择条件" multiple collapse-tags max-collapse-tags="3">
+                    <el-option-group
+                      v-for="group in classNames"
+                      :key="group.primaryClass"
+                      :label="group.primaryClass"
+                    >
+                      <el-option
+                        v-for="item in group.secondrayClass"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-option-group>
+                  </el-select>
+                </el-col>
+              </el-row>
               <el-collapse v-model="activeNames" @change="handleChange">
                 <el-space direction="vertical" size="10" fill="fill">
                   <el-collapse-item :name="process.title" :title="process.title" 
-                    v-for="(process, index) in drawerConfigs" :key="index">
+                    v-for="(process, index) in filtredConfigs" :key="index">
                    <el-space size="10" direction="vertical" fill>
                     <el-row>
                       <el-col :span="19">
@@ -111,6 +145,9 @@ div{
     opacity: 0;
     transform: translateX(-100%);
 } 
+.primaryClass {
+  max-height: 200px;
+}
 .drawer {
     width: 25vw;
     height: 91vh;

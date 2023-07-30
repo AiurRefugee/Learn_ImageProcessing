@@ -23,8 +23,8 @@ export const classification = [{
 }] 
 export  const configs =  [{
     title: "Fixed Threshold",
-    primaryClass: 'Image Segment',
-    secondrayClass: 'Threshold Segment',
+    primaryClass: '图像分割',
+    secondrayClass: '阈值分割',
     selected: false,
     imageAvaliable: true,
     params: [{
