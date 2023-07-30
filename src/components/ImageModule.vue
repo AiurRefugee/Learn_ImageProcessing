@@ -5,7 +5,7 @@ import cv from 'opencv.js';
 defineExpose( {
     outputImage: () => {
         loading.value = false
-        cv.imshow('ImageOutput', dst);
+        cv.imshow('imageOutput', dst);
         mat.delete();
     }
 })
@@ -31,8 +31,7 @@ onMounted(() => {
     imageSrc.value.onload = function() { 
         // await nextTick()
         
-        mat = cv.imread(imageSrc.value);
-        console.log(mat.size())
+        mat = cv.imread(imageSrc.value); 
         
         cv.cvtColor(mat, dst, cv.COLOR_RGBA2GRAY);
         let rect = new cv.Rect(100, 100, 200, 200);
@@ -48,7 +47,7 @@ onMounted(() => {
         <var-paper class="inoutput" :elevation="12" :radius="12">
             
             <div class="imageArea" @click="input"> 
-                <img ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${src}`"/>
+                <img id="imageSrc" ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${src}`"/>
                 <!-- <img id="imageSrc" > -->
             </div>
             <div class="labelArea">
@@ -72,15 +71,17 @@ onMounted(() => {
         </var-paper> 
         <var-paper class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
-                <var-skeleton
+                <!-- <var-skeleton
                     title 
                     card
                     :rows="4"
                     :loading="loading"
                     v-if="loading"
                 >
-                </var-skeleton>
-                <canvas id="ImageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas>
+                </var-skeleton> -->
+                <canvas id="imageOutput" class="imgInoutput"></canvas>
+
+                <!-- <canvas id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas> -->
             </div>
             <div class="labelArea">
                 <div>Image Output</div>

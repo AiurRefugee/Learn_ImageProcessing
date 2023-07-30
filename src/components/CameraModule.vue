@@ -4,7 +4,8 @@ import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
 import { 
 MakeBorder,
-InRange 
+InRange,
+BackgroundSubtract
 } from '@/opencv/api.js'
 const videoInput = ref(null) 
 const size = ref(Object)
@@ -44,16 +45,13 @@ async function init() {
         ElMessage.error(`${error}.`)
         console.log("An error occurred! " + error);
     });
-
-    
     await nextTick()
     width = videoInput.value.width
     height = videoInput.value.height
     console.log('width', width)
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
-    cap = new cv.VideoCapture(videoInput.value);
-    fgmask = new cv.Mat(height, width, cv.CV_8UC1);
+    cap = new cv.VideoCapture(videoInput.value); 
 }
 
 async function processVideo() {
@@ -62,11 +60,12 @@ async function processVideo() {
         let begin = Date.now();
         // start processing.
         cap.read(src);
-        fgbg.apply(src, fgmask)
-        cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+        BackgroundSubtract(src, dst, fgbg)
+
+        //cv.cvtColor(dst, dst, cv.COLOR_RGBA2GRAY);
         // InRange(src, dst)
         await nextTick()
-        cv.imshow('canvasOutput', fgmask);
+        cv.imshow('canvasOutput', dst);
         // schedule the next one.
         let delay = 1000/FPS - (Date.now() - begin);
         setTimeout(processVideo, delay);

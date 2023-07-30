@@ -1,4 +1,16 @@
 import cv from 'opencv.js'
+
+const api = {
+    fgbg: new cv.BackgroundSubtractorMOG2(500, 16, true),
+    BackgroundSubtract: (src, dst) => {
+        fgbg.apply(src, dst)
+    },
+    ROI: (src, dst, width, height) => {
+        let rect = new cv.Rect(x, y, width, height);
+        let dist = src.roi(rect);
+        return dist
+    }
+}
  
 // ROI
 export function ROI(src, x, y, width, height) {
@@ -20,7 +32,10 @@ export function InRange(src, dst) {
     cv.inRange(src, low, high, dst);
 }
 
-
+// 背景去除
+export function BackgroundSubtract(src, dst, fgbg) {
+    fgbg.apply(src, dst)
+}
 
 
 

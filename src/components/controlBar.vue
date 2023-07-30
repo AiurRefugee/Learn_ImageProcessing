@@ -5,14 +5,14 @@ import { useRouter } from 'vue-router';
 
 const store = useStore()
 const router = useRouter()
-const refresh = ref(null)
-const drawerSwitch = ref(false)
+const refresh = ref(null) 
 const direction = ref("ltr")
 
 
 const curOpt = computed( () => store.getters.currentOption )
 const cameraCount = computed(() => store.getters.cameraNum)
 const cameraStatus = computed( () => store.getters.cameraStatus )
+const drawerSwitch = computed( () => store.getters.drawerSwitch)
 
 const emit = defineEmits(['outputImage', 'toggleMode']) 
 
@@ -77,8 +77,8 @@ function toggleDrawer() {
                 <div class="device">
                     <div class="drawerCorontroller">
                         <!-- <text>Options</text> -->
-                        <el-switch v-model="drawerSwitch" inline-prompt width="50" @change="toggleDrawer"
-                        active-text="选项" inactive-text="选项" size="normal"></el-switch>
+                        <el-switch v-model="drawerSwitch" inline-prompt width="70" @change="toggleDrawer"
+                        active-text="options" inactive-text="options" size="normal"></el-switch>
                     </div>
                 </div>
             </div>
@@ -142,8 +142,8 @@ div{
                 }
                 .active {
                     color: $button_Color;
-                    transform: translateX(-20px);
-                    transition: transform 0.4s ease-in-out;
+                    transform: translateX(-10px) scale(1.2); 
+                    transition: all 0.4s ease-in-out;
                 }
             }
         }

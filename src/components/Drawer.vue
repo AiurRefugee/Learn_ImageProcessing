@@ -2,71 +2,89 @@
 import { onMounted, ref, computed, nextTick} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { configs } from '@/opencv/configs.js'
+import cv from 'opencv.js' 
+import { ElMessage } from 'element-plus';
 const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
+let imgInput, src
+let dst = new cv.Mat()
 
  const drawerSwitch = computed( () => store.getters.drawerSwitch )
+ const curOpt = computed( () => store.getters.currentOption )
  
  const value = ref(['1'])
+
+ const drawerConfigs = ref(configs)
+
+function output() { 
+    if(curOpt.value == 'image') {
+      
+      try {
+        src = cv.imread(imgInput) 
+        for (const process of configs) {
+          if(process.imageAvaliable && process.selected) {
+            process.f(src, dst, process.params.map( item => item.paramValue ))
+          }
+        }
+        
+        cv.imshow('imageOutput', dst);
+      } catch(error) {
+       // ElMessage.error(`${error}.`)
+      }
+
+    }
+}
 
 function changeHandle(val) {
   console.log(val)
 }
- onMounted( () => {
-    console.log(drawerSwitch.value)
- })
+ onMounted( async () => {
+    // await nextTick() 
+    imgInput = document.getElementById('imageSrc') 
+
+  })
 </script>
 <template> 
      <transition name="drawer">
-        <div class="drawer" v-if="drawerSwitch" >
-            <el-collapse v-model="activeNames" @change="handleChange">
-      <el-collapse-item title="Consistency" name="1">
-        <div>
-          Consistent with real life: in line with the process and logic of real
-          life, and comply with languages and habits that the users are used to;
-        </div>
-        <div>
-          Consistent within interface: all elements should be consistent, such
-          as: design style, icons and texts, position of elements, etc.
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="Feedback" name="2">
-        <div>
-          Operation feedback: enable the users to clearly perceive their
-          operations by style updates and interactive effects;
-        </div>
-        <div>
-          Visual feedback: reflect current state by updating or rearranging
-          elements of the page.
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="Efficiency" name="3">
-        <div>
-          Simplify the process: keep operating process simple and intuitive;
-        </div>
-        <div>
-          Definite and clear: enunciate your intentions clearly so that the
-          users can quickly understand and make decisions;
-        </div>
-        <div>
-          Easy to identify: the interface should be straightforward, which helps
-          the users to identify and frees them from memorizing and recalling.
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="Controllability" name="4">
-        <div>
-          Decision making: giving advices about operations is acceptable, but do
-          not make decisions for the users;
-        </div>
-        <div>
-          Controlled consequences: users should be granted the freedom to
-          operate, including canceling, aborting or terminating current
-          operation.
-        </div>
-      </el-collapse-item>
-    </el-collapse>
+        <div class="drawer" v-if="drawerSwitch" @click="output" >
+            <el-scrollbar>
+              <el-collapse v-model="activeNames" @change="handleChange">
+                <el-space direction="vertical" size="10" fill="fill">
+                  <el-collapse-item :name="process.title" :title="process.title" 
+                    v-for="(process, index) in drawerConfigs" :key="index">
+                   <el-space size="10" direction="vertical" fill>
+                    <el-row>
+                      <el-col :span="19">
+                        <el-checkbox label="on" v-model="process.selected"></el-checkbox>
+                      </el-col>
+                      <el-col :span="5">
+                        <el-button text type="primary" icon="View" size="small" class="el-icon--right">Learn More</el-button>
+                      </el-col>
+                    </el-row>
+                    <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" :key="index">
+                      <el-col :span="4"> {{ slider.paramName }}</el-col>
+                      <el-col :span="20">
+                        <el-slider v-model="slider.paramValue" show-input input-size="small"
+                          :min="slider.widget.min" :max="slider.widget.max">
+                        </el-slider>
+                      </el-col>
+                    </el-row>
+                    <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')" :key="index">
+                      <el-col :span="4"> {{ selecter.paramName }}</el-col>
+                      <el-col :span="20">
+                        <el-select v-model="selecter.paramValue" placeholder="" size="small">
+                          <el-option :label="selecter.widget.selectLables[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
+                        </el-select>
+                      </el-col>
+                    </el-row>
+                   </el-space>
+                  </el-collapse-item>
+                </el-space>
+              </el-collapse>
+            </el-scrollbar>
         </div>
      </transition>
 </template>
@@ -97,15 +115,15 @@ div{
     width: 25vw;
     height: 91vh;
     //display: flex;
-    border-radius: 20px;
-    box-shadow: inset 2px 2px 10px gray;
+    border-radius: 15px;
+    box-shadow: 2px 2px 10px gray;
     //background-color: transparent;
     background-color: rgba($color: white, $alpha: 0.8);
     backdrop-filter: blur(5px);
     position: absolute;
     left: 0;
     z-index: 999;
-    margin-left: 1%;
+    margin-left: 1.5%;
     padding: 1%
 }
 </style>

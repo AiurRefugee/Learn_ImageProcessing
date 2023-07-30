@@ -1,6 +1,6 @@
 const options = {
     state: {
-        drawerSwitch: false
+        drawerSwitch: true
        
     },
     mutations: {

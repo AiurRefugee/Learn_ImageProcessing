@@ -46,37 +46,7 @@ function navigateTo(option) {
 }
 
 onMounted(() => {
-  // 检查浏览器是否支持mediaDevices API
-  if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-    // 获取设备信息
-    navigator.mediaDevices.enumerateDevices()
-      .then(devices => {
-        // 计数摄像头设备数量
-        let cameraCount = 0;
-        devices.forEach(device => {
-          if (device.kind === 'videoinput') {
-            cameraCount++;
-          }
-        });
-        if(cameraCount == 0) {
-          status.value = 0
-          store.dispatch('set_deviceStatus', 'No Camera Avaliable')
-        }
-        console.log(`设备上的摄像头数量：${cameraCount}`);
-        store.dispatch('set_cameraNum', cameraCount)
-      })
-      .catch(error => {
-        console.error('获取设备信息失败：', error);
-        ElMessage.error(`${error}.`)
-        store.dispatch('set_deviceStatus', 'Failed to access device information')
-        status.value = 1
-      });
-  } else {
-    console.error('浏览器不支持mediaDevices API');
-    store.dispatch('set_deviceStatus', 'Browser does not support mediaDevices API')
-    status.value = 2
-    
-  }
+  store.dispatch('systemInit')
 })
 </script>
 
