@@ -9,7 +9,7 @@ $--el-switch-on-color: #ffb444;
     width: 100%;
 }
 .el-input--large .el-input__wrapper {
-    background-color: rgb(255 255 255 / 60%);
+    // background-color: rgb(255 255 255 / 60%);
     padding: 1px 15px;
 }
 .el-carousel__container {
@@ -32,11 +32,15 @@ $--el-switch-on-color: #ffb444;
     width: 100%;
 }
 .el-collapse-item__header {
-    // background-color: #e1e1e185;
+    //background-color: #e1e1e185;
+    opacity: 0.6;
     padding-left: 2%; 
 }
+.el-collapse-item__content {
+    opacity: 0.9;
+}
 .el-collapse-item__wrap {
-    background-color: transparent;
+    // background-color: transparent;
      
 }
 .el-space--vertical {
@@ -44,4 +48,8 @@ $--el-switch-on-color: #ffb444;
 }
 .el-slider__input {
     width: 100px;
+}
+.el-scrollbar__thumb {
+//可设置滚动条颜色
+    background: transparent;//这里我设置成了透明色,可以根据需求添加自己想要的颜色
 }

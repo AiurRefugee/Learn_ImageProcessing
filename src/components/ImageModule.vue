@@ -104,14 +104,16 @@ onMounted(() => {
     width: 100vw;
     height: 100vh;
     margin-right: 10vw;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
     // background-color: green;
     .inoutput {
         flex-direction: column;
-        width: 46%;
+        width: 40vw;
         height: 95vh;
         padding-top: 1%; 
+        margin-left: 4vw;
+        box-shadow: 0px 0px 10px 5px gray;
         background-color: rgba($color: white, $alpha: 0.8);
         .imageArea {
             width: 100%;
@@ -135,7 +137,7 @@ onMounted(() => {
         }
         .labelArea {
             width: 100%;
-            color: black;
+            // color: black;
             display: flex;
             justify-content: center;
             align-items: center;

@@ -117,7 +117,7 @@ div{
     height: 100vh;
     z-index: 999;
     display: flex; 
-    background-color: transparent;
+    // background-color: transparent;
     flex-direction: column;
     position: absolute;
     right: 0;
@@ -134,7 +134,7 @@ div{
                 width: 50%;
                 height: 150px;
                 flex-direction: column; 
-                color: white;
+                // color: white;
                 .swipeItem{
                     width: 100%;
                     height: 60px;
@@ -172,7 +172,7 @@ div{
         padding-top: 15%; 
         flex-direction: column;
         .device { 
-            color: white; 
+            // color: white; 
             flex-direction: column;
             justify-content: flex-start; 
             margin: 2%;

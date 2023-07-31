@@ -6,7 +6,7 @@ body {
     margin: 0;
     transition: background-color .25s, color .25s;
     color: var(--color-text);
-    background-color: var(--color-body);
+    // background-color: var(--color-body);
 }
  
 .appContainer {
@@ -15,6 +15,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: black;
+    //background-color: black;
     position: relative;
 }

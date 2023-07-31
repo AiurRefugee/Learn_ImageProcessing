@@ -1,5 +1,5 @@
 import cv from 'opencv.js'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus' 
 export const classification = [{
   primaryClass: '图像变换',
   secondrayClass: [
@@ -22,7 +22,8 @@ export const classification = [{
   ]
 }] 
 
-/*  title
+/*  
+  title
   primaryClass
   secondrayClass
   selected
@@ -39,6 +40,73 @@ export const classification = [{
   f 
 */
 export  const configs =  [
+{
+  title: "2D Convolution ( Image Filtering )",
+  primaryClass: '图像增强',
+  secondrayClass: '降噪',
+  selected: false,
+  imageAvaliable: true,
+  params: [{
+    paramName: "ddepth",
+    paramDesc: "desired depth of the destination image.",
+    paramValue: cv.CV_8U ,
+    widget: {
+      type: "selecter", 
+      selectLabels: [
+        'cv.CV_8U'
+      ],
+      selectValues: [
+        cv.CV_8U
+      ]
+    },
+    
+  },{
+    paramName: "kernel",
+    paramDesc: "convolution kernel (or rather a correlation kernel), a single-channel floating point matrix; if you want to apply different kernels to different channels, split the image into separate color planes using split and process them individually.",
+    paramValue: 3,
+    widget: {
+      type: "slider", 
+      min: 3,
+      max: 15,
+      step: 2
+    }
+  },{
+    paramName: "borderType",
+    paramDesc: "pixel extrapolation method.",
+    paramValue: 0, 
+    widget: {
+      type: "slider", 
+      min: -126,
+      max: 125
+    }
+  }, {
+    paramName: "delta",
+    paramDesc: "optional value added to the filtered pixels before storing them in dst.",
+    paramValue: cv.BORDER_DEFAULT, 
+    widget: {
+      type: "selecter", 
+      selectLabels: [
+        'cv.BORDER_CONSTANT ', 'cv.BORDER_REPLICATE', 'cv.BORDER_REFLECT', 'cv.BORDER_WRAP', 'cv.BORDER_REFLECT_101',
+        'cv.BORDER_TRANSPARENT', 'cv.BORDER_REFLECT101', 'cv.BORDER_DEFAULT', 'cv.BORDER_ISOLATED'
+      ],
+      selectValues: [
+        cv.BORDER_CONSTANT , cv.BORDER_REPLICATE, cv.BORDER_REFLECT, cv.BORDER_WRAP, cv.BORDER_REFLECT_101,
+        cv.BORDER_TRANSPARENT, cv.BORDER_REFLECT101, cv.BORDER_DEFAULT, cv.BORDER_ISOLATED
+      ]
+    }
+  }],
+  f: (title, src, dst, params) => {
+    try {
+      let [depth, kernel, delta, borderType] = [...params]
+      let M = cv.Mat.eye(kernel, kernel, cv.CV_32FC1)
+      let anchor = new cv.Point(-1, -1)
+      cv.filter2D(src, dst, depth, M, anchor, delta, borderType);
+    } catch(error) {
+      ElMessage.error(`${title}: `+ error)
+      console.log(`${title}: `+ error)
+    }
+  }
+},
 {
   title: "Fixed Threshold",
   primaryClass: '图像分割',
@@ -88,7 +156,7 @@ export  const configs =  [
       ]
     }
   }],
-  f: (src, dst, params) => {
+  f: (title, src, dst, params) => {
     let [ thresh, maxval, type] = [...params] 
       if(maxval < thresh) {
         ElMessage.error('maxval can not be less than thresh.')
@@ -97,8 +165,8 @@ export  const configs =  [
         console.log('Fixed Threshold params', thresh, maxval, type)
         cv.threshold(src, dst, thresh, maxval, type)
       } catch(error) {
-        ElMessage.error(`${error}.`)
-        console.log(error)
+        ElMessage.error(`${title}: `+ error)
+        console.log(`${title}: `+ error)
       }
   }
 }, 
@@ -170,16 +238,70 @@ export  const configs =  [
       }
     }
   ],
-  f: (src, dst, params) => { 
+  f: (title, src, dst, params) => { 
     console.log(`Adaptive Thresholding params:`,src, dst, ...params)
     cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
     cv.adaptiveThreshold(src, dst, ...params);
     try {
       
     } catch(error) {
-      ElMessage.error(`${error}`)
-      console.log(error)
+      ElMessage.error(`${title}: `+ error)
+      console.log(`${title}: `+ error)
     }
+  }
+}, 
+{
+  title: "Canny Edge Detection",
+  primaryClass: "图像分割",
+  secondrayClass: "边界分割",
+  selected: false,
+  imageAvaliable: true,
+  params: [
+    {
+      paramName: 'threshold1',
+      paramDesc: 'first threshold for the hysteresis procedure.',
+      paramValue: 50,
+      widget: {
+        type: 'slider',
+        min: 0,
+        max: 255
+      }
+    }, {
+      paramName: 'threshold2',
+      paramDesc: 'second threshold for the hysteresis procedure...',
+      paramValue: 100,
+      widget: {
+        type: 'slider',
+        min: 0,
+        max: 255
+      }
+    }, {
+      paramName: 'apertureSize',
+      paramDesc: 'aperture size for the Sobel operator.',
+      paramValue: 3,
+      widget: {
+        type: 'slider',
+        min: 3,
+        max: 7,
+        step: 2
+      }
+    }, {
+      paramName: 'L2gradient',
+      paramDesc: 'specifies the equation for finding gradient magnitude. If it is True, it uses the equation mentioned above which is more accurate, otherwise it uses this function: Edge_Gradient(G)=|Gx|+|Gy|.',
+      paramValue: false,
+      widget: {
+        type: 'switch'
+      }
+    } 
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
+      cv.Canny(src, dst, ...params);
+    } catch(error) {
+      ElMessage.error(`${title}: `+ error)
+      console.log(`${title}: ` + error)
+    } 
   }
 }]
 

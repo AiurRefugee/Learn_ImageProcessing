@@ -2,8 +2,15 @@
 import { onMounted, ref, watch, nextTick} from 'vue'
 import { useRouter } from 'vue-router';
 import { StyleProvider, Themes } from '@varlet/ui'
-import { useStore } from 'vuex';
-import { ElMessage } from 'element-plus'
+import { useStore } from 'vuex'; 
+import { useDark, useToggle } from '@vueuse/core'
+
+const isDark = useDark()
+const toggleDark = () => {
+  console.log(isDark.value) 
+  useToggle(isDark)
+}
+
 const store = useStore()
 const iconsize = ref('200')
 const topTextSize = ref('20')
@@ -14,6 +21,8 @@ const showVue = ref(false)
 const showVarletUI = ref(false)
 const currentTheme = ref(null)
 const status = ref(-1)
+const iconWidth = ref(5)
+
 const router = useRouter()
 
 
@@ -54,7 +63,7 @@ onMounted(() => {
 
   <div class="appContainer">
     <div class="three" ref="canvasdom"></div>
-    <var-popup v-model:show="showOpenCV" :position="pos" >
+    <!-- <var-popup v-model:show="showOpenCV" :position="pos" >
       <var-cell :border="true">
         <var-image src="src/assets/preview/textures/m1.png"></var-image>
       </var-cell>
@@ -71,27 +80,27 @@ onMounted(() => {
         <var-image src="src/assets/imgs/varlet.png"></var-image>
       </var-cell>
       <var-cell>Varlet 是一个基于 Vue3 开发的 Material 风格移动端组件库，全面拥抱 Vue3 生态，由社区团队维护。支持 Typescript、按需引入、暗黑模式、主题定制、国际化，并提供 VSCode 插件保障良好的开发体验。</var-cell>
-    </var-popup>
+    </var-popup> -->
     <div class="topBar">
       <div class="title">Learn ImageProcessing</div>
       <div class="topbarIcons">
-        <var-row style="width:100%" align="center" justify="flex-end" :gutter="20">
-          <var-col :span="1" justify="center">
-            <var-link :text-size="topTextSize" underline="hover" @click="showOpenCV = !showOpenCV">OpenCV</var-link>
-          </var-col> 
-          <var-col :span="1" justify="center">
-            <var-link :text-size="topTextSize" underline="hover" @click="showVue = !showThree">Vue</var-link>
-          </var-col>
-          <var-col :span="1" justify="center">
-            <var-link :text-size="topTextSize" underline="hover" @click="showVarletUI = !showVarletUI">Varlet UI</var-link>
-          </var-col>
-          <var-col :span="1" justify="center">
-            <var-icon :name="`${!currentTheme ? 'white-balance-sunny' : 'weather-night'}`" @click="changeTheme" :size="topbarIconSize" :transition="400"/>
-          </var-col>
-          <var-col :span="1" justify="center">
+        <el-row style="width:100%;" :gutter="2" justify="end" align="middle">
+          <el-col :span="iconWidth" class="topItem">
+            <el-link   underline="hover" @click="showOpenCV = !showOpenCV">OpenCV</el-link>
+          </el-col> 
+          <el-col :span="iconWidth" class="topItem">
+            <el-link  underline="hover" @click="showVue = !showThree">Vue</el-link>
+          </el-col>
+          <el-col :span="iconWidth" class="topItem">
+            <el-link   underline="hover" @click="showVarletUI = !showVarletUI">Varlet UI</el-link>
+          </el-col>
+          <el-col :span="3" class="topItem">
+            <el-icon size="40" @click="toggleDark"><Sunny /></el-icon>
+          </el-col>
+          <el-col :span="2" class="topItem">
             <var-icon name="github" :size="topbarIconSize"/>
-          </var-col>
-        </var-row>
+          </el-col>
+        </el-row>
       </div>
       <!-- <var-divider /> -->
     </div>
@@ -99,20 +108,18 @@ onMounted(() => {
     <div class="main">
       
       <div class="showArea">
-        <var-row class="inputIcons" justify="center" align="center">
-          <var-col :span="6" justify="justify" direction="column" @click="navigateTo('image')">
-              <var-icon name="image" :size="iconsize"></var-icon>
-              <div class="text">从图片输入</div>
-          </var-col>
-          <var-col :span="6" justify="justify" direction="column" @click="navigateTo('video')">
-              <var-icon name="play-circle" :size="iconsize"></var-icon>
-              <div class="text">从视频输入</div>
-          </var-col>
-          <var-col :span="6" justify="justify" direction="column" @click="navigateTo('camera')">
-              <var-icon name="radio-marked" :size="iconsize"></var-icon>
-              <div class="text">从摄像头输入</div>
-          </var-col>
-        </var-row>
+        <div class="centerItem" @click="navigateTo('image')">
+          <var-icon name="radio-marked" :size="iconsize"></var-icon>
+          <div class="text">从摄像头输入</div>
+        </div>
+        <div class="centerItem" @click="navigateTo('video')">
+          <var-icon name="image" :size="iconsize"></var-icon>
+          <div class="text">从图片输入</div>
+        </div>
+        <div class="centerItem" @click="navigateTo('camera')">
+          <var-icon name="play-circle" :size="iconsize"></var-icon>
+          <div class="text">从视频输入</div>
+        </div>
       </div>
     </div>
   </div> 
@@ -134,36 +141,16 @@ div{
   justify-content: center;
   align-items: center;
 }
-:deep(.var-box){
-  align-content: center;
-}
 
-:deep(.var-swipe){
-  overflow: hidden;
-  user-select: none;
-  width: 100%;
-  height: 100%;
-}
-:deep(.var-swipe__indicators){
-  margin-bottom: 2%;
-}
-:deep(.var-cell){
-  width: 100%;
-  font-size: 20px;
-}
-:deep(.var-col){
-  justify-content: center;
-}
-:deep(.var-cell__content){
+.centerItem {
   @include center();
-  justify-content: space-around;
-  width: 100%;
-  height: 100%;
+  width: 33%;
+  font-size: 40px;
+  flex-direction: column;
+  @media (max-width: 1000px) {
+    width: 500px;
+  }
 }
-:deep(.var-swipe__indicators){
-  bottom: 0;
-}
-
 .appContainer{
   display: flex;
   flex-direction: column;
@@ -212,19 +199,22 @@ div{
       }
     }
     .topbarIcons{
-       min-width: 45%;
-       padding-right: 2%;
+       min-width: 40%;
+       //padding-right: 2%;
       @include center();
       max-height: 100px; 
+      .topItem {
+        @include center();
+        a {
+          font-size: 20px;
+        }
+      }
       @media (max-width: 1000px) {
         font-size: 20px;
         width: 100%;
+        flex-direction: column;
       }
-    }
-    :deep(.var-icon){
-      margin: 1%;
-      cursor: pointer;
-    }
+    } 
   }
   .main{
     display: flex;
@@ -233,34 +223,32 @@ div{
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+    @media (max-width: 1000px) {
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 10%;
+    }
     .showArea{
-      width: 95%;
+      width: 85%;
       height: 70%;
       display: flex;
-      justify-content: flex-start;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
       // padding-top: 2%;
       @media (max-width: 1000px) {
-        padding-top: 0%;
-      }
-      align-items: space-between;
-      flex-direction: column;
-
-      :deep(.var-col){
-        justify-content: center;
-      }
-      .inputIcons{
-        width: 100%;
-        @include center();
-        cursor: pointer;
-        justify-content: space-around;
+        padding-top: 0%; 
+      } 
+      
         .text{
           @include center();
+          width: 100%;
           font-size: 40px;
           @media (max-width: 1000px) {
-              font-size: 14px;
+              font-size: 20px;
           }
         }
-      }
+      
     }
   }
 
