@@ -3,13 +3,11 @@ import { onMounted, ref, watch, nextTick} from 'vue'
 import { useRouter } from 'vue-router';
 import { StyleProvider, Themes } from '@varlet/ui'
 import { useStore } from 'vuex'; 
+
 import { useDark, useToggle } from '@vueuse/core'
 
 const isDark = useDark()
-const toggleDark = () => {
-  console.log(isDark.value) 
-  useToggle(isDark)
-}
+const toggleDark = useToggle(isDark) 
 
 const store = useStore()
 const iconsize = ref('200')
@@ -55,6 +53,10 @@ function navigateTo(option) {
 }
 
 onMounted(() => {
+  setTimeout(() => {
+    toggleDark()
+  }, 3000);
+  localStorage['vueuse-color-scheme'] = 'dark'
   store.dispatch('systemInit')
 })
 </script>
@@ -82,7 +84,11 @@ onMounted(() => {
       <var-cell>Varlet 是一个基于 Vue3 开发的 Material 风格移动端组件库，全面拥抱 Vue3 生态，由社区团队维护。支持 Typescript、按需引入、暗黑模式、主题定制、国际化，并提供 VSCode 插件保障良好的开发体验。</var-cell>
     </var-popup> -->
     <div class="topBar">
-      <div class="title">Learn ImageProcessing</div>
+      <div class="title">
+        <el-text size="large">
+          <h1>Learn ImageProcessing</h1>
+        </el-text>
+      </div>
       <div class="topbarIcons">
         <el-row style="width:100%;" :gutter="2" justify="end" align="middle">
           <el-col :span="iconWidth" class="topItem">
@@ -94,8 +100,8 @@ onMounted(() => {
           <el-col :span="iconWidth" class="topItem">
             <el-link   underline="hover" @click="showVarletUI = !showVarletUI">Varlet UI</el-link>
           </el-col>
-          <el-col :span="3" class="topItem">
-            <el-icon size="40" @click="toggleDark"><Sunny /></el-icon>
+          <el-col :span="3" class="topItem" @click="toggleDark">
+            <el-icon size="40"><Sunny /></el-icon>
           </el-col>
           <el-col :span="2" class="topItem">
             <var-icon name="github" :size="topbarIconSize"/>
@@ -109,16 +115,28 @@ onMounted(() => {
       
       <div class="showArea">
         <div class="centerItem" @click="navigateTo('image')">
-          <var-icon name="radio-marked" :size="iconsize"></var-icon>
-          <div class="text">从摄像头输入</div>
+          <el-icon size="200"><PictureFilled /></el-icon>
+          <div class="text">
+            <el-text size="large">
+              <h1>从图片输入</h1>
+            </el-text>
+          </div>
         </div>
         <div class="centerItem" @click="navigateTo('video')">
-          <var-icon name="image" :size="iconsize"></var-icon>
-          <div class="text">从图片输入</div>
+          <el-icon size="200"><VideoPlay /></el-icon>
+          <div class="text">
+            <el-text size="large">
+              <h1>从视频输入</h1>
+            </el-text>
+          </div>
         </div>
         <div class="centerItem" @click="navigateTo('camera')">
-          <var-icon name="play-circle" :size="iconsize"></var-icon>
-          <div class="text">从视频输入</div>
+          <el-icon size="200"><CameraFilled /></el-icon>
+          <div class="text">
+            <el-text size="large">
+              <h1>从摄像头输入</h1>
+            </el-text>
+          </div>
         </div>
       </div>
     </div>

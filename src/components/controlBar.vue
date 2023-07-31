@@ -56,7 +56,7 @@ function toggleDrawer() {
                 <div class="contentWrapper">
                     <div class="swipeItem" v-for="(item, index) in options" :key="index"
                      :class="{active: curOpt == item}" @click="control(item)">
-                        {{ item }}
+                        <el-text>{{ item }}</el-text>
                     </div>
                 </div>
             </div>
@@ -151,7 +151,7 @@ div{
     
     .controllerWrapper {
         border-radius: 50%;
-        border: 2px solid white;
+        border: 1.5px dashed $button_Color;
         // padding: 2%;
         // width: 60%;
         cursor: pointer;

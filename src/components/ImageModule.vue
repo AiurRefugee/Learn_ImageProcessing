@@ -44,16 +44,16 @@ onMounted(() => {
 </script>
 <template>
     <div class="imageWrapper">
-        <var-paper class="inoutput" :elevation="12" :radius="12">
+        <div class="inoutput" :elevation="12" :radius="12">
             
             <div class="imageArea" @click="input"> 
                 <img id="imageSrc" ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${src}`"/>
                 <!-- <img id="imageSrc" > -->
             </div>
             <div class="labelArea">
-                 <el-row justify="center" style="width: 100%;">
-                    <el-col :span="6"  >
-                        <div>Image Input</div>
+                 <el-row justify="center" align="middle" style="width: 100%;">
+                    <el-col :span="6">
+                        <el-text size="large">Image Input</el-text>
                     </el-col>
                     <el-col :span="6" :offset="1">
                         <el-select v-model="src" placeholder="选择图片" size="large">
@@ -68,8 +68,8 @@ onMounted(() => {
                     <input ref="fileInput" type="file" id="fileInput" name="file" style="display: none;" @change="inputChange"/>
                 </label>
             </div>
-        </var-paper> 
-        <var-paper class="inoutput" :elevation="12" :radius="12">
+        </div> 
+        <div class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
                 <!-- <var-skeleton
                     title 
@@ -83,22 +83,18 @@ onMounted(() => {
 
                 <!-- <canvas id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas> -->
             </div>
-            <div class="labelArea">
-                <div>Image Output</div>
-                 
-                <label>
-                    <input type="file" id="fileInput" name="file" style="display: none;" />
-                </label>
+            <div class="labelArea" justify="center">
+                <el-row>
+                    <el-col :span="24">
+                        <el-text size="large"> Image Outut</el-text>
+                    </el-col>
+                </el-row>
             </div>
-        </var-paper>  
+        </div>  
     </div>
 </template>
 <style lang="scss">
  
-:deep(* .el-col-12) {
-    display: flex;
-    justify-content: center;
-}
 .imageWrapper {
     display: flex;
     width: 100vw;
@@ -108,13 +104,16 @@ onMounted(() => {
     align-items: center;
     // background-color: green;
     .inoutput {
+        display: flex;
         flex-direction: column;
         width: 40vw;
         height: 95vh;
         padding-top: 1%; 
         margin-left: 4vw;
+        border-radius: 12px;
+        justify-content: space-around;
         box-shadow: 0px 0px 10px 5px gray;
-        background-color: rgba($color: white, $alpha: 0.8);
+        // background-color: rgba($color: white, $alpha: 0.8);
         .imageArea {
             width: 100%;
             height: 92%;
@@ -141,9 +140,9 @@ onMounted(() => {
             display: flex;
             justify-content: center;
             align-items: center;
-            flex: 1;
-            font-size: 20px;
+            height: 15%; 
             letter-spacing: 3px;
+            // border: 1px solid black;
             // font-weight: 800;
             .selectArea {
                 display: block;

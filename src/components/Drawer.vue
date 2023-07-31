@@ -41,28 +41,29 @@ function show() {
 
 function output() { 
   toggleDark()
-    if(curOpt.value == 'image') { 
-      try { 
-        src = cv.imread(imgInput)  
-        for (const process of filtredConfigs.value) { 
-          if(process.imageAvaliable && process.selected) {
-            process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
-            src = dst
-          }
-        } 
-        if(filtredConfigs.value.filter( (item) => item.selected).length) {
-          cv.imshow('imageOutput', dst);
-        } else {
-          cv.imshow('imageOutput', src);
+  console.log(localStorage)
+  if(curOpt.value == 'image') { 
+    try { 
+      src = cv.imread(imgInput)  
+      for (const process of filtredConfigs.value) { 
+        if(process.imageAvaliable && process.selected) {
+          process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+          src = dst
         }
-          
-
-      } catch(error) {
-        console.log(error)
-        ElMessage.error(`${error}.`)
+      } 
+      if(filtredConfigs.value.filter( (item) => item.selected).length) {
+        cv.imshow('imageOutput', dst);
+      } else {
+        cv.imshow('imageOutput', src);
       }
+        
 
+    } catch(error) {
+      console.log(error)
+      ElMessage.error(`${error}.`)
     }
+
+  }
 }
 
 function changeHandle(val) {
@@ -85,7 +86,9 @@ onUnmounted( () => {
             <div class="filterBar">
               <el-row justify="start" align="middle">
                 <el-col :span="3">
-                  <h4>筛选：</h4>
+                  <el-text>
+                    <h4>筛选：</h4>
+                  </el-text>
                 </el-col> 
                 <el-col :span="21" >
                   <el-select v-model="selectedProcessions" filterable @change="show"
@@ -140,7 +143,7 @@ onUnmounted( () => {
                       <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" :key="index">
                         <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
                         <el-col :span="contentWidth">
-                          <el-slider v-model="slider.paramValue" show-input 
+                          <el-slider v-model="slider.paramValue" show-input
                             show-stop="true" input-size="small" :step="slider.widget.step"
                             :min="slider.widget.min" :max="slider.widget.max">
                           </el-slider>
@@ -190,13 +193,13 @@ div{
   max-height: 200px;
 }
 .drawer {
-    width: 30vw;
+    width: 35vw;
     height: 95vh;
     //display: flex;
     border-radius: 12px;
-    box-shadow: 2px 2px 10px gray;
-    //background-color: transparent;
-    // background-color: rgba($color: white, $alpha: 0.8);
+    // box-shadow: 2px 2px 10px gray;
+    // background-color: rgba(151, 151, 151, 0.395);
+    
     backdrop-filter: blur(10px);
     position: absolute;
     left: 0;
@@ -207,7 +210,7 @@ div{
     .filterBar {
       width: 100%;
       height: 60px;
-      color: gray;
+      // color: gray;
     } 
     .scrollerWrapper {
       width: 100%;
