@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick} from 'vue' 
+import { onMounted, ref, computed, onUnmounted, nextTick} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { classification, configs } from '@/opencv/configs.js'
@@ -9,6 +9,8 @@ const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
+const labelWidth = ref(6)
+const contentWidth = ref(24 - labelWidth.value)
 let imgInput, src
 let dst = new cv.Mat()
 const selectedProcessions = ref([])
@@ -33,19 +35,20 @@ function show() {
 }
 
 function output() { 
-    if(curOpt.value == 'image') {
-      
-      try {
-        src = cv.imread(imgInput) 
-        for (const process of configs) {
+    if(curOpt.value == 'image') { 
+      try { 
+        src = cv.imread(imgInput)  
+        for (const process of filtredConfigs.value) { 
           if(process.imageAvaliable && process.selected) {
             process.f(src, dst, process.params.map( item => item.paramValue ))
+            // src = dst
           }
         }
         
         cv.imshow('imageOutput', dst);
       } catch(error) {
-       // ElMessage.error(`${error}.`)
+        console.log(error)
+        ElMessage.error(`${error}.`)
       }
 
     }
@@ -54,10 +57,15 @@ function output() {
 function changeHandle(val) {
   console.log(val)
 }
- onMounted( async () => {
-    // await nextTick() 
-    imgInput = document.getElementById('imageSrc')  
-  })
+onMounted( async () => {
+  // await nextTick() 
+  imgInput = document.getElementById('imageSrc')   
+})
+onUnmounted( () => {
+  // src.delete()
+  // dst.delete()
+})
+
 </script>
 <template> 
      <transition name="drawer">
@@ -90,27 +98,29 @@ function changeHandle(val) {
                   <el-collapse-item :name="process.title" :title="process.title" 
                     v-for="(process, index) in filtredConfigs" :key="index">
                    <el-space size="10" direction="vertical" fill>
-                    <el-row>
-                      <el-col :span="19">
-                        <el-checkbox label="on" v-model="process.selected"></el-checkbox>
+                    <el-row align="middle">
+                      <el-col :span="19"> 
+                        <el-switch v-model="process.selected"></el-switch>
                       </el-col>
                       <el-col :span="5">
-                        <el-button text type="primary" icon="View" size="small" class="el-icon--right">Learn More</el-button>
-                      </el-col>
+                        <el-link :underline="false">
+                          <el-icon><View /></el-icon>Learn More
+                        </el-link>
+                      </el-col> 
                     </el-row>
                     <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" :key="index">
-                      <el-col :span="4"> {{ slider.paramName }}</el-col>
-                      <el-col :span="20">
-                        <el-slider v-model="slider.paramValue" show-input input-size="small"
+                      <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
+                      <el-col :span="contentWidth">
+                        <el-slider v-model="slider.paramValue" show-input input-size="small" :step="slider.widget.step"
                           :min="slider.widget.min" :max="slider.widget.max">
                         </el-slider>
                       </el-col>
                     </el-row>
                     <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')" :key="index">
-                      <el-col :span="4"> {{ selecter.paramName }}</el-col>
-                      <el-col :span="20">
+                      <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
+                      <el-col :span="contentWidth">
                         <el-select v-model="selecter.paramValue" placeholder="" size="small">
-                          <el-option :label="selecter.widget.selectLables[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
+                          <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
                         </el-select>
                       </el-col>
                     </el-row>
