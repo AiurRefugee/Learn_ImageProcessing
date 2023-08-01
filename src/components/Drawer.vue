@@ -18,7 +18,8 @@ const filterBarLabel = ref(3)
 
 const contentWidth = ref(24 - labelWidth.value)
 const maxCollapseNum = ref(2)
-let imgInput, src
+let imgInput, videoInput, canvasOutput, src, cap, videoWitdth, videoHeight, begin, delay
+const FPS = 30
 let dst = new cv.Mat()
 const selectedProcessions = ref([])
 const primaryClassnameList = classification.map( item => item.primaryClass)
@@ -44,25 +45,57 @@ function show() {
 function output() {  
   if(curOpt.value == 'image') { 
     try { 
+      imgInput = document.getElementById('imageSrc')  
       src = cv.imread(imgInput)  
-      for (const process of filtredConfigs.value) { 
-        if(process.imageAvaliable && process.selected) {
-          process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
-          src = dst
-        }
-      } 
-      if(filtredConfigs.value.filter( (item) => item.selected).length) {
-        cv.imshow('imageOutput', dst);
-      } else {
-        cv.imshow('imageOutput', src);
-      }
-        
-
+      processImage() 
     } catch(error) {
       console.log(error)
       ElMessage.error(`${error}.`)
     }
 
+  } else {
+    try {
+      videoInput = document.getElementById('videoInput')
+      videoWitdth = videoInput.width
+      videoHeight = videoInput.height  
+      src = new cv.Mat(videoHeight, videoWitdth, cv.CV_8UC4);
+      dst = new cv.Mat(videoHeight, videoWitdth, cv.CV_8UC1);
+      cap = new cv.VideoCapture(videoInput); 
+      processVideo()
+
+    } catch(error) {
+      console.log(error)
+      ElMessage(`${error}`)
+    }
+  }
+}
+
+function processImage() {
+  for (const process of filtredConfigs.value) { 
+    if(process.imageAvaliable && process.selected) {
+      process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+    }
+  }
+}
+
+function processVideo() {
+  try {
+    begin = Date.now();
+    // start processing.
+    console.log(src)
+    cap.read(src); 
+    for (const process of filtredConfigs.value) { 
+      if(process.imageAvaliable && process.selected) {
+        process.f(process.title, src, src, process.params.map( item => item.paramValue ))
+         
+      }
+    }
+    cv.imshow('canvasOutput', src);
+    delay = 1000/FPS - (Date.now() - begin);
+    setTimeout(processVideo, delay);
+  } catch(error) {
+    console.log(error)
+    ElMessage(`${error}`)
   }
 }
 
@@ -71,7 +104,7 @@ function changeHandle(val) {
 }
 onMounted( async () => {
   // await nextTick() 
-  imgInput = document.getElementById('imageSrc')  
+  
    
 })
 onUnmounted( () => {
@@ -82,7 +115,8 @@ onUnmounted( () => {
 </script>
 <template> 
      <transition name="drawer" >
-        <div class="drawer" v-if="drawerSwitch" @click="output" ref="el">
+        <div class="drawer" v-if="drawerSwitch" @click="output" ref="el"
+          :style="{'background-color': isDark? 'rgba($color: black, $alpha: 0.5)' : 'rgba($color: #8d8d8d, $alpha: 0.5)'}">
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel">

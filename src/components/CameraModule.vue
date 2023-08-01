@@ -56,7 +56,7 @@ async function init() {
 
 async function processVideo() {
     try {
-        canvasOutput.value.getContext('2d').clearRect(0, 0, size.width, size.height)
+        // canvasOutput.value.getContext('2d').clearRect(0, 0, size.width, size.height)
         let begin = Date.now();
         // start processing.
         cap.read(src);
