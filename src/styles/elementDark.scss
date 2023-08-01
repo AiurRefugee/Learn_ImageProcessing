@@ -1,0 +1,11 @@
+// styles/element/index.scss
+/* 覆盖你需要的变量 */
+@use 'sass:map';
+
+@forward 'element-plus/theme-chalk/src/dark/var.scss' with (
+  $colors: (
+    'info': (
+      'base': white,
+    ),
+  )
+);

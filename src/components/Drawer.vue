@@ -14,6 +14,8 @@ const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
 const labelWidth = ref(6)
+const filterBarLabel = ref(3)
+
 const contentWidth = ref(24 - labelWidth.value)
 const maxCollapseNum = ref(2)
 let imgInput, src
@@ -40,7 +42,7 @@ function show() {
 }
 
 function output() { 
-  toggleDark()
+  
   console.log(localStorage)
   if(curOpt.value == 'image') { 
     try { 
@@ -84,13 +86,13 @@ onUnmounted( () => {
      <transition name="drawer" >
         <div class="drawer" v-if="drawerSwitch" @click="output" ref="el">
             <div class="filterBar">
-              <el-row justify="start" align="middle">
-                <el-col :span="3">
-                  <el-text>
+              <el-row justify="space-between" align="middle">
+                <el-col :span="filterBarLabel">
+                  <el-text @click="toggleDark">
                     <h4>筛选：</h4>
                   </el-text>
                 </el-col> 
-                <el-col :span="21" >
+                <el-col :span="24 - filterBarLabel" >
                   <el-select v-model="selectedProcessions" filterable @change="show"
                     placeholder="请选择条件" multiple collapse-tags :max-collapse-tags="maxCollapseNum">
                     <el-option-group
@@ -112,52 +114,54 @@ onUnmounted( () => {
             <div class="scrollerWrapper">
               <el-scrollbar> 
                 <el-collapse v-model="activeNames" @change="handleChange">
-                  <el-space direction="vertical" :size="20" fill="fill">
+                  <el-space direction="vertical" :size="15" fill="fill">
                     <el-collapse-item :name="process.title" :title="process.title" 
                       v-for="(process, index) in filtredConfigs" :key="index">
-                    <el-space size="10" direction="vertical" fill>
-                      
-                      <el-row align="middle">
-                        <el-col :span="20"> 
-                          <el-switch v-model="process.selected"></el-switch>
-                        </el-col>
-                        <el-col :span="4">
-                          <el-link :underline="false">
-                            <el-icon><View /></el-icon>Learn More
-                          </el-link>
-                        </el-col> 
-                      </el-row>
-                      <el-row>
-                        <el-col :span="24">
-                          <div class="switchGrid">
-                            <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
-                              justify="start" align="middle" :key="index">
-                              <el-col :span="12">{{ Switch.paramName }}</el-col>
-                              <el-col :span="12">
-                                <el-switch v-model="Switch.paramValue"></el-switch>
-                              </el-col>
-                            </el-row>
-                          </div>
-                        </el-col>
-                      </el-row>
-                      <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" :key="index">
-                        <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
-                        <el-col :span="contentWidth">
-                          <el-slider v-model="slider.paramValue" show-input
-                            show-stop="true" input-size="small" :step="slider.widget.step"
-                            :min="slider.widget.min" :max="slider.widget.max">
-                          </el-slider>
-                        </el-col>
-                      </el-row>
-                      <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')" :key="index">
-                        <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
-                        <el-col :span="contentWidth">
-                          <el-select v-model="selecter.paramValue" placeholder="" size="small">
-                            <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
-                          </el-select>
-                        </el-col>
-                      </el-row>
-                    </el-space>
+                      <el-space size="10" direction="vertical" fill>
+                        
+                        <el-row align="middle" justify="center">
+                          <el-col :span="20"> 
+                            <el-switch v-model="process.selected"></el-switch>
+                          </el-col>
+                          <el-col :span="4">
+                            <el-link :underline="false">
+                              <el-icon><View /></el-icon>Learn More
+                            </el-link>
+                          </el-col> 
+                        </el-row>
+                        <el-row>
+                          <el-col :span="24">
+                            <div class="switchGrid">
+                              <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
+                                justify="center" align="middle" :key="index">
+                                <el-col :span="12">{{ Switch.paramName }}</el-col>
+                                <el-col :span="12">
+                                  <el-switch v-model="Switch.paramValue"></el-switch>
+                                </el-col>
+                              </el-row>
+                            </div>
+                          </el-col>
+                        </el-row>
+                        <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
+                          justify="center" :key="index">
+                          <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
+                          <el-col :span="contentWidth">
+                            <el-slider v-model="slider.paramValue" show-input
+                              show-stop="true" input-size="small" :step="slider.widget.step"
+                              :min="slider.widget.min" :max="slider.widget.max">
+                            </el-slider>
+                          </el-col>
+                        </el-row>
+                        <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
+                          justify="center" :key="index">
+                          <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
+                          <el-col :span="contentWidth">
+                            <el-select v-model="selecter.paramValue" placeholder="" size="small">
+                              <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
+                            </el-select>
+                          </el-col>
+                        </el-row>
+                      </el-space>
                     </el-collapse-item>
                   </el-space>
                 </el-collapse>
@@ -183,37 +187,56 @@ div{
 .drawer-leave-to {
   opacity: 1;
   transform: translateX(0);
+  backdrop-filter: blur(10px);
 }
 .drawer-enter-from,
 .drawer-leave-to {
     opacity: 0;
     transform: translateX(-100%);
+    backdrop-filter: blur(2px);
 } 
 .primaryClass {
   max-height: 200px;
 }
 .drawer {
-    width: 35vw;
+    width: 40vw;
     height: 95vh;
     //display: flex;
     border-radius: 12px;
     // box-shadow: 2px 2px 10px gray;
-    // background-color: rgba(151, 151, 151, 0.395);
-    
+    // background-color: rgba(151, 151, 151, 0.395); 
+    // border: 1px solid white;
     backdrop-filter: blur(10px);
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     left: 0;
     z-index: 999;
     margin-left: 4vw;
-    padding-left: 1%;
-    padding-right: 1%;
+    // padding-left: 1%;
+    // padding-right: 1%;
+    // ::before {
+    //   content: "";
+    //   width: inherit; 
+    //   height: 100%;
+    //   filter: blur(15px);
+    //   position: absolute;
+    //   background-color: rgb(191, 191, 191);
+    //   opacity: 0.5;
+    //   top: 0;
+    //   bottom: 0; 
+    //   z-index: -1;
+    //   border-radius: 2%; 
+    // }
     .filterBar {
-      width: 100%;
+      width: 90%;
       height: 60px;
       // color: gray;
     } 
     .scrollerWrapper {
-      width: 100%;
+      width: 90%;
       height: 93%;
     }
     .switchGrid {

@@ -10,6 +10,7 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
 const store = useStore()
+const theme = ref(false)
 const iconsize = ref('200')
 const topTextSize = ref('20')
 const pos = ref('left')
@@ -25,8 +26,7 @@ const router = useRouter()
 
 
 function changeTheme() {
-  currentTheme.value = currentTheme.value ? null : Themes.dark
-  StyleProvider(currentTheme.value)
+  toggleDark()
 }
 function navigateTo(option) {
   store.dispatch('set_currentOption', option)
@@ -52,10 +52,7 @@ function navigateTo(option) {
   }
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    toggleDark()
-  }, 3000);
+onMounted(() => { 
   localStorage['vueuse-color-scheme'] = 'dark'
   store.dispatch('systemInit')
 })
@@ -100,8 +97,10 @@ onMounted(() => {
           <el-col :span="iconWidth" class="topItem">
             <el-link   underline="hover" @click="showVarletUI = !showVarletUI">Varlet UI</el-link>
           </el-col>
-          <el-col :span="3" class="topItem" @click="toggleDark">
-            <el-icon size="40"><Sunny /></el-icon>
+          <el-col :span="3" class="topItem">
+            <el-switch v-model="theme" style="--el-switch-on-color: gray" @change="changeTheme">
+            </el-switch>
+            <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>
           <el-col :span="2" class="topItem">
             <var-icon name="github" :size="topbarIconSize"/>

@@ -86,7 +86,7 @@ onMounted(() => {
             <div class="labelArea" justify="center">
                 <el-row>
                     <el-col :span="24">
-                        <el-text size="large"> Image Outut</el-text>
+                        <el-text size="large"> Image Output</el-text>
                     </el-col>
                 </el-row>
             </div>

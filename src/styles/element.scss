@@ -27,21 +27,28 @@ $--el-switch-on-color: #ffb444;
 
 .el-collapse {
     flex-direction: column;
+    border-bottom: 0;
 }
 .el-collapse-item {
     width: 100%;
+    border-bottom: 0;
 }
 .el-collapse-item__header {
     background-color: #e1e1e185;
     opacity: 0.6;
+    border-bottom: 0;
     padding-left: 2%; 
 }
 .el-collapse-item__content {
-    opacity: 0.9;
+    opacity: 0.9; 
+    padding-bottom: 0;
+    border-bottom: 0;
 }
 .el-collapse-item__wrap {
+    // background-image: linear-gradient(transparent 0%, #e7e7e7ce 50%, transparent 80%);
     background-color: transparent;
-     
+    padding: 2%; 
+    border: 0;
 }
 .el-space--vertical {
     width: 100%;

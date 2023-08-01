@@ -2,6 +2,10 @@
 import { onMounted, ref, computed, nextTick} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';  
+import { useDark, useToggle } from '@vueuse/core'
+const isDark = useDark()
+const toggleDark = useToggle(isDark) 
 
 const store = useStore()
 const router = useRouter()
@@ -21,7 +25,8 @@ const options = computed(() => {
 })
 
 function outputImage() {
-    emit('outputImage')
+    toggleDark()
+    // emit('outputImage')
 }
 
 async function control(option) {

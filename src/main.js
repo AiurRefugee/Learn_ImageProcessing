@@ -6,9 +6,7 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
-// import '@/styles/elementDark.scss'
-import { useToggle } from '@vueuse/shared'
-import { useDark } from "@vueuse/core";
+import '@/styles/elementDark.scss' 
 
 import '@/styles/element.scss'
 
