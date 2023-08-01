@@ -1,11 +1,12 @@
 <script setup>
-import { onMounted, ref, computed, onUnmounted, nextTick} from 'vue' 
+import { onMounted, ref, computed, onUnmounted, nextTick, watch} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { classification, configs } from '@/opencv/configs.js'
 import cv from 'opencv.js' 
 import { ElMessage } from 'element-plus';  
-import { useDark, useToggle } from '@vueuse/core'
+import { useDark, useToggle } from '@vueuse/core' 
+const emit = defineEmits(['outputImage']) 
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
@@ -13,7 +14,7 @@ const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
-const labelWidth = ref(4)
+const labelWidth = ref(5)
 const filterBarLabel = ref(3)
 
 const contentWidth = ref(24 - labelWidth.value)
@@ -28,31 +29,22 @@ const drawerConfigs = ref(configs)
 const classNames = ref(classification)
 const drawerSwitch = computed( () => store.getters.drawerSwitch )
 const curOpt = computed( () => store.getters.currentOption )
-const filtredConfigs = computed( () => {
-  console.log(selectedProcessions.value)
+const filtredConfigs = computed( () => { 
   if( selectedProcessions.value && selectedProcessions.value.length ) {
     return   drawerConfigs.value.filter( (item) => selectedProcessions.value.includes(item.secondrayClass) )
   } else {
     return   drawerConfigs.value
-  }
-  return []
+  } 
+}) 
+
+watch(filtredConfigs.value, (val) => { 
+  store.dispatch('set_filteredProcesses', val)
+  console.log(store.getters.filteredProcesses.map( item => item.selected ))
 })
 
-function show() {
-  console.log(selectedProcessions.value)
-}
-
 function output() {  
-  if(curOpt.value == 'image') { 
-    try { 
-      imgInput = document.getElementById('imageSrc')  
-      src = cv.imread(imgInput)  
-      processImage() 
-    } catch(error) {
-      console.log(error)
-      ElMessage.error(`${error}.`)
-    }
-
+  if(curOpt.value == 'image') {  
+    emit('outputImage')
   } else {
     try {
       videoInput = document.getElementById('videoInput')
@@ -61,7 +53,10 @@ function output() {
       src = new cv.Mat(videoHeight, videoWitdth, cv.CV_8UC4);
       dst = new cv.Mat(videoHeight, videoWitdth, cv.CV_8UC1);
       cap = new cv.VideoCapture(videoInput); 
+      canvasOutput = document.getElementById('canvasOutput')
       processVideo()
+
+      cv.imshow('canvasOutput', src);
 
     } catch(error) {
       console.log(error)
@@ -74,23 +69,23 @@ function processImage() {
   for (const process of filtredConfigs.value) { 
     if(process.imageAvaliable && process.selected) {
       process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+      src = dst
     }
   }
 }
 
 function processVideo() {
   try {
-    begin = Date.now();
-    // start processing.
-    console.log(src)
+    begin = Date.now(); 
     cap.read(src); 
+    //cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+    canvasOutput.getContext('2d').clearRect(0, 0, videoWitdth, videoHeight)
     for (const process of filtredConfigs.value) { 
       if(process.imageAvaliable && process.selected) {
         process.f(process.title, src, src, process.params.map( item => item.paramValue ))
          
       }
     }
-    cv.imshow('canvasOutput', src);
     delay = 1000/FPS - (Date.now() - begin);
     setTimeout(processVideo, delay);
   } catch(error) {
@@ -102,8 +97,9 @@ function processVideo() {
 function changeHandle(val) {
   console.log(val)
 }
-onMounted( async () => {
-  // await nextTick() 
+onMounted( async () => { 
+  // console.log('test'. filtredConfigs.value)
+  // store.dispatch('set_filteredProcesses', drawerConfigs.value)
   
    
 })

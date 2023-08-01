@@ -97,14 +97,14 @@ export  const configs =  [
   }],
   f: (title, src, dst, params) => {
     try {
-      console.log(`${title} params:`,src, dst, ...params)
+      // console.log(`${title} params:`,src, dst, ...params)
       let [depth, kernel, delta, borderType] = [...params]
       let M = cv.Mat.eye(kernel, kernel, cv.CV_32FC1)
       let anchor = new cv.Point(-1, -1)
       cv.filter2D(src, dst, depth, M, anchor, delta, borderType);
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
-      console.log(`${title}: `+ error)
+      // console.log(`${title}: `+ error)
     }
   }
 },
@@ -163,11 +163,11 @@ export  const configs =  [
         ElMessage.error('maxval can not be less than thresh.')
       }
       try {
-        console.log(`${title} params:`,src, dst, ...params)
+        // console.log(`${title} params:`,src, dst, ...params)
         cv.threshold(src, dst, thresh, maxval, type)
       } catch(error) {
         ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
-        console.log(`${title}: `+ error)
+        // console.log(`${title}: `+ error)
       }
   }
 }, 
@@ -240,13 +240,13 @@ export  const configs =  [
     }
   ],
   f: (title, src, dst, params) => { 
-    console.log(`${title} params:`,src, dst, ...params) 
+    // console.log(`${title} params:`,src, dst, ...params) 
     try {
       cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
       cv.adaptiveThreshold(src, dst, ...params);
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
-      console.log(`${title}: `+ error)
+     //  console.log(`${title}: `+ error)
     }
   }
 }, 
@@ -296,12 +296,12 @@ export  const configs =  [
   ],
   f: (title, src, dst, params) => {
     try {
-      console.log(`${title} params:`,src, dst, ...params)
+      // console.log(`${title} params:`,src, dst, ...params)
       cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
       cv.Canny(src, dst, ...params); 
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
-      console.log(`${title}: ` + error)
+      // console.log(`${title}: ` + error)
     } 
   }
 }]

@@ -4,22 +4,18 @@ import ControlBar from '@/components/ControlBar.vue';
 import CameraModule from '@/components/CameraModule.vue';
 import ImageModule from '@/components/ImageModule.vue';
 import Drawer from '@/components/Drawer.vue';
+import { ElMessage } from 'element-plus';  
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-const store = useStore()
-const emit = defineEmits(['outputImage', 'toggleMode'])
+const store = useStore() 
 const route = useRoute() 
 const option = route.params.option
-const funcModule = ref(null)
-const Camera = ref(null)
-function outputImage() {
-  funcModule.value.outputImage()
-}
 
-function toggleMode() {
-  Camera.value.toggleMode()
-}
+// refs
+const image = ref(null)
+const camera = ref(null)
 
+// computed
 const curOpt = computed( () => store.getters.currentOption )
 const cameraStatus = computed( () => store.getters.cameraStatus )
 
@@ -28,16 +24,34 @@ onMounted(() => {
   console.log('aaa', cameraStatus.value)
 })
 
+// functions
+
+function outputImage() {
+  console.log('imageProcessing outputImage')
+  switch(curOpt.value) {
+    case 'image':  
+        image.value.outputImage()
+      break
+    case 'camera':
+        camera.value.outputImage()
+        break
+  }
+}
+
+function toggleMode() {
+  Camera.value.toggleMode()
+}
+
 </script>
 
 <template>
   <div class="appContainer"> 
-    <Drawer></Drawer> 
+    <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
     <keep-alive>
-      <ImageModule  ref="funcModule" v-if="curOpt == 'image'"></ImageModule> 
+      <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule> 
     </keep-alive>
-    <CameraModule ref="Camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
-    <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>
+    <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
+    <ControlBar @toggleMode="toggleMode"/>
   </div>
  
 </template>

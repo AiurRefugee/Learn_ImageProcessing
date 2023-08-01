@@ -1,23 +1,50 @@
 <script setup>
 import { onMounted, ref, computed, nextTick} from 'vue' 
 import cv from 'opencv.js';  
+import { ElMessage } from 'element-plus';  
+import { useStore } from 'vuex';
 
-defineExpose( {
-    outputImage: () => {
-        loading.value = false
-        cv.imshow('imageOutput', dst);
-        mat.delete();
-    }
-})
+const store = useStore()
 
 const loading = ref(true)
 const imageOption = ref()
-const imageSrc = ref(null)
-const fileInput = ref(null)
-const src = ref("Lena.png")
+const imageSrc = ref(null) // <img>
+const fileInput = ref(null) // <input>
+const imgName = ref("Lena.png")
 const srcList = ref(["Lena.png", "girl.jpeg", "milkyWay.jpg", "gang.webp", "gundam.jpeg", "trans.webp", "car.webp"])
+let src
 let dst = new cv.Mat()
-let mat
+
+const filtredConfigs = computed( () => {
+    return store.getters.filteredProcesses
+})
+
+defineExpose( {
+    outputImage: () => {
+        
+        loading.value = false
+        try {  
+            src = cv.imread(imageSrc.value)  
+            processImage() 
+            cv.imshow('imageOutput', src);
+        } catch(error) {
+            console.log(error)
+            ElMessage.error(`${error}.`)
+        }
+    }, 
+    
+})
+
+const processImage = () =>  {
+        console.log('filtredConfigs', filtredConfigs.value.filter( item => item.selected ))
+        for (const process of filtredConfigs.value) { 
+            if(process.imageAvaliable && process.selected) {
+            process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+            src = dst
+            }
+        }
+    }
+
 function input() {
     
     document.querySelector('#fileInput').click()
@@ -31,9 +58,9 @@ onMounted(() => {
     imageSrc.value.onload = function() { 
         // await nextTick()
         
-        mat = cv.imread(imageSrc.value); 
+        // dst = cv.imread(imageSrc.value); 
         
-        cv.cvtColor(mat, dst, cv.COLOR_RGBA2GRAY);
+        //cv.cvtColor(mat, dst, cv.COLOR_RGBA2GRAY);
         let rect = new cv.Rect(100, 100, 200, 200);
         // dst = dst.roi(rect);
         
@@ -47,7 +74,7 @@ onMounted(() => {
         <div class="inoutput" :elevation="12" :radius="12">
             
             <div class="imageArea" @click="input"> 
-                <img id="imageSrc" ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${src}`"/>
+                <img id="imageSrc" ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${imgName}`"/>
                 <!-- <img id="imageSrc" > -->
             </div>
             <div class="labelArea">
@@ -56,7 +83,7 @@ onMounted(() => {
                         <el-text size="large">Image Input</el-text>
                     </el-col>
                     <el-col :span="6" :offset="1">
-                        <el-select v-model="src" placeholder="选择图片" size="large">
+                        <el-select v-model="imgName" placeholder="选择图片" size="large">
                             <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index">
                                  
                             </el-option>
