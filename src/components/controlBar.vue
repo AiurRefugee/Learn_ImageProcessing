@@ -61,7 +61,7 @@ function toggleDrawer() {
                 <div class="contentWrapper">
                     <div class="swipeItem" v-for="(item, index) in options" :key="index"
                      :class="{active: curOpt == item}" @click="control(item)">
-                        <el-text>{{ item }}</el-text>
+                        <el-text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</el-text>
                     </div>
                 </div>
             </div>
@@ -82,8 +82,9 @@ function toggleDrawer() {
                 <div class="device">
                     <div class="drawerCorontroller">
                         <!-- <text>Options</text> -->
-                        <el-switch v-model="drawerSwitch" inline-prompt width="70" @change="toggleDrawer"
-                        active-text="options" inactive-text="options" size="normal"></el-switch>
+                        <el-switch v-model="drawerSwitch" style="--el-switch-on-color: gray;"
+                            inline-prompt width="70" @change="toggleDrawer"
+                            active-text="options" inactive-text="options" size="normal"></el-switch>
                     </div>
                 </div>
             </div>

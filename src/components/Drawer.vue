@@ -13,7 +13,7 @@ const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
-const labelWidth = ref(6)
+const labelWidth = ref(4)
 const filterBarLabel = ref(3)
 
 const contentWidth = ref(24 - labelWidth.value)
@@ -41,9 +41,7 @@ function show() {
   console.log(selectedProcessions.value)
 }
 
-function output() { 
-  
-  console.log(localStorage)
+function output() {  
   if(curOpt.value == 'image') { 
     try { 
       src = cv.imread(imgInput)  
@@ -119,11 +117,11 @@ onUnmounted( () => {
                       v-for="(process, index) in filtredConfigs" :key="index">
                       <el-space size="10" direction="vertical" fill>
                         
-                        <el-row align="middle" justify="center">
-                          <el-col :span="20"> 
+                        <el-row align="middle" justify="space-between">
+                          <el-col :span="24 - labelWidth"> 
                             <el-switch v-model="process.selected"></el-switch>
                           </el-col>
-                          <el-col :span="4">
+                          <el-col :span="labelWidth">
                             <el-link :underline="false">
                               <el-icon><View /></el-icon>Learn More
                             </el-link>
@@ -133,9 +131,9 @@ onUnmounted( () => {
                           <el-col :span="24">
                             <div class="switchGrid">
                               <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
-                                justify="center" align="middle" :key="index">
-                                <el-col :span="12">{{ Switch.paramName }}</el-col>
-                                <el-col :span="12">
+                                justify="start" align="middle" :key="index">
+                                <el-col :span="8">{{ Switch.paramName }}</el-col>
+                                <el-col :span="8">
                                   <el-switch v-model="Switch.paramValue"></el-switch>
                                 </el-col>
                               </el-row>
@@ -203,8 +201,8 @@ div{
     height: 95vh;
     //display: flex;
     border-radius: 12px;
-    // box-shadow: 2px 2px 10px gray;
-    // background-color: rgba(151, 151, 151, 0.395); 
+    box-shadow: 2px 2px 10px gray;
+    // background-color: rgba($color: #8d8d8d, $alpha: 0.5); 
     // border: 1px solid white;
     backdrop-filter: blur(10px);
     position: absolute;

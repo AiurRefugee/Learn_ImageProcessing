@@ -43,7 +43,7 @@ onMounted(() => {
 
 </script>
 <template>
-    <div class="imageWrapper">
+    <el-row class="imageWrapper">
         <div class="inoutput" :elevation="12" :radius="12">
             
             <div class="imageArea" @click="input"> 
@@ -91,7 +91,7 @@ onMounted(() => {
                 </el-row>
             </div>
         </div>  
-    </div>
+    </el-row>
 </template>
 <style lang="scss">
  
@@ -107,8 +107,7 @@ onMounted(() => {
         display: flex;
         flex-direction: column;
         width: 40vw;
-        height: 95vh;
-        padding-top: 1%; 
+        height: 95vh; 
         margin-left: 4vw;
         border-radius: 12px;
         justify-content: space-around;
@@ -116,18 +115,19 @@ onMounted(() => {
         // background-color: rgba($color: white, $alpha: 0.8);
         .imageArea {
             width: 100%;
-            height: 92%;
+            height: 80%;
             display: flex;
+            padding-top: 5%;
             flex-direction: column;
-            justify-items: center;
+            justify-content: center;
             align-items: center;
-            padding-top: 10%;
+            //padding-top: 10%;
             .imgInoutput { 
                 //display: flex;
                 max-height: 90%;
                 max-width: 90%;
                 min-width: 55%;
-                padding-top: 5%;
+                // padding-top: 5%;
             }
             
         }

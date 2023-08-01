@@ -60,12 +60,12 @@ async function processVideo() {
         let begin = Date.now();
         // start processing.
         cap.read(src);
-        BackgroundSubtract(src, dst, fgbg)
+        // BackgroundSubtract(src, dst, fgbg)
 
         //cv.cvtColor(dst, dst, cv.COLOR_RGBA2GRAY);
         // InRange(src, dst)
         await nextTick()
-        cv.imshow('canvasOutput', dst);
+        cv.imshow('canvasOutput', src);
         // schedule the next one.
         let delay = 1000/FPS - (Date.now() - begin);
         setTimeout(processVideo, delay);
