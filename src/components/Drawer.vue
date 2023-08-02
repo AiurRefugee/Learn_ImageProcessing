@@ -39,30 +39,13 @@ const filtredConfigs = computed( () => {
 
 watch(filtredConfigs.value, (val) => { 
   store.dispatch('set_filteredProcesses', val)
-  console.log(store.getters.filteredProcesses.map( item => item.selected ))
+  // console.log(store.getters.filteredProcesses.map( item => item.selected ))
 })
 
 function output() {  
   if(curOpt.value == 'image') {  
     emit('outputImage')
-  } else {
-    try {
-      videoInput = document.getElementById('videoInput')
-      videoWitdth = videoInput.width
-      videoHeight = videoInput.height  
-      src = new cv.Mat(videoHeight, videoWitdth, cv.CV_8UC4);
-      dst = new cv.Mat(videoHeight, videoWitdth, cv.CV_8UC1);
-      cap = new cv.VideoCapture(videoInput); 
-      canvasOutput = document.getElementById('canvasOutput')
-      processVideo()
-
-      cv.imshow('canvasOutput', src);
-
-    } catch(error) {
-      console.log(error)
-      ElMessage(`${error}`)
-    }
-  }
+  }  
 }
 
 function processImage() {
@@ -99,7 +82,7 @@ function changeHandle(val) {
 }
 onMounted( async () => { 
   // console.log('test'. filtredConfigs.value)
-  // store.dispatch('set_filteredProcesses', drawerConfigs.value)
+  store.dispatch('set_filteredProcesses', filtredConfigs.value)
   
    
 })

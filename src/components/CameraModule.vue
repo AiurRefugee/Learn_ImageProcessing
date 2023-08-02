@@ -2,7 +2,7 @@
 import { onMounted, ref, computed, nextTick, onUnmounted} from 'vue' 
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex';
+import { useStore } from 'vuex'; 
 
 const store = useStore()
 const videoInput = ref(null) 
@@ -13,16 +13,11 @@ const camerSwitch = ref(false)
 const videoWrapper = ref(null)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
-const faceMode = computed( () => {
-    return camerSwitch.value ? "user" : "environment"
-})
+const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 
-const filteredProcesses = computed( () => {
-    console.log(store.options.filteredProcesses)
-    return store.options.filteredProcesses
-})
+const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
-let width, height, src, dst, cap, mediaStream, fgmask
+let width, height, src, srcTemp,  dst, cap, mediaStream, fgmask, interval
  
 
 
@@ -53,28 +48,44 @@ async function init() {
     height = videoInput.value.height 
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
+    // srcTemp = new cv.Mat()
     cap = new cv.VideoCapture(videoInput.value); 
+    if(interval) {
+        clearInterval(interval)
+    } 
+    console.log('val', filtredConfigs.value)
+    interval = setInterval( () => {
+         
+        try {
+            canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+            cap.read(src);  
+            // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
+            processVideo() 
+            // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
+            //     dst = src.clone()
+            // }
+            cv.imshow('canvasOutput', dst);
+        } catch(error) {
+            console.log(error)
+        }
+        
+    }, 1000 / FPS)
+    
 }
 
-function processVideo() {
-    try {
-        canvasOutput.value.getContext('2d').clearRect(0, 0, size.width, size.height)
-        //let begin = Date.now();
-        // start processing.
-        cap.read(src);
-        // BackgroundSubtract(src, dst, fgbg)
-
-        // cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
-        // InRange(src, dst)
-        //await nextTick()
-        cv.imshow('canvasOutput', src);
-        // schedule the next one.
-        //let delay = 1000/FPS - (Date.now() - begin);
-         
-    } catch (error) {
-        // ElMessage.error(`${error}.`)
-        console.log(error)
-    }
+function processVideo() {   
+    filtredConfigs.value.map( (process, index) => {  
+        try { 
+            if(process.selected) {
+                process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+            }
+        } catch (error) {  
+            // clearInterval(interval)
+            console.log(error)
+            
+        }   
+    })
+    
 };
 
 onMounted(async () => { 
@@ -82,15 +93,7 @@ onMounted(async () => {
         width: window.innerWidth,
         height: window.innerHeight
     } 
-    await nextTick()
-    let test = setInterval(() => {
-        console.log(filteredProcesses)
-    }, 1000);
-    setTimeout( () => {
-        clearInterval(test)
-    }, 5000)
-    // schedule the first one.
-    // setInterval(processVideo, 1000/FPS)
+    init()
 
 })
 
@@ -100,6 +103,9 @@ onUnmounted(() => {
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
     } 
+    if(interval) {
+        clearInterval(interval)
+    }
     // src.delete()
     // dst.delete()
 })

@@ -242,8 +242,8 @@ export  const configs =  [
   f: (title, src, dst, params) => { 
     // console.log(`${title} params:`,src, dst, ...params) 
     try {
-      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
-      cv.adaptiveThreshold(src, dst, ...params);
+      cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
+      cv.adaptiveThreshold(dst, dst, ...params);
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
      //  console.log(`${title}: `+ error)
@@ -297,7 +297,7 @@ export  const configs =  [
   f: (title, src, dst, params) => {
     try {
       // console.log(`${title} params:`,src, dst, ...params)
-      cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
+      // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
       cv.Canny(src, dst, ...params); 
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)

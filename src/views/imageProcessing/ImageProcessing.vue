@@ -26,8 +26,7 @@ onMounted(() => {
 
 // functions
 
-function outputImage() {
-  console.log('imageProcessing outputImage')
+function outputImage() { 
   switch(curOpt.value) {
     case 'image':  
         image.value.outputImage()
@@ -39,7 +38,7 @@ function outputImage() {
 }
 
 function toggleMode() {
-  Camera.value.toggleMode()
+  camera.value.toggleMode()
 }
 
 </script>
@@ -51,7 +50,7 @@ function toggleMode() {
       <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule> 
     </keep-alive>
     <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
-    <ControlBar @toggleMode="toggleMode"/>
+    <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>
   </div>
  
 </template>

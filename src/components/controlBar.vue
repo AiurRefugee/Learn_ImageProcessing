@@ -26,7 +26,7 @@ const options = computed(() => {
 
 function outputImage() {
     toggleDark()
-    // emit('outputImage')
+    emit('outputImage')
 }
 
 async function control(option) {

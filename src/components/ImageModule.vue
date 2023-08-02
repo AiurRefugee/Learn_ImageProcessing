@@ -15,9 +15,7 @@ const srcList = ref(["Lena.png", "girl.jpeg", "milkyWay.jpg", "gang.webp", "gund
 let src
 let dst = new cv.Mat()
 
-const filtredConfigs = computed( () => {
-    return store.getters.filteredProcesses
-})
+const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
 defineExpose( {
     outputImage: () => {
@@ -36,14 +34,14 @@ defineExpose( {
 })
 
 const processImage = () =>  {
-        console.log('filtredConfigs', filtredConfigs.value.filter( item => item.selected ))
-        for (const process of filtredConfigs.value) { 
-            if(process.imageAvaliable && process.selected) {
-            process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
-            src = dst
-            }
+    console.log('filtredConfigs', filtredConfigs.value.filter( item => item.selected ))
+    for (const process of filtredConfigs.value) { 
+        if(process.imageAvaliable && process.selected) {
+        process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+        src = dst
         }
     }
+}
 
 function input() {
     
@@ -98,17 +96,11 @@ onMounted(() => {
         </div> 
         <div class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
-                <!-- <var-skeleton
-                    title 
-                    card
-                    :rows="4"
-                    :loading="loading"
-                    v-if="loading"
-                >
-                </var-skeleton> -->
-                <canvas id="imageOutput" class="imgInoutput"></canvas>
+                <div class="imgInoutput"> 
+                </div>
+                <!-- <canvas id="imageOutput" class="imgInoutput"></canvas> -->
 
-                <!-- <canvas id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas> -->
+                <canvas id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas>
             </div>
             <div class="labelArea" justify="center">
                 <el-row>

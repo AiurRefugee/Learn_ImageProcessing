@@ -95,7 +95,7 @@ onMounted(() => {
             <el-link  underline="hover" @click="showVue = !showThree">Vue</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
-            <el-link   underline="hover" @click="showVarletUI = !showVarletUI">Varlet UI</el-link>
+            <el-link   underline="hover" @click="showVarletUI = !showVarletUI">Element UI</el-link>
           </el-col>
           <el-col :span="3" class="topItem">
             <el-switch v-model="theme" style="--el-switch-on-color: gray" @change="changeTheme">
