@@ -25,8 +25,10 @@ const options = computed(() => {
 })
 
 function outputImage() {
-    toggleDark()
-    emit('outputImage')
+    if(curOpt == 'image') {
+        toggleDark()
+        emit('outputImage')
+    }
 }
 
 async function control(option) {

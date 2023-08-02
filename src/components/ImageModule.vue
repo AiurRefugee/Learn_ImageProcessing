@@ -6,10 +6,13 @@ import { useStore } from 'vuex';
 
 const store = useStore()
 
+const imageUrl = ref(null)
+const imageUrlList = ref([])
 const loading = ref(true)
 const imageOption = ref()
 const imageSrc = ref(null) // <img>
 const fileInput = ref(null) // <input>
+const imageOutput = ref(null) // <canvas></canvas>
 const imgName = ref("Lena.png")
 const srcList = ref(["Lena.png", "girl.jpeg", "milkyWay.jpg", "gang.webp", "gundam.jpeg", "trans.webp", "car.webp"])
 let src
@@ -19,12 +22,25 @@ const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
 defineExpose( {
     outputImage: () => {
-        
+        imageUrl.value = null
+        imageUrlList.value = []
         loading.value = false
         try {  
             src = cv.imread(imageSrc.value)  
-            processImage() 
+
             cv.imshow('imageOutput', src);
+            imageUrl.value = imageOutput.value.toDataURL()
+            imageUrlList.value.push(imageUrl.value)
+            
+            processImage()  
+            
+            cv.imshow('imageOutput', src);
+            imageUrl.value = imageOutput.value.toDataURL()
+            imageUrlList.value.push(imageUrl.value)
+            
+            // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
+            // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
+            // imageUrlList.value.push(imageOutput.value.toDataURL())
         } catch(error) {
             console.log(error)
             ElMessage.error(`${error}.`)
@@ -37,8 +53,15 @@ const processImage = () =>  {
     console.log('filtredConfigs', filtredConfigs.value.filter( item => item.selected ))
     for (const process of filtredConfigs.value) { 
         if(process.imageAvaliable && process.selected) {
-        process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
-        src = dst
+            process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+            src = dst
+
+            cv.imshow('imageOutput', src);
+            imageUrl.value = imageOutput.value.toDataURL()
+            imageUrlList.value.push(imageUrl.value)
+            // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
+            // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
+            // imageUrlList.value.push(imageOutput.value.toDataURL())
         }
     }
 }
@@ -82,9 +105,7 @@ onMounted(() => {
                     </el-col>
                     <el-col :span="6" :offset="1">
                         <el-select v-model="imgName" placeholder="选择图片" size="large">
-                            <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index">
-                                 
-                            </el-option>
+                            <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
                         </el-select>
                     </el-col>
                  </el-row>
@@ -97,10 +118,19 @@ onMounted(() => {
         <div class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
                 <div class="imgInoutput"> 
+                    <el-skeleton :rows="10" animated v-if="loading" />
+
+                    <el-image :src="imageUrl"
+                        :zoom-rate="1.6"
+                        :preview-src-list="imageUrlList"
+                        fit="cover"
+                        >
+                    </el-image>
                 </div>
+
                 <!-- <canvas id="imageOutput" class="imgInoutput"></canvas> -->
 
-                <canvas id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'block'}"></canvas>
+                <canvas ref="imageOutput" id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'none'}"></canvas>
             </div>
             <div class="labelArea" justify="center">
                 <el-row>
@@ -150,9 +180,7 @@ onMounted(() => {
             }
             
         }
-        .imageArea div {
-            display: block;
-        }
+        
         .labelArea {
             width: 100%;
             // color: black;
