@@ -112,8 +112,8 @@ onUnmounted(() => {
     if(interval) {
         clearInterval(interval)
     }
-    // src.delete()
-    // dst.delete()
+    src.delete()
+    dst.delete()
 })
 
 </script>

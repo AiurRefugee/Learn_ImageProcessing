@@ -14,7 +14,7 @@ const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
-const labelWidth = ref(4)
+const labelWidth = ref(5)
 const filterBarLabel = ref(3)
 
 const contentWidth = ref(24 - labelWidth.value)
@@ -197,12 +197,14 @@ div{
 .drawer-enter-from,
 .drawer-leave-to {
   opacity: 1;
+  
   transform: translateX(0);
   backdrop-filter: blur(10px);
 }
 .drawer-enter-from,
 .drawer-leave-to {
     opacity: 0;
+    z-index: -1;
     transform: translateX(-100%);
     backdrop-filter: blur(2px);
 } 
@@ -236,7 +238,7 @@ div{
     } 
     .scrollerWrapper {
       width: 90%;
-      height: 93%;
+      height: 90%;
     }
     .switchGrid {
       width: 100%;

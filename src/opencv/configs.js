@@ -117,8 +117,7 @@ export  const configs =  [
     }
     return false
   }
-},
-{
+}, {
   title: "Fixed Threshold",
   primaryClass: '图像分割',
   secondrayClass: '阈值分割',
@@ -182,8 +181,7 @@ export  const configs =  [
       }
       return false
   }
-}, 
-{
+}, {
   title: "Adaptive Thresholding",
   primaryClass: "图像分割",
   secondrayClass: "阈值分割",
@@ -263,8 +261,7 @@ export  const configs =  [
     }
     return false
   }
-}, 
-{
+}, {
   title: "Canny Edge Detection",
   primaryClass: "图像分割",
   secondrayClass: "边界分割",
@@ -350,10 +347,10 @@ export  const configs =  [
     }, {
       paramName: 'angle',
       paramDesc: '',
-      paramValue: 0,
+      paramValue: 45,
       widget: {
         type: 'slider',
-        min: 0,
+        min: 0.1,
         max: 100
       }
     }, {

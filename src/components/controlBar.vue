@@ -83,8 +83,7 @@ function toggleDrawer() {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
-                    <div class="drawerCorontroller">
-                        <text>Options</text>
+                    <div class="drawerCorontroller"> 
                         <el-switch v-model="drawerSwitch" style="--el-switch-on-color: gray;"
                             inline-prompt width="70" @change="toggleDrawer"
                             active-text="options" inactive-text="options" size="normal"></el-switch>
