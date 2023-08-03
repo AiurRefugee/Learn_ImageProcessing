@@ -25,7 +25,7 @@ const options = computed(() => {
 })
 
 function outputImage() {
-    if(curOpt == 'image') {
+    if(curOpt.value == 'image') {
         toggleDark()
         emit('outputImage')
     }
@@ -75,7 +75,8 @@ function toggleDrawer() {
             <div class="deviceWrapper">
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
                 <div class="device">
-                    <img src="/src/assets/icons/refresh.svg" class="refresh" ref="refresh" @click="toggleMode">
+                    <img src="/src/assets/icons/refresh.svg" class="refresh" 
+                    v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'" ref="refresh" @click="toggleMode">
                     {{ 'cameraStatus:' + cameraStatus }}
                     {{ 'curOpt:' + curOpt }}
                     {{ 'cameraNum:' + cameraCount }}
@@ -83,7 +84,7 @@ function toggleDrawer() {
                 </div>
                 <div class="device">
                     <div class="drawerCorontroller">
-                        <!-- <text>Options</text> -->
+                        <text>Options</text>
                         <el-switch v-model="drawerSwitch" style="--el-switch-on-color: gray;"
                             inline-prompt width="70" @change="toggleDrawer"
                             active-text="options" inactive-text="options" size="normal"></el-switch>
@@ -150,8 +151,8 @@ div{
                 }
                 .active {
                     color: $button_Color;
-                    transform: translateX(-10px) scale(1.2); 
-                    transition: all 0.4s ease-in-out;
+                    transform: scale(1.5); 
+                    transition: all 0.2s ease-in-out;
                 }
             }
         }

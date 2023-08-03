@@ -1,6 +1,7 @@
 import cv from 'opencv.js'
-import { ElMessage } from 'element-plus' 
-export const classification = [{
+import { ElMessage } from 'element-plus'  
+export const classification = [
+{
   primaryClass: '图像变换',
   secondrayClass: [
     '几何变换', '图像增广', '尺度变换', '频域变换', '颜色空间变换', '形态学变换'
@@ -23,21 +24,28 @@ export const classification = [{
 }] 
 
 /*  
-  title
-  primaryClass
-  secondrayClass
-  selected
-  imageAvaliable
-  params
-  -- paramName
-  -- paramDesc
-  -- paramValue
-  -- widget
-      -- type "slider" min 0 max 255 step 1
-      -- type "selecter" selectLabels [...] selectValues [...]
-      -- type "input" ''
-      -- type "switch" ''
-  f 
+  title: 'example',
+  primaryClass: 'example',
+  secondrayClass: 'example',
+  selected: false,
+  imageAvaliable: true,
+  params: [
+    {
+      paramName: 
+      paramDesc:
+      paramValue:
+      widget:{
+        type "slider" min 0 max 255 step 1
+        type "selecter" selectLabels [...] selectValues [...]
+        type "input" ''
+        type "switch" ''
+      }
+      
+    }
+  ],
+  f: () => {
+
+  } 
 */
 export  const configs =  [
 {
@@ -102,10 +110,12 @@ export  const configs =  [
       let M = cv.Mat.eye(kernel, kernel, cv.CV_32FC1)
       let anchor = new cv.Point(-1, -1)
       cv.filter2D(src, dst, depth, M, anchor, delta, borderType);
+      return true
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
       // console.log(`${title}: `+ error)
     }
+    return false
   }
 },
 {
@@ -165,10 +175,12 @@ export  const configs =  [
       try {
         // console.log(`${title} params:`,src, dst, ...params)
         cv.threshold(src, dst, thresh, maxval, type)
+        return true
       } catch(error) {
         ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
         // console.log(`${title}: `+ error)
       }
+      return false
   }
 }, 
 {
@@ -244,10 +256,12 @@ export  const configs =  [
     try {
       cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
       cv.adaptiveThreshold(dst, dst, ...params);
+      return true
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
      //  console.log(`${title}: `+ error)
     }
+    return false
   }
 }, 
 {
@@ -299,10 +313,74 @@ export  const configs =  [
       // console.log(`${title} params:`,src, dst, ...params)
       // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
       cv.Canny(src, dst, ...params); 
+      return true
     } catch(error) {
       ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
       // console.log(`${title}: ` + error)
     } 
+    return false
+  }
+}, {
+  title: 'Rotation Transform',
+  primaryClass: '图像变换',
+  secondrayClass: '几何变换',
+  selected: false,
+  imageAvaliable: true,
+  params: [
+    {
+      paramName: 'center x',
+      paramDesc: 'center x of the rotation in the source image.',
+      paramValue: 50,
+      widget: {
+         type: 'slider',
+         min: 0,
+         max: 100
+      }
+      
+    }, {
+      paramName: 'center y',
+      paramDesc: 'center y of the rotation in the source image.',
+      paramValue: 50,
+      widget: {
+        type: 'slider',
+        min: 0,
+        max: 100
+      }
+      
+    }, {
+      paramName: 'angle',
+      paramDesc: '',
+      paramValue: 0,
+      widget: {
+        type: 'slider',
+        min: 0,
+        max: 100
+      }
+    }, {
+      paramName: 'scale',
+      paramDesc: 'isotropic scale factor',
+      paramValue: 1,
+      widget: {
+        type: 'slider',
+        min: 0.1,
+        max: 10
+      } 
+    }
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      // console.log(`${title} params:`,src, dst, ...params)
+      let [centerx, centery, angle, scale] = [...params]
+      let dsize = new cv.Size(src.rows, src.cols)
+      let center = new cv.Point(src.cols * centerx / 100, src.rows * centery / 100);
+      let M = cv.getRotationMatrix2D(center, angle, scale);
+      cv.warpAffine(src, dst, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      // console.log(`${title}: ` + error)
+    }
+    return false
   }
 }]
 

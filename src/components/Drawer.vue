@@ -14,7 +14,7 @@ const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
-const labelWidth = ref(5)
+const labelWidth = ref(4)
 const filterBarLabel = ref(3)
 
 const contentWidth = ref(24 - labelWidth.value)
@@ -228,19 +228,7 @@ div{
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
-    // ::before {
-    //   content: "";
-    //   width: inherit; 
-    //   height: 100%;
-    //   filter: blur(15px);
-    //   position: absolute;
-    //   background-color: rgb(191, 191, 191);
-    //   opacity: 0.5;
-    //   top: 0;
-    //   bottom: 0; 
-    //   z-index: -1;
-    //   border-radius: 2%; 
-    // }
+    
     .filterBar {
       width: 90%;
       height: 60px;
@@ -257,6 +245,6 @@ div{
       grid-column-gap: 20px;
       overflow: auto;
     }
-}
+} 
 
 </style>

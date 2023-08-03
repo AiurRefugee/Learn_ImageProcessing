@@ -10,7 +10,7 @@ const size = ref(Object)
 const canvasOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
-const videoWrapper = ref(null)
+const cameraWrapper = ref(null)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
@@ -23,7 +23,7 @@ let width, height, src, srcTemp,  dst, cap, mediaStream, fgmask, interval
 
 defineExpose({
     toggleMode: async () => { 
-        videoWrapper.value.animate([
+        cameraWrapper.value.animate([
             {transform: 'rotateY(0)'},
             {transform: 'rotateY(360deg)'},
         ], 800)
@@ -74,13 +74,19 @@ async function init() {
 }
 
 function processVideo() {   
+    src.copyTo(dst)
     filtredConfigs.value.map( (process, index) => {  
         try { 
             if(process.selected) {
-                process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+                let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
+                if(!res) {
+                    process.selected = !process.selected
+                    
+                }
             }
         } catch (error) {  
             // clearInterval(interval)
+            
             console.log(error)
             
         }   
@@ -112,7 +118,7 @@ onUnmounted(() => {
 
 </script>
 <template>
-    <div ref="videoWrapper" class="videoWrapper"> 
+    <div ref="cameraWrapper" class="cameraWrapper"> 
         <video ref="videoInput" id="videoInput" :width="size.width" :height="size.height">
 
         </video> 
@@ -130,7 +136,7 @@ onUnmounted(() => {
     transform: rotateY(360deg); /* 360度旋转，一周 */
     }
 }
-.videoWrapper {
+.cameraWrapper {
     width: 100vw;
     height: 100vh;
      #videoInput {

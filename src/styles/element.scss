@@ -62,3 +62,10 @@ $--el-switch-on-color: #ffb444;
 //可设置滚动条颜色
     background: transparent;//这里我设置成了透明色,可以根据需求添加自己想要的颜色
 }
+.el-image-viewer__mask {
+    opacity: 0.8;
+    
+}
+.el-image-viewer__wrapper {
+    backdrop-filter: blur(10px);
+}

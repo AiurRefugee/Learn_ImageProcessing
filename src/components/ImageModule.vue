@@ -31,12 +31,8 @@ defineExpose( {
             cv.imshow('imageOutput', src);
             imageUrl.value = imageOutput.value.toDataURL()
             imageUrlList.value.push(imageUrl.value)
-            
-            processImage()  
-            
-            cv.imshow('imageOutput', src);
-            imageUrl.value = imageOutput.value.toDataURL()
-            imageUrlList.value.push(imageUrl.value)
+
+            processImage()   
             
             // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
             // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
@@ -50,10 +46,12 @@ defineExpose( {
 })
 
 const processImage = () =>  {
-    console.log('filtredConfigs', filtredConfigs.value.filter( item => item.selected ))
     for (const process of filtredConfigs.value) { 
         if(process.imageAvaliable && process.selected) {
-            process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+            let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+            if(!res) {
+                process.selected = !process.selected
+            }
             src = dst
 
             cv.imshow('imageOutput', src);
@@ -118,12 +116,13 @@ onMounted(() => {
         <div class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
                 <div class="imgInoutput"> 
-                    <el-skeleton :rows="10" animated v-if="loading" />
+                    <el-skeleton :rows="10" animated v-if="loading">
+                    </el-skeleton>
 
-                    <el-image :src="imageUrl"
-                        :zoom-rate="1.6"
+                    <el-image :src="imageUrl" 
                         :preview-src-list="imageUrlList"
                         fit="cover"
+                        v-if="!loading"
                         >
                     </el-image>
                 </div>
@@ -146,13 +145,14 @@ onMounted(() => {
  
 .imageWrapper {
     display: flex;
-    width: 100vw;
+    width: 90vw;
     height: 100vh;
     margin-right: 10vw;
     justify-content: flex-start;
     align-items: center;
-    // background-color: green;
-    .inoutput {
+    left: 0;
+    position: absolute;
+    .inoutput { 
         display: flex;
         flex-direction: column;
         width: 40vw;
@@ -198,7 +198,7 @@ onMounted(() => {
 
             }
         }
-    } 
+    }  
     
    
 }
