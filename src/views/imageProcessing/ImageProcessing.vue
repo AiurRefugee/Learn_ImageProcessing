@@ -46,7 +46,9 @@ function toggleMode() {
 
 <template>
   <div class="appContainer"> 
-    <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
+    <keep-alive>
+      <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
+    </keep-alive>
     <transition>
        
         <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule> 
@@ -58,7 +60,9 @@ function toggleMode() {
     <transition >
       <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
     </transition>
-    <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>
+    <keep-alive>
+      <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>
+    </keep-alive>
   </div>
  
 </template>

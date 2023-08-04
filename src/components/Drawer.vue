@@ -57,6 +57,10 @@ function processImage() {
   }
 }
 
+function toggle() {
+  store.dispatch('toggle_currentOption')
+}
+
 function processVideo() {
   try {
     begin = Date.now(); 
@@ -180,6 +184,7 @@ onUnmounted( () => {
             </div>
         </div>
      </transition>
+     <div class="mask" v-if="drawerSwitch"  @click="toggle"></div>
 </template>
 <style lang="scss" scoped>
 $button_Color: #ffb444;
@@ -204,13 +209,21 @@ div{
 }
 .drawer-enter-from,
 .drawer-leave-to {
-    opacity: 0;
-    z-index: -1;
+    opacity: 0; 
     transform: translateX(-100%);
     backdrop-filter: blur(2px);
 } 
 .primaryClass {
   max-height: 200px;
+}
+.mask {
+  width: 90vw;
+  height: 100vh;
+  position: absolute;
+  background-color: transparent;
+  left: 0;
+  top: 0;
+  z-index: 1;
 }
 .drawer {
     width: 40vw;

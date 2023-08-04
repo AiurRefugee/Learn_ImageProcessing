@@ -5,6 +5,8 @@ import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'; 
 
 const store = useStore()
+
+let playing = ref(false)
 const videoInput = ref(null) 
 const size = ref(Object)
 const canvasOutput = ref(null)
@@ -18,7 +20,36 @@ let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
-let width, height, src, srcTemp,  dst, cap, mediaStream, fgmask, interval
+let width, height, src, dst, cap, fgmask, interval
+
+function play() {
+    
+    if(!playing.value){
+        videoInput.value.play()
+    } else {
+        videoInput.value.pause()
+    }
+    playing.value = !playing.value 
+    if(!interval) { 
+        interval = setInterval( () => {
+            try {
+                if(canvasOutput.value) {
+                    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+                }
+                
+                cap.read(src);  
+                // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
+                processVideo() 
+                // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
+                //     dst = src.clone()
+                // }
+                cv.imshow('canvasOutput', dst);
+            } catch(error) {
+                console.log(error)
+            }
+        }, 1000 / FPS)  
+    }
+}
 
 function processVideo() {   
     src.copyTo(dst)
@@ -51,35 +82,25 @@ onMounted( async () => {
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     // srcTemp = new cv.Mat()
     cap = new cv.VideoCapture(videoInput.value); 
-    // await nextTick()
-    setInterval( () => {
-        try {
-            // canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-            cap.read(src);  
-            // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
-            processVideo() 
-            // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
-            //     dst = src.clone()
-            // }
-            cv.imshow('canvasOutput', dst);
-        } catch(error) {
-            console.log(error)
-        }
-    }, 1000 / FPS) 
+    await nextTick()
+    // videoInput.value.play()
+    videoInput.value.addEventListener("timeupdate", async () => {
+    //   console.log('playing')
+    })
+    
 })
 
-// onUnmounted(() => { 
-//     if (mediaStream) {
-//         const tracks = mediaStream.getTracks();
-//         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
-//         mediaStream = null; // 清空媒体流对象
-//     } 
-//     if(interval) {
-//         clearInterval(interval)
-//     }
-//     // src.delete()
-//     // dst.delete()
-// })
+onUnmounted(() => { 
+     
+    if(interval) {
+        clearInterval(interval)
+    }
+    src.delete()
+    dst.delete()
+    if(videoInput.value) {
+        canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    }
+})
 
 </script>
 <template>
@@ -91,13 +112,13 @@ onMounted( async () => {
 
         </canvas> -->
         <div class="videoArea" ref="contentWrapper">
-            <div class="contentWrapper" >
-                <!-- <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
-                    src="http://192.168.2.9:8080/videos/video.m4s" style="display: none;" autoplay controls>
-                </video> -->
+            <div class="contentWrapper" @click="play">
                 <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
-                    src="http://192.168.2.9:8080/videos/video.m4s"  autoplay controls loop crossOrigin="">
+                    src="/src/assets/videos/video.m4s" style="display: none;" autoplay controls loop>
                 </video>
+                <!-- <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
+                    src="/src/assets/videos/video.m4s"  autoplay controls loop>
+                </video> -->
                 <canvas id="canvasOutput" ref="canvasOutput"></canvas>
             </div>
             <div class="saucer"></div>
