@@ -350,8 +350,8 @@ export  const configs =  [
       paramValue: 45,
       widget: {
         type: 'slider',
-        min: 0.1,
-        max: 100
+        min: 0,
+        max: 180
       }
     }, {
       paramName: 'scale',

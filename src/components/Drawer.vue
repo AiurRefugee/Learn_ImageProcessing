@@ -199,6 +199,7 @@ div{
   opacity: 1;
   
   transform: translateX(0);
+  -webkit-backdrop-filter: blur(10px); 
   backdrop-filter: blur(10px);
 }
 .drawer-enter-from,
@@ -219,6 +220,7 @@ div{
     box-shadow: 2px 2px 10px gray;
     // background-color: rgba($color: #8d8d8d, $alpha: 0.5); 
     // border: 1px solid white;
+    -webkit-backdrop-filter: blur(10px); 
     backdrop-filter: blur(10px);
     position: absolute;
     display: flex;

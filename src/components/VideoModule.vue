@@ -11,6 +11,9 @@ const canvasOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
 const videoWrapper = ref(null)
+const contentWrapper = ref(null)
+const videoWitdth = ref(0)
+const videoHeight = ref(0)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
@@ -38,6 +41,8 @@ function processVideo() {
 };
 
 onMounted( async () => { 
+    videoWitdth.value = contentWrapper.value.clientWidth * 0.8
+    videoHeight.value = contentWrapper.value.clientHeight * 0.8 
     await nextTick()
     width = videoInput.value.width
     height = videoInput.value.height 
@@ -46,9 +51,10 @@ onMounted( async () => {
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     // srcTemp = new cv.Mat()
     cap = new cv.VideoCapture(videoInput.value); 
+    // await nextTick()
     setInterval( () => {
         try {
-            canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+            // canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
             cap.read(src);  
             // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
             processVideo() 
@@ -84,10 +90,13 @@ onMounted( async () => {
         <!-- <canvas ref="canvasOutput" id="canvasOutput">
 
         </canvas> -->
-        <div class="videoArea">
-            <div class="contentWrapper">
-                <video id="videoInput" ref="videoInput" width="1920" height="1080"
-                src="/src/assets/videos/video.m4s" style="display: none;" autoplay controls>
+        <div class="videoArea" ref="contentWrapper">
+            <div class="contentWrapper" >
+                <!-- <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
+                    src="http://192.168.2.9:8080/videos/video.m4s" style="display: none;" autoplay controls>
+                </video> -->
+                <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
+                    src="http://192.168.2.9:8080/videos/video.m4s"  autoplay controls loop crossOrigin="">
                 </video>
                 <canvas id="canvasOutput" ref="canvasOutput"></canvas>
             </div>
@@ -115,10 +124,12 @@ video {
         height: 100vh;
         display: flex;
         flex-direction: column;
+        // background-color: white;
         align-items: center;
         justify-content: center;
         .contentWrapper {
-            width: 80vw;
+            width: 82vw;
+            // height: 100%;
             aspect-ratio: 16/9;
             max-height: 80vh;
             border: 15px solid gray;

@@ -16,10 +16,10 @@ export default defineConfig({
   server: {
     host: ['127.0.0.1', '192.168.2.9', '192.168.2.77', '192.168.3.127'],
     port: 1145,
-    https: {
+    // https: {
 
-      key: 'mydomain.key',
-      cert: 'mydomain.crt',
-    }
+    //   key: 'mydomain.key',
+    //   cert: 'mydomain.crt',
+    // }
   }
 })
