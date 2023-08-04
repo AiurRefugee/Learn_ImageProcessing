@@ -145,7 +145,7 @@ video {
         height: 100vh;
         display: flex;
         flex-direction: column;
-        // background-color: white;
+        // background-color: black;
         align-items: center;
         justify-content: center;
         .contentWrapper {
@@ -154,6 +154,7 @@ video {
             aspect-ratio: 16/9;
             max-height: 80vh;
             border: 15px solid gray;
+            background-color: black;
             display: flex;
             justify-content: center;
             align-items: center;

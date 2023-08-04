@@ -37,6 +37,11 @@ const filtredConfigs = computed( () => {
   } 
 }) 
 
+const dark = computed( () => {
+  console.log(isDark.value)
+  return isDark.value
+})
+
 watch(filtredConfigs.value, (val) => { 
   store.dispatch('set_filteredProcesses', val)
   // console.log(store.getters.filteredProcesses.map( item => item.selected ))
@@ -98,8 +103,8 @@ onUnmounted( () => {
 </script>
 <template> 
      <transition name="drawer" >
-        <div class="drawer" v-if="drawerSwitch" @click="output" ref="el"
-          :style="{'background-color': isDark? 'rgba($color: black, $alpha: 0.5)' : 'rgba($color: #8d8d8d, $alpha: 0.5)'}">
+        <div class="drawer" v-show="drawerSwitch" @click="output" ref="el"
+          :style="{'background-color': isDark? 'rgb(86 82 82 / 60%)' : 'rgb(86 82 82 / 60%)'}">
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel">
@@ -135,14 +140,12 @@ onUnmounted( () => {
                       <el-space size="10" direction="vertical" fill>
                         
                         <el-row align="middle" justify="space-between">
-                          <el-col :span="24 - labelWidth"> 
+                           
                             <el-switch v-model="process.selected"></el-switch>
-                          </el-col>
-                          <el-col :span="labelWidth">
+                            
                             <el-link :underline="false">
                               <el-icon><View /></el-icon>Learn More
-                            </el-link>
-                          </el-col> 
+                            </el-link> 
                         </el-row>
                         <el-row>
                           <el-col :span="24">

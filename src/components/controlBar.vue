@@ -26,9 +26,11 @@ const options = computed(() => {
 
 function outputImage() {
     if(curOpt.value == 'image') {
-        toggleDark()
+        
         emit('outputImage')
     }
+    toggleDark()
+    console.log(isDark.value)
 }
 
 async function control(option) {
