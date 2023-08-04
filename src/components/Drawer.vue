@@ -104,7 +104,7 @@ onUnmounted( () => {
 <template> 
      <transition name="drawer" >
         <div class="drawer" v-show="drawerSwitch" @click="output" ref="el"
-          :style="{'background-color': isDark? 'rgb(86 82 82 / 60%)' : 'rgb(86 82 82 / 60%)'}">
+          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 23%)'}">
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel">
@@ -233,7 +233,7 @@ div{
     height: 95vh;
     //display: flex;
     border-radius: 12px;
-    box-shadow: 2px 2px 10px gray;
+    box-shadow: 2px 2px 10px rgba(205, 204, 204, 0.6);
     // background-color: rgba($color: #8d8d8d, $alpha: 0.5); 
     // border: 1px solid white;
     -webkit-backdrop-filter: blur(10px); 
