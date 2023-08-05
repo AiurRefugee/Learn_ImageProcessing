@@ -16,7 +16,7 @@ const videoWrapper = ref(null)
 const contentWrapper = ref(null)
 const videoWitdth = ref(0)
 const videoHeight = ref(0)
-const displayPointer = ref(80)
+const displayPointer = ref(100)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
@@ -120,7 +120,7 @@ onUnmounted(() => {
                 <div class="playerWrapper">
                     <div class="videoArea" :style="{'width': videoWitdth * displayPointer / 100 + 'px', 'height': videoHeight + 'px'}" @click="play">
                         <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
-                            src="/src/assets/videos/video.m4s"  autoplay loop>
+                            src="/src/assets/videos/video.m4s" autoplay controls loop>
                         </video>
                         
                     </div>

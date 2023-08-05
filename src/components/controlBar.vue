@@ -7,6 +7,8 @@ import { useDark, useToggle } from '@vueuse/core'
 import { Hide, View } from '@element-plus/icons-vue'
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
+const lightColor = ref('gray')
+const darkColor = ref('gray')
 
 const store = useStore()
 const router = useRouter()
@@ -64,7 +66,7 @@ function toggleDrawer() {
     <el-row class="controlBar">
         <div class="spacer" >
             <div class="swipeWrapper">
-                <div class="contentWrapper" :style="{'color': isDark? 'white': 'black'}">
+                <div class="contentWrapper" :style="{'color': isDark? darkColor: lightColor}">
                     <div class="swipeItem" v-for="(item, index) in options" :key="index"
                      :class="{active: curOpt == item}" @click="control(item)">
                         <text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</text>
@@ -72,14 +74,26 @@ function toggleDrawer() {
                 </div>
             </div>
         </div>
-        <div class="controllerWrapper" @click="outputImage">
-            <div class="controller"></div>
+        <div class="controllerWrapper"  @click="outputImage">
+            <div class="outSide" :style="{border: cameraMode? '8px solid gray': '1px dashed #ffb444'}">
+                <div class="controller" 
+                    :style="{
+                        'background-color': cameraMode? '#636363': 'red',
+                        'width': cameraMode? '85%': '70%'
+                        }">
+                    </div>
+            </div>
         </div>
         <div class="spacer">
             <div class="deviceWrapper">
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
                 <div class="device" ref="refresh">
-                    <el-icon class="refresh" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"  @click="toggleMode" :size="30" ><Refresh /></el-icon>
+                    <el-icon class="refresh" 
+                        v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"
+                        :color="isDark? darkColor: lightColor"  
+                        @click="toggleMode" :size="30" >
+                        <Refresh />
+                    </el-icon>
                      
                     <!-- {{ 'cameraStatus:' + cameraStatus }}
                     {{ 'curOpt:' + curOpt }}
@@ -87,7 +101,7 @@ function toggleDrawer() {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
-                    <el-icon :size="30" @click="toggleDrawer" :color="isDark? 'white': 'black'"><MoreFilled /></el-icon>
+                    <el-icon :size="30" @click="toggleDrawer" :color="isDark? darkColor: lightColor"><MoreFilled /></el-icon>
                     <!-- <div class="drawerCorontroller">  
                         <el-switch v-model="drawerSwitch" style="--el-switch-on-color: gray;"
                             inline-prompt width="70" @change="toggleDrawer"
@@ -122,7 +136,7 @@ div{
 }
 .drawer-enter-active,
 .drawer-leave-active {
-  transition: all 0.2s ease;
+  transition: all 0.5s ease;
 }
 
 .drawer-enter-from,
@@ -171,27 +185,28 @@ div{
         }
     }
     
-    .controllerWrapper {
-        border-radius: 50%;
-        border: 1.5px dashed $button_Color;
-        // padding: 2%;
-        // width: 60%;
-        cursor: pointer;
-        width: 40%;
+    .controllerWrapper { 
+        width: 5vw;
         aspect-ratio: 1/1; 
-        .controller {
-            width: 65%;
+        .outSide {
+            width: 95%;border-radius: 50%; 
+            border-radius: 50%; 
             aspect-ratio: 1/1;
-            background-color: red;
-            filter: brightness(1.1);
-            border-radius: 50%;
+            transition: all 0.5s ease; 
+            .controller {
+                width: 70%;
+                aspect-ratio: 1/1;
+                transition: all 0.6s ease; 
+                filter: brightness(1.1);
+                border-radius: 50%;
+            }
         }
     }
     .deviceWrapper { 
         width: 100%;
         height: 100%;
         justify-content: flex-start;
-        // padding-top: 15%; 
+        padding-top: 10%; 
         flex-direction: column;
         .device { 
             // color: white; 
