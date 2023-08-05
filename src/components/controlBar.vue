@@ -5,15 +5,23 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  
 import { useDark, useToggle } from '@vueuse/core' 
 import { Hide, View } from '@element-plus/icons-vue'
+import { FORWARD } from 'element-plus/es/components/virtual-list/src/defaults';
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
+
+let recording = false
+
+const videoCaped = ref([])
+const recorder = ref(null)
+const controllerWrapper = ref(null)
+const controller = ref(null)
 const lightColor = ref('gray')
 const darkColor = ref('gray')
 
 const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
-const cameraMode = ref(true)
+const cameraMode = ref(true) // true 拍照 false 摄像
 const direction = ref("ltr")
 
 
@@ -28,13 +36,20 @@ const options = computed(() => {
    return ['image', 'video', 'camera']
 })
 
+const ctx = computed( () => {
+    return document.getElementById('canvasOutput')
+})
+
 function outputImage() {
-    if(curOpt.value == 'image') {
-        
-        emit('outputImage')
+    if(cameraMode.value) {
+        takePhoto()
+    } else {
+        if(recording) {
+            endRecord()
+        } else {
+            beginRecord()
+        }
     }
-    toggleDark()
-    console.log(isDark.value)
 }
 
 async function control(option) {
@@ -61,6 +76,80 @@ function toggleDrawer() {
     store.dispatch('toggle_currentOption')
 }
 
+function takePhoto() {
+    try{
+        if(curOpt.value == 'image') {
+            emit('outputImage')
+        }
+        const url = ctx.value.toDataURL()
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'output.png';
+        link.style.display = 'none'
+        document.body.appendChild(link);
+        link.click();
+    } catch(error) {
+        console.log(ctx.value)
+        ElMessage(`${error}`)
+    }
+}
+
+function beginRecord() { 
+    recorder.value.start()
+    console.log('start record')
+    recording = true
+    controllerWrapper.value.animate([
+    { transform: 'rotate(0)'},
+        { transform: 'rotate(360deg)'}
+    ],
+    400 )
+    controller.value.animate([
+        { transform: 'scale(1)'},
+        { transform: 'scale(1.2)'}
+    ], {
+        duration: 500,
+        fill: 'forwards'
+    }
+    
+    )
+}
+
+function endRecord() {
+    recorder.value.stop()
+    console.log('end record')
+    console.log(videoCaped.value)
+    controllerWrapper.value.animate([
+    { transform: 'rotate(0)'},
+        { transform: 'rotate(360deg)'}
+    ],
+    400 )
+    controller.value.animate([
+        { transform: 'scale(1.2)'},
+        { transform: 'scale(1)'}
+    ],{
+        duration: 500,
+        fill: 'forwards'
+    })
+    recording = false 
+    
+}
+
+onMounted( () => {
+    recorder.value = new MediaRecorder(ctx.value.captureStream(60), {videoBitsPerSecond: 4000000})
+    recorder.value.ondataavailable = (e) => {
+        videoCaped.value.push(e.data)
+        const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/webm' }));  
+        var element = document.createElement('a');
+        element.setAttribute('href', url);
+        element.setAttribute('download', "output");
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element); 
+    }
+})
+
+
 </script>
 <template> 
     <el-row class="controlBar">
@@ -74,9 +163,9 @@ function toggleDrawer() {
                 </div>
             </div>
         </div>
-        <div class="controllerWrapper"  @click="outputImage">
-            <div class="outSide" :style="{border: cameraMode? '8px solid gray': '1px dashed #ffb444'}">
-                <div class="controller" 
+        <div class="controllerWrapper" ref="controllerWrapper" @click="outputImage">
+            <div class="outSide" :style="{border: cameraMode? '8px solid gray': '2px dashed #ffb444'}">
+                <div class="controller" ref="controller"
                     :style="{
                         'background-color': cameraMode? '#636363': 'red',
                         'width': cameraMode? '85%': '70%'
@@ -101,24 +190,17 @@ function toggleDrawer() {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
-                    <el-icon :size="30" @click="toggleDrawer" :color="isDark? darkColor: lightColor"><MoreFilled /></el-icon>
-                    <!-- <div class="drawerCorontroller">  
-                        <el-switch v-model="drawerSwitch" style="--el-switch-on-color: gray;"
-                            inline-prompt width="70" @change="toggleDrawer"
-                            active-text="options" inactive-text="options" size="normal"></el-switch>
-                    </div> -->
-                </div>
-                <div class="device">
-                    <transition name="drawer">
-                        <el-Switch style="--el-switch-on-color: gray"
+                    <el-Switch style="--el-switch-on-color: gray"
                         active-text="拍照"
                         inactive-text="录像"
                         :active-action-icon="View"
                         :inactive-action-icon="Hide"
                         inline-prompt
                         v-model="cameraMode"
-                        v-if="drawerSwitch"/>
-                    </transition>
+                    />  
+                </div>
+                <div class="device"> 
+                    <el-icon :size="30" @click="toggleDrawer" :color="isDark? darkColor: lightColor"><MoreFilled /></el-icon>
                 </div>
             </div>
         </div>
@@ -189,7 +271,8 @@ div{
         width: 5vw;
         aspect-ratio: 1/1; 
         .outSide {
-            width: 95%;border-radius: 50%; 
+            width: 70%;
+            border-radius: 50%; 
             border-radius: 50%; 
             aspect-ratio: 1/1;
             transition: all 0.5s ease; 

@@ -12,7 +12,7 @@ const loading = ref(true)
 const imageOption = ref()
 const imageSrc = ref(null) // <img>
 const fileInput = ref(null) // <input>
-const imageOutput = ref(null) // <canvas></canvas>
+const canvasOutput = ref(null) // <canvas></canvas>
 const imgName = ref("Lena.png")
 const srcList = ref(["Lena.png", "girl.jpeg", "milkyWay.jpg", "gang.webp", "gundam.jpeg", "trans.webp", "car.webp"])
 let src
@@ -28,15 +28,15 @@ defineExpose( {
         try {  
             src = cv.imread(imageSrc.value)  
 
-            cv.imshow('imageOutput', src);
-            imageUrl.value = imageOutput.value.toDataURL()
+            cv.imshow('canvasOutput', src);
+            imageUrl.value = canvasOutput.value.toDataURL()
             imageUrlList.value.push(imageUrl.value)
 
             processImage()   
             
             // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
-            // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
-            // imageUrlList.value.push(imageOutput.value.toDataURL())
+            // canvasOutput.value.getContext('2d').putImageData(imgData, 0, 0);
+            // imageUrlList.value.push(canvasOutput.value.toDataURL())
         } catch(error) {
             console.log(error)
             ElMessage.error(`${error}.`)
@@ -54,12 +54,12 @@ const processImage = () =>  {
             }
             src = dst
 
-            cv.imshow('imageOutput', src);
-            imageUrl.value = imageOutput.value.toDataURL()
+            cv.imshow('canvasOutput', src);
+            imageUrl.value = canvasOutput.value.toDataURL()
             imageUrlList.value.push(imageUrl.value)
             // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
-            // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
-            // imageUrlList.value.push(imageOutput.value.toDataURL())
+            // canvasOutput.value.getContext('2d').putImageData(imgData, 0, 0);
+            // imageUrlList.value.push(canvasOutput.value.toDataURL())
         }
     }
 }
@@ -127,9 +127,9 @@ onMounted(() => {
                     </el-image>
                 </div>
 
-                <!-- <canvas id="imageOutput" class="imgInoutput"></canvas> -->
+                <!-- <canvas id="canvasOutput" class="imgInoutput"></canvas> -->
 
-                <canvas ref="imageOutput" id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'none'}"></canvas>
+                <canvas ref="canvasOutput" id="canvasOutput" class="imgInoutput" :style="{display: loading? 'none' : 'none'}"></canvas>
             </div>
             <div class="labelArea" justify="center">
                 <el-row>
