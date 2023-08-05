@@ -125,14 +125,14 @@ onUnmounted(() => {
                         
                     </div>
                     <canvas id="canvasOutput" ref="canvasOutput" :width="videoWitdth" :height="videoHeight"></canvas>
-                    <div class="pointerArea">
-                        <el-slider v-model="displayPointer"></el-slider>
-                    </div>
+                    
                 </div>
+                
             </div>
             <div class="saucer"></div>
 
         </div>
+        
     </div>
 </template>
 <style lang="scss"> 

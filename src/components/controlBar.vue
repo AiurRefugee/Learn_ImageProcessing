@@ -3,13 +3,15 @@ import { onMounted, ref, computed, nextTick} from 'vue'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  
-import { useDark, useToggle } from '@vueuse/core'
+import { useDark, useToggle } from '@vueuse/core' 
+import { Hide, View } from '@element-plus/icons-vue'
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
 const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
+const cameraMode = ref(true)
 const direction = ref("ltr")
 
 
@@ -59,47 +61,56 @@ function toggleDrawer() {
 
 </script>
 <template> 
-    <div class="controlBar">
+    <el-row class="controlBar">
         <div class="spacer" >
             <div class="swipeWrapper">
-                <div class="contentWrapper">
+                <div class="contentWrapper" :style="{'color': isDark? 'white': 'black'}">
                     <div class="swipeItem" v-for="(item, index) in options" :key="index"
                      :class="{active: curOpt == item}" @click="control(item)">
-                        <el-text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</el-text>
+                        <text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</text>
                     </div>
                 </div>
             </div>
         </div>
         <div class="controllerWrapper" @click="outputImage">
-                <div class="controller"></div>
-            </div>
+            <div class="controller"></div>
+        </div>
         <div class="spacer">
             <div class="deviceWrapper">
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
-                <div class="device">
-                    <img src="/src/assets/icons/refresh.svg" class="refresh" 
-                    v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'" ref="refresh" @click="toggleMode">
-                    {{ 'cameraStatus:' + cameraStatus }}
+                <div class="device" ref="refresh">
+                    <el-icon class="refresh" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"  @click="toggleMode" :size="30" ><Refresh /></el-icon>
+                     
+                    <!-- {{ 'cameraStatus:' + cameraStatus }}
                     {{ 'curOpt:' + curOpt }}
-                    {{ 'cameraNum:' + cameraCount }}
+                    {{ 'cameraNum:' + cameraCount }} -->
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
-                    <div class="drawerCorontroller"> 
+                    <el-icon :size="30" @click="toggleDrawer" :color="isDark? 'white': 'black'"><MoreFilled /></el-icon>
+                    <!-- <div class="drawerCorontroller">  
                         <el-switch v-model="drawerSwitch" style="--el-switch-on-color: gray;"
                             inline-prompt width="70" @change="toggleDrawer"
                             active-text="options" inactive-text="options" size="normal"></el-switch>
-                    </div>
+                    </div> -->
+                </div>
+                <div class="device">
+                    <transition name="drawer">
+                        <el-Switch style="--el-switch-on-color: gray"
+                        active-text="拍照"
+                        inactive-text="录像"
+                        :active-action-icon="View"
+                        :inactive-action-icon="Hide"
+                        inline-prompt
+                        v-model="cameraMode"
+                        v-if="drawerSwitch"/>
+                    </transition>
                 </div>
             </div>
         </div>
-    </div> 
-    <div class="drawer"  >
-
-    </div>
-    <transition name="drawer">
-        
-    </transition>
+    </el-row> 
+    
+    
 </template>
 <style lang="scss" scoped>
 $button_Color: #ffb444;
@@ -111,7 +122,7 @@ div{
 }
 .drawer-enter-active,
 .drawer-leave-active {
-  transition: all 0.5s ease;
+  transition: all 0.2s ease;
 }
 
 .drawer-enter-from,
@@ -135,6 +146,7 @@ div{
         width: 100%;
         padding-bottom: 5%;
         flex: 1;
+        // background-color: #ffb444;
         .swipeWrapper {
             width: 100%;
             height: 100%;
@@ -142,12 +154,12 @@ div{
             justify-content: flex-end;
             .contentWrapper {
                 width: 50%;
-                height: 150px;
+                height: 200px;
                 flex-direction: column; 
                 // color: white;
                 .swipeItem{
                     width: 100%;
-                    height: 60px;
+                    height: 80px;
                     cursor: pointer;
                 }
                 .active {
@@ -168,7 +180,7 @@ div{
         width: 40%;
         aspect-ratio: 1/1; 
         .controller {
-            width: 75%;
+            width: 65%;
             aspect-ratio: 1/1;
             background-color: red;
             filter: brightness(1.1);
@@ -179,12 +191,13 @@ div{
         width: 100%;
         height: 100%;
         justify-content: flex-start;
-        padding-top: 15%; 
+        // padding-top: 15%; 
         flex-direction: column;
         .device { 
             // color: white; 
             flex-direction: column;
             justify-content: flex-start; 
+            // background-color: #ffb444;
             margin: 2%;
             cursor: pointer;
             .refresh {

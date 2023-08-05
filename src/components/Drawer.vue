@@ -104,7 +104,7 @@ onUnmounted( () => {
 <template> 
      <transition name="drawer" >
         <div class="drawer" v-show="drawerSwitch" @click="output" ref="el"
-          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 23%)'}">
+          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'}">
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel">
@@ -216,6 +216,9 @@ div{
     transform: translateX(-100%);
     backdrop-filter: blur(2px);
 } 
+:root {
+  --el-color-primary: green;
+}
 .primaryClass {
   max-height: 200px;
 }
