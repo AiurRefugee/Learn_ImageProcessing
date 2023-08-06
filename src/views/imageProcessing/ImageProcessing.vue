@@ -50,15 +50,11 @@ function toggleMode() {
      
     <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
       
-    <transition> 
-      <keep-alive>
-        <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule>  
-      </keep-alive>
+    <transition>  
+        <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule>   
     </transition> 
-    <transition >
-      <keep-alive>
-        <VideoModule ref="video" v-if="curOpt == 'video'"></VideoModule>
-      </keep-alive>
+    <transition > 
+        <VideoModule ref="video" v-if="curOpt == 'video'"></VideoModule> 
     </transition>
     <transition >
       <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>

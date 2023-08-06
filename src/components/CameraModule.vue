@@ -96,6 +96,7 @@ function processVideo() {
 };
 
 onMounted(async () => { 
+    console.log(' camera mount ') 
     size.value = {
         width: window.innerWidth,
         height: window.innerHeight
@@ -105,6 +106,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => { 
+    console.log('camera unmount')
     if (mediaStream) {
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获

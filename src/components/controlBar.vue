@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, ref, computed, nextTick} from 'vue' 
+import { onMounted, ref, computed, nextTick, watch} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  
 import { useDark, useToggle } from '@vueuse/core' 
 import moment from 'moment'; 
+import cv from 'opencv.js';
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
@@ -13,13 +14,13 @@ let timeInterval
 const recording = ref(false)
 
 const videoCaped = ref([])
-const timeCount = ref(0)
-const recorder = ref(null)
+const timeCount = ref(0) 
 const timeString = ref('00:00:00')
 const controllerWrapper = ref(null)
 const controller = ref(null)
 const lightColor = ref('black')
 const darkColor = ref('white')
+const recorder = ref(null)
 
 const store = useStore()
 const router = useRouter()
@@ -40,8 +41,16 @@ const options = computed(() => {
 })
 
 const ctx = computed( () => {
-    return document.getElementById('canvasOutput')
+    let res
+    switch(curOpt.value) {
+        case 'image': res = document.getElementById('imageOutput'); break;
+        case 'video': res = document.getElementById('canvasOutput'); break;
+        case 'camera':  res = document.getElementById('cameraOutput')
+    }
+    console.log('ctx', res)
+    return res
 })
+ 
 
 const dark = computed( () => useDark())
 
@@ -64,6 +73,7 @@ async function control(option) {
         router.push(`/noCamera/${cameraStatus}`) 
     }
     store.dispatch('set_currentOption', option)
+    ctx.value = null
     await nextTick()
 }
 
@@ -81,14 +91,30 @@ function toggleMode() {
 function toggleDrawer() {
     toggleDark()
     store.dispatch('toggle_currentOption')
+    
+}
+
+function downloadVideo(data) {
+    videoCaped.value.push(data)
+    const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/webm' }));  
+    var element = document.createElement('a');
+    element.setAttribute('href', url);
+    element.setAttribute('download', "output");
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element); 
 }
 
 function takePhoto() {
     try{
+        // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height) 
         if(curOpt.value == 'image') {
             emit('outputImage')
         }
-        const url = ctx.value.toDataURL()
+        // cv.imshow(ctx.value.id)
+        console.log(ctx.value)
+        const url = ctx.value.toDataURL() 
         const link = document.createElement('a');
         link.href = url;
         link.download = 'output.png';
@@ -96,14 +122,24 @@ function takePhoto() {
         document.body.appendChild(link);
         link.click();
     } catch(error) {
-        console.log(ctx.value)
-        ElMessage(`${error}`)
+        console.log(error)
+        ElMessage.error(`${error}`)
     }
 }
 
 function beginRecord() {  
     timeCount.value = 0
     timeString.value = '00:00:00'
+    console.log('record', ctx.value)
+    
+    recorder.value = new MediaRecorder(ctx.value.captureStream(60), {videoBitsPerSecond: 8000000})
+    recorder.value.ondataavailable = (e) => {
+        downloadVideo(e.data)
+    }
+    // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
+    if(curOpt.value == 'image') {
+        emit('outputImage')
+    }
     timeInterval = setInterval( () => {
         timeCount.value += 1
         let time = moment.duration(timeCount.value, 'seconds')  //得到一个对象，里面有对应的时分秒等时间对象值
@@ -118,7 +154,7 @@ function beginRecord() {
     console.log('start record')
     recording.value = true
     controllerWrapper.value.animate([
-    { transform: 'rotate(0)'},
+        { transform: 'rotate(0)'},
         { transform: 'rotate(360deg)'}
     ],
     400 )
@@ -154,22 +190,13 @@ function endRecord() {
         fill: 'forwards'
     })
     recording.value = false 
+    videoCaped.value = []
     
 }
 
-onMounted( () => {
-    recorder.value = new MediaRecorder(ctx.value.captureStream(60), {videoBitsPerSecond: 4000000})
-    recorder.value.ondataavailable = (e) => {
-        videoCaped.value.push(e.data)
-        const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/webm' }));  
-        var element = document.createElement('a');
-        element.setAttribute('href', url);
-        element.setAttribute('download', "output");
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element); 
-    }
+onMounted( async () => {
+    console.log('control mount')
+    
 })
 
 

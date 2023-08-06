@@ -166,8 +166,7 @@ onMounted( async () => {
 
 onUnmounted(() => { 
     console.log('video unmount')
-    playing.value = false
-    videoInput.value.pause()
+    playing.value = false 
     if(interval) {
         clearInterval(interval)
     }
