@@ -2,11 +2,20 @@
 import { onMounted, ref, computed, nextTick, onUnmounted} from 'vue' 
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex'; 
+import { useStore } from 'vuex';  
 
 const store = useStore()
 
-let playing = ref(false)
+const videoList = ref([
+    {
+        label: 'ocean',
+        value: '//vjs.zencdn.net/v/oceans.mp4'
+    }
+])  
+const videoUrl = ref('//vjs.zencdn.net/v/oceans.mp4')
+const videoUpload = ref(null)
+const playerIconSize = ref(30)
+const playing = ref(false)
 const videoInput = ref(null) 
 const size = ref(Object)
 const canvasOutput = ref(null)
@@ -21,16 +30,39 @@ let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
-let width, height, src, dst, cap, fgmask, interval
+let width, height, src, dst, cap, fgmask, interval, duration
 
-function play() {
+async function play() {
     console.log('a')
-    if(!playing.value){
-        videoInput.value.play()
+    if(!playing.value && videoInput.value.src != ''){
+        try {
+            await videoInput.value.play()
+            playing.value = !playing.value 
+        } catch(error) {
+            playing.value = false
+            console.log(error)
+            ElMessage({
+                message: `${error}.`,
+                grouping: true,
+                type: 'error',
+            })
+        }
+        
     } else {
-        videoInput.value.pause()
+        try {
+            await videoInput.value.pause()
+            playing.value = !playing.value 
+        } catch(error) {
+            playing.value = true
+            console.log(error)
+            ElMessage({
+                message: `${error}.`,
+                grouping: true,
+                type: 'error',
+            })
+        }
     }
-    playing.value = !playing.value 
+    
     if(!interval) { 
         interval = setInterval( () => {
             try {
@@ -72,24 +104,77 @@ function processVideo() {
     
 };
 
+function pause() {
+    videoInput.value.pause()
+}
+
+function zoom() {
+    console.log('zoom', duration)
+    if(videoInput.value.currentTime + 10 < duration) {
+        videoInput.value.currentTime += 10
+    } else {
+        videoInput.value.currentTime = duration
+    }
+}
+
+function antiZoom() {
+    if(videoInput.value.currentTime - 10 > 0) {
+        videoInput.value.currentTime -= 10
+    } else {
+        videoInput.value.currentTime = 0
+    }
+}
+
+function upload() {
+    videoUpload.value.click()
+    videoInput.value.src = null
+}
+
 onMounted( async () => { 
     videoWitdth.value = contentWrapper.value.clientWidth * 0.8
     videoHeight.value = contentWrapper.value.clientHeight * 0.8 
     await nextTick()
     width = videoInput.value.width
     height = videoInput.value.height 
+    videoInput.value.addEventListener('loadedmetadata', () => {
+        duration = videoInput.value.duration
+    })
     console.log(videoInput.value)
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     // srcTemp = new cv.Mat()
     cap = new cv.VideoCapture(videoInput.value); 
-    await nextTick()
-    // videoInput.value.play()
-    videoInput.value.addEventListener("timeupdate", async () => {
-    //   console.log('playing')
+    await nextTick() 
+    videoUpload.value.addEventListener( "change", () => {
+    pause()
+      const file = videoUpload.value.files[0]
+      const fileName = file.name
+    //   const reader = new FileReader()
+    //   reader.readAsDataURL(file)
+    //   reader.addEventListener( "load", async () => {  
+    //     videoInput.value.src = reader.result  
+    //     videoList.value.push({
+    //         label: fileName,
+    //         value: reader.result
+    //     })
+    //     videoUrl.value = reader.result
+    //     await videoInput.value.load() 
+    //     console.log(videoInput.value)
+    //   })
+    const url = URL.createObjectURL(file)
+    videoInput.value.src = url
+    videoList.value.push({
+        label: fileName,
+        value: url
     })
-    
+    videoUrl.value = url
+    videoInput.value.load()
+    videoInput.value.pause()
+
+    })
 })
+
+
 
 onUnmounted(() => { 
      
@@ -105,6 +190,9 @@ onUnmounted(() => {
 
 </script>
 <template>
+    <el-affix :offset="120">
+    <el-button type="primary">Offset top 120px</el-button>
+  </el-affix>
     <div ref="videoWrapper" class="videoWrapper"> 
         <!-- <video ref="videoInput" id="videoInput" >
 
@@ -114,24 +202,51 @@ onUnmounted(() => {
         </canvas> -->
         <div class="videoArea" >
             <div class="contentWrapper" ref="contentWrapper">
-                <!-- <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
-                    src="/src/assets/videos/video.m4s" style="display: none;" autoplay controls loop>
-                </video> -->
                 <div class="playerWrapper">
-                    <div class="videoContent" :style="{'width': videoWitdth * displayPointer / 100 + 'px', 'height': videoHeight + 'px'}" @click="play">
-                        <video id="videoInput" ref="videoInput" :width="videoWitdth" :height="videoHeight"
-                              autoplay loop crossorigin="true">
-                            <source src="//vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+                    <div class="videoContent" :style="{
+                        'width': videoWitdth * displayPointer / 100 + 'px', 'height': videoHeight + 'px',
+                        'border-right': displayPointer != 0 ? '2px solid white' : ''
+                        }" @click="play">
+                        <video ref="videoInput" :src="videoUrl" id="videoInput"  :width="videoWitdth" :height="videoHeight"
+                            loop crossorigin="true" muted> 
                         </video>
                         
                     </div>
-                    <canvas id="canvasOutput" ref="canvasOutput" :width="videoWitdth" :height="videoHeight"></canvas>
-                    
+                    <div class="canvasWrapper">
+                        <canvas id="canvasOutput" ref="canvasOutput" :width="videoWitdth" :height="videoHeight"></canvas>
+                    </div>                    
                 </div>
-                
-            </div>
+                <div class="videoController" :style="{'max-height': videoHeight,'overflow': 'hidden'}">
+                    <el-row justify="center" align="middle" style="width: 80%;">
+                        <el-col :span="3">
+                            <el-text>Input Source</el-text>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-select v-model="videoUrl" placeholder="请选择输入源" @change="pause">
+                                <el-option :label="''" :value="''" @click="upload"> 
+                                    <el-icon><UploadFilled/></el-icon>
+                                    <span style="margin-left: 5px;">上传视频</span>
+                                </el-option>
+                                <el-option :label="item.label" :value="item.value" v-for="(item, index) in videoList" :key="index"></el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span="12" >
+                            <el-icon :size="playerIconSize" @click="antiZoom"><DArrowLeft /></el-icon>
+                            <el-icon :size="playerIconSize" v-if="!playing" @click="play"><VideoPlay /></el-icon>
+                            <el-icon :size="playerIconSize" v-else @click="play"><VideoPause /></el-icon>
+                            <el-icon :size="playerIconSize" @click="zoom"><DArrowRight /></el-icon>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-text>Mask</el-text>
+                        </el-col>
+                        <el-col :span="3">
+                            <el-slider v-model="displayPointer"></el-slider>
+                        </el-col>
+                    </el-row>
+                </div>  
+                </div>
             <div class="saucer"></div>
-
+            <input type="file" style="display: none;" id="videoUpload" ref="videoUpload">
         </div>
         
     </div>
@@ -150,29 +265,31 @@ onUnmounted(() => {
     position: absolute;
     .videoArea {
         width: 90vw;
-        height: 100vh;
+        height: 93vh;
         display: flex;
         flex-direction: column;
         // background-color: black;
         align-items: center;
         justify-content: center;
         .contentWrapper {
-            width: 82vw;
+            width: 85vw;
             // height: 100%;
             aspect-ratio: 16/9; 
-            max-height: 80vh;
+            max-height: 90vh;
             border: 15px solid gray;
             background-color: black;
             display: flex;
-            // flex-direction: column;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             border-radius: 10px;
             .playerWrapper { 
                 justify-content: flex-start;
                 align-items: center;
+                position: relative;
                 // background-color: white;
                 display: flex; 
+                // min-width: 80%;
                 height: 100%;
                 overflow: hidden;
                 
@@ -180,7 +297,7 @@ onUnmounted(() => {
                     position: absolute; 
                     overflow: hidden;
                     border: 10px solid whie;
-                    border-right: 2px solid white;
+                    // border-right: 2px solid white;
                     video {
                         position: absolute;
                         left: 0;
@@ -190,25 +307,49 @@ onUnmounted(() => {
                     } 
                     
                 }
-                #canvasOutput { 
-                    display: flex;
-                //     position: absolute;
-                //     left: 0;
-                //     top: 0;
-                    // aspect-ratio: 16/9; 
-                    // left: 0; 
-                    // z-index:  1;
-                    // // max-width: 100%; 
-                    // // height: 95%;
+                .canvasWrapper {
+                    overflow: hidden;
+                    max-height: 80vh;
+                    #canvasOutput { 
+                        display: flex;
+                        
+                    //     position: absolute;
+                    //     left: 0;
+                    //     top: 0;
+                        // aspect-ratio: 16/9; 
+                        // left: 0; 
+                        // z-index:  1;
+                        // // max-width: 100%; 
+                        // // height: 95%;
+                    }
                 }
-                .pointerArea {
-                    width: 95%;
-                    height: 30px;
-                    position: absolute;
-                    bottom: 0;
+                
+                
+            }
+            .videoController {
+                width: 100%;
+                min-height: 10%;
+                max-height: 80px;
+                display: flex;
+                justify-content: space-around;
+                // position: absolute;
+                // bottom: 0;
+                // z-index: 2;
+                // transform: translateY(-100%);
+                // background-color: white;
+                .el-col {
+                    display: flex;
+                    justify-content: space-around;
+
+                }
+                .el-slider__bar {
+                    background-color: gray;
+                    border-color: white;
+                }
+                .el-slider__button-wrapper {
+                    border-color: white;
                 }
             }
-            
             
         }
         .saucer {

@@ -4,24 +4,27 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  
 import { useDark, useToggle } from '@vueuse/core' 
-import { Hide, View } from '@element-plus/icons-vue'
-import { FORWARD } from 'element-plus/es/components/virtual-list/src/defaults';
+import moment from 'moment'; 
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
-let recording = false
+let timeInterval
+
+const recording = ref(false)
 
 const videoCaped = ref([])
+const timeCount = ref(0)
 const recorder = ref(null)
+const timeString = ref('00:00:00')
 const controllerWrapper = ref(null)
 const controller = ref(null)
-const lightColor = ref('gray')
-const darkColor = ref('gray')
+const lightColor = ref('black')
+const darkColor = ref('white')
 
 const store = useStore()
 const router = useRouter()
 const refresh = ref(null) 
-const cameraMode = ref(true) // true 拍照 false 摄像
+const cameraMode = ref(false) // true 拍照 false 摄像
 const direction = ref("ltr")
 
 
@@ -40,11 +43,17 @@ const ctx = computed( () => {
     return document.getElementById('canvasOutput')
 })
 
+const dark = computed( () => {
+    let res = useDark()
+    console.log(res)
+    return res
+})
+
 function outputImage() {
     if(cameraMode.value) {
         takePhoto()
     } else {
-        if(recording) {
+        if(recording.value) {
             endRecord()
         } else {
             beginRecord()
@@ -95,9 +104,22 @@ function takePhoto() {
 }
 
 function beginRecord() { 
+    toggleDark()
+    timeCount.value = 0
+    timeString.value = '00:00:00'
+    timeInterval = setInterval( () => {
+        timeCount.value += 1
+        let time = moment.duration(timeCount.value, 'seconds')  //得到一个对象，里面有对应的时分秒等时间对象值
+        let hours = time.hours() 
+        let minutes = time.minutes()
+        let seconds = time.seconds()
+        timeString.value = moment({h:hours, m:minutes, s:seconds}).format('HH:mm:ss') 
+        
+    }, 1000)
+    
     recorder.value.start()
     console.log('start record')
-    recording = true
+    recording.value = true
     controllerWrapper.value.animate([
     { transform: 'rotate(0)'},
         { transform: 'rotate(360deg)'}
@@ -114,10 +136,14 @@ function beginRecord() {
     )
 }
 
-function endRecord() {
-    recorder.value.stop()
-    console.log('end record')
-    console.log(videoCaped.value)
+function endRecord() { 
+    clearInterval(timeInterval)
+    timeCount.value = 0
+    timeString.value = '00:00:00'
+    ElMessage.closeAll()
+    console.log('stop record')
+    // timeString.value = '00:00:00'
+    recorder.value.stop() 
     controllerWrapper.value.animate([
     { transform: 'rotate(0)'},
         { transform: 'rotate(360deg)'}
@@ -130,7 +156,7 @@ function endRecord() {
         duration: 500,
         fill: 'forwards'
     })
-    recording = false 
+    recording.value = false 
     
 }
 
@@ -144,7 +170,7 @@ onMounted( () => {
         element.setAttribute('download', "output");
         element.style.display = 'none';
         document.body.appendChild(element);
-        element.click();
+        // element.click();
         document.body.removeChild(element); 
     }
 })
@@ -152,12 +178,20 @@ onMounted( () => {
 
 </script>
 <template> 
+    <div class="timeCount" :style="{
+        'display': recording? 'flex': 'none',
+        'color': dark? 'black': 'white', 
+        }">
+        <div class="point"></div>
+        <div>{{ timeString }}</div>
+    </div>
     <el-row class="controlBar">
         <div class="spacer" >
             <div class="swipeWrapper">
-                <div class="contentWrapper" :style="{'color': isDark? darkColor: lightColor}">
+                <div class="contentWrapper" :style="{'color': dark? 'black': 'white'}"> 
                     <div class="swipeItem" v-for="(item, index) in options" :key="index"
-                     :class="{active: curOpt == item}" @click="control(item)">
+                        :style="{'color': dark? 'black': 'white'}"
+                        :class="{active: curOpt == item}" @click="control(item)">
                         <text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</text>
                     </div>
                 </div>
@@ -179,7 +213,7 @@ onMounted( () => {
                 <div class="device" ref="refresh">
                     <el-icon class="refresh" 
                         v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"
-                        :color="isDark? darkColor: lightColor"  
+                        :color="dark? darkColor: lightColor"  
                         @click="toggleMode" :size="30" >
                         <Refresh />
                     </el-icon>
@@ -191,16 +225,18 @@ onMounted( () => {
                 </div>
                 <div class="device">
                     <el-Switch style="--el-switch-on-color: gray"
-                        active-text="拍照"
-                        inactive-text="录像"
+                        active-text="Photos"
+                        inactive-text="Videos"
+                        :width="70"
                         :active-action-icon="View"
                         :inactive-action-icon="Hide"
                         inline-prompt
+                        :disabled="recording"
                         v-model="cameraMode"
                     />  
                 </div>
                 <div class="device"> 
-                    <el-icon :size="30" @click="toggleDrawer" :color="isDark? darkColor: lightColor"><MoreFilled /></el-icon>
+                    <el-icon :size="30" @click="toggleDrawer" :color="dark? darkColor: lightColor"><MoreFilled /></el-icon>
                 </div>
             </div>
         </div>
@@ -214,6 +250,7 @@ div{
     display: flex;
     justify-content: center;
     align-items: center;
+    color: white;
     // border: 1px solid white;
 }
 .drawer-enter-active,
@@ -228,6 +265,27 @@ div{
 .drawer-enter-from,
 .drawer-leave-to {
     opacity: 0;
+}
+
+.timeCount {
+    // display: none;
+    position: absolute;
+    left: 50%;
+    top: 2%;
+    width: 8%;
+    height: 30px; 
+    display: inline-block;
+    justify-content: center;
+    transform: translateX(-50%); 
+    transition: all 0.2s ease-in; 
+    text-align: justify;
+    .point {
+        width: 10px;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        margin-right: 10px;
+        background-color: red;
+    }
 }
 .controlBar {
     width: 10vw;
@@ -270,6 +328,7 @@ div{
     .controllerWrapper { 
         width: 5vw;
         aspect-ratio: 1/1; 
+        cursor: pointer;
         .outSide {
             width: 70%;
             border-radius: 50%; 
@@ -291,6 +350,7 @@ div{
         justify-content: flex-start;
         padding-top: 10%; 
         flex-direction: column;
+        
         .device { 
             // color: white; 
             flex-direction: column;
