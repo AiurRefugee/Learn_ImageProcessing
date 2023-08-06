@@ -43,11 +43,7 @@ const ctx = computed( () => {
     return document.getElementById('canvasOutput')
 })
 
-const dark = computed( () => {
-    let res = useDark()
-    console.log(res)
-    return res
-})
+const dark = computed( () => useDark())
 
 function outputImage() {
     if(cameraMode.value) {
@@ -82,6 +78,7 @@ function toggleMode() {
 }
 
 function toggleDrawer() {
+    toggleDark()
     store.dispatch('toggle_currentOption')
 }
 
@@ -103,8 +100,7 @@ function takePhoto() {
     }
 }
 
-function beginRecord() { 
-    toggleDark()
+function beginRecord() {  
     timeCount.value = 0
     timeString.value = '00:00:00'
     timeInterval = setInterval( () => {
@@ -170,7 +166,7 @@ onMounted( () => {
         element.setAttribute('download', "output");
         element.style.display = 'none';
         document.body.appendChild(element);
-        // element.click();
+        element.click();
         document.body.removeChild(element); 
     }
 })
@@ -179,20 +175,21 @@ onMounted( () => {
 </script>
 <template> 
     <div class="timeCount" :style="{
-        'display': recording? 'flex': 'none',
-        'color': dark? 'black': 'white', 
+        'display': recording? 'flex': 'none', 
         }">
         <div class="point"></div>
         <div>{{ timeString }}</div>
     </div>
     <el-row class="controlBar">
+        <!-- <div style="color: gray;">
+            {{ dark }}
+        </div> -->
         <div class="spacer" >
             <div class="swipeWrapper">
-                <div class="contentWrapper" :style="{'color': dark? 'black': 'white'}"> 
-                    <div class="swipeItem" v-for="(item, index) in options" :key="index"
-                        :style="{'color': dark? 'black': 'white'}"
+                <div class="contentWrapper"> 
+                    <div class="swipeItem" v-for="(item, index) in options" :key="index" 
                         :class="{active: curOpt == item}" @click="control(item)">
-                        <text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</text>
+                        <el-text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</el-text>
                     </div>
                 </div>
             </div>
@@ -213,7 +210,7 @@ onMounted( () => {
                 <div class="device" ref="refresh">
                     <el-icon class="refresh" 
                         v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"
-                        :color="dark? darkColor: lightColor"  
+                        
                         @click="toggleMode" :size="30" >
                         <Refresh />
                     </el-icon>
@@ -236,7 +233,7 @@ onMounted( () => {
                     />  
                 </div>
                 <div class="device"> 
-                    <el-icon :size="30" @click="toggleDrawer" :color="dark? darkColor: lightColor"><MoreFilled /></el-icon>
+                    <el-icon :color="gray" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
                 </div>
             </div>
         </div>
@@ -357,6 +354,7 @@ div{
             justify-content: flex-start; 
             // background-color: #ffb444;
             margin: 2%;
+            color: gray;
             cursor: pointer;
             .refresh {
                 width: 40px;

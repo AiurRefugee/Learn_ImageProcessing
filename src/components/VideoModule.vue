@@ -104,9 +104,9 @@ function processVideo() {
     
 };
 
-function pause() {
-    videoInput.value.pause()
-}
+// function pause() {
+//     videoInput.value.pause()
+// }
 
 function zoom() {
     console.log('zoom', duration)
@@ -146,21 +146,9 @@ onMounted( async () => {
     cap = new cv.VideoCapture(videoInput.value); 
     await nextTick() 
     videoUpload.value.addEventListener( "change", () => {
-    pause()
-      const file = videoUpload.value.files[0]
-      const fileName = file.name
-    //   const reader = new FileReader()
-    //   reader.readAsDataURL(file)
-    //   reader.addEventListener( "load", async () => {  
-    //     videoInput.value.src = reader.result  
-    //     videoList.value.push({
-    //         label: fileName,
-    //         value: reader.result
-    //     })
-    //     videoUrl.value = reader.result
-    //     await videoInput.value.load() 
-    //     console.log(videoInput.value)
-    //   })
+    play()
+    const file = videoUpload.value.files[0]
+    const fileName = file.name 
     const url = URL.createObjectURL(file)
     videoInput.value.src = url
     videoList.value.push({
@@ -168,8 +156,7 @@ onMounted( async () => {
         value: url
     })
     videoUrl.value = url
-    videoInput.value.load()
-    videoInput.value.pause()
+    videoInput.value.load() 
 
     })
 })
@@ -189,10 +176,7 @@ onUnmounted(() => {
 })
 
 </script>
-<template>
-    <el-affix :offset="120">
-    <el-button type="primary">Offset top 120px</el-button>
-  </el-affix>
+<template> 
     <div ref="videoWrapper" class="videoWrapper"> 
         <!-- <video ref="videoInput" id="videoInput" >
 
@@ -219,10 +203,10 @@ onUnmounted(() => {
                 <div class="videoController" :style="{'max-height': videoHeight,'overflow': 'hidden'}">
                     <el-row justify="center" align="middle" style="width: 80%;">
                         <el-col :span="3">
-                            <el-text>Input Source</el-text>
+                            <text>Input Source</text>
                         </el-col>
                         <el-col :span="3">
-                            <el-select v-model="videoUrl" placeholder="请选择输入源" @change="pause">
+                            <el-select v-model="videoUrl" placeholder="请选择输入源" @change="play">
                                 <el-option :label="''" :value="''" @click="upload"> 
                                     <el-icon><UploadFilled/></el-icon>
                                     <span style="margin-left: 5px;">上传视频</span>
@@ -234,13 +218,14 @@ onUnmounted(() => {
                             <el-icon :size="playerIconSize" @click="antiZoom"><DArrowLeft /></el-icon>
                             <el-icon :size="playerIconSize" v-if="!playing" @click="play"><VideoPlay /></el-icon>
                             <el-icon :size="playerIconSize" v-else @click="play"><VideoPause /></el-icon>
+                            
                             <el-icon :size="playerIconSize" @click="zoom"><DArrowRight /></el-icon>
                         </el-col>
                         <el-col :span="3">
-                            <el-text>Mask</el-text>
+                            <text>Mask</text>
                         </el-col>
                         <el-col :span="3">
-                            <el-slider v-model="displayPointer"></el-slider>
+                            <el-slider v-model="displayPointer" :step="0.1"></el-slider>
                         </el-col>
                     </el-row>
                 </div>  
@@ -332,6 +317,9 @@ onUnmounted(() => {
                 max-height: 80px;
                 display: flex;
                 justify-content: space-around;
+                color: white;
+                background: linear-gradient(to bottom, gray 1px, black);
+                opacity: 0.8;
                 // position: absolute;
                 // bottom: 0;
                 // z-index: 2;
@@ -348,6 +336,12 @@ onUnmounted(() => {
                 }
                 .el-slider__button-wrapper {
                     border-color: white;
+                }
+                .el-input__wrapper {
+                    background-color: transparent;
+                }
+                .el-input__inner {
+                    color: white;
                 }
             }
             

@@ -14,6 +14,7 @@ const option = route.params.option
 
 // refs
 const image = ref(null)
+const video = ref(null)
 const camera = ref(null)
 
 // computed
@@ -46,23 +47,23 @@ function toggleMode() {
 
 <template>
   <div class="appContainer"> 
-    <keep-alive>
-      <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
-    </keep-alive>
-    <transition>
-       
-        <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule> 
-       
-    </transition>
+     
+    <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
+      
+    <transition> 
+      <keep-alive>
+        <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule>  
+      </keep-alive>
+    </transition> 
     <transition >
-      <VideoModule v-if="curOpt == 'video'"></VideoModule>
+      <keep-alive>
+        <VideoModule ref="video" v-if="curOpt == 'video'"></VideoModule>
+      </keep-alive>
     </transition>
     <transition >
       <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
-    </transition>
-    <keep-alive>
-      <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>
-    </keep-alive>
+    </transition> 
+      <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/> 
   </div>
  
 </template>
@@ -70,19 +71,17 @@ function toggleMode() {
 <style lang="scss" scoped>
 .v-enter-active,
 .v-leave-active {
-  transition: all 0.5s ease;
+  transition: all 0.5s ease-in-out;
 }
 
 .v-enter-from,
 .v-leave-to {
   opacity: 1;
-  transform: translateY(0);
-  backdrop-filter: blur(10px);
+  transform: translateY(0); 
 }
 .v-enter-from,
 .v-leave-to {
     opacity: 0;
-    transform: translateY(-100%);
-    backdrop-filter: blur(0px);
+    transform: translateY(-100%); 
 } 
 </style>

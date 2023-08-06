@@ -89,7 +89,7 @@ onMounted(() => {
 
 </script>
 <template>
-    <el-row class="imageWrapper">
+    <div class="imageWrapper">
         <div class="inoutput" :elevation="12" :radius="12">
             
             <div class="imageArea" @click="input"> 
@@ -139,7 +139,7 @@ onMounted(() => {
                 </el-row>
             </div>
         </div>  
-    </el-row>
+    </div>
 </template>
 <style lang="scss">
  
