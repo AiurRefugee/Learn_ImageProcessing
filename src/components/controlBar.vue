@@ -88,8 +88,7 @@ function toggleMode() {
     emit('toggleMode')
 }
 
-function toggleDrawer() {
-    toggleDark()
+function toggleDrawer() { 
     store.dispatch('toggle_currentOption')
     
 }
@@ -102,7 +101,7 @@ function downloadVideo(data) {
     element.setAttribute('download', "output");
     element.style.display = 'none';
     document.body.appendChild(element);
-    element.click();
+    // element.click();
     document.body.removeChild(element); 
 }
 
@@ -243,10 +242,10 @@ onMounted( async () => {
                         <Refresh />
                     </el-icon>
                      
-                    {{ 'cameraStatus:' + cameraStatus }}
+                    <!-- {{ 'cameraStatus:' + cameraStatus }}
                     {{ 'curOpt:' + curOpt }}
                     {{ 'cameraNum:' + cameraCount }}  
-                    {{ 'cameraStatus:' + cameraStatus }}
+                    {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
                     <el-Switch style="--el-switch-on-color: gray"
@@ -301,6 +300,7 @@ div{
     height: 30px; 
     display: inline-block;
     justify-content: center;
+    background-color: #000000bd;
     transform: translateX(-50%); 
     transition: all 0.2s ease-in; 
     text-align: justify;
@@ -321,25 +321,48 @@ div{
     flex-direction: column;
     position: absolute;
     right: 0;
+    @media (max-width: 1000px) {
+        width: 100vw;
+        height: 10vh;
+        flex-direction: row;
+        align-content: center;
+        bottom: 0;
+    }
     .spacer {
         width: 100%;
         padding-bottom: 5%;
         flex: 1;
+        
         // background-color: #ffb444;
+        @media (max-width: 1000px) {
+            flex-direction: row;
+            padding: 0;
+        }
         .swipeWrapper {
             width: 100%;
             height: 100%;
             flex-direction: column; 
             justify-content: flex-end;
+            
             .contentWrapper {
                 width: 50%;
                 height: 200px;
                 flex-direction: column; 
+                 
+                @media (max-width: 1000px) {
+                    flex-direction: row;
+                    width: 100%;
+                    height: 9vh;
+                }
                 // color: white;
                 .swipeItem{
                     width: 100%;
                     height: 80px;
                     cursor: pointer;
+                    @media (max-width: 1000px) {
+                        width: 30%;
+
+                    }
                 }
                 .active {
                     color: $button_Color;
@@ -354,6 +377,10 @@ div{
         width: 5vw;
         aspect-ratio: 1/1; 
         cursor: pointer;
+        
+        @media (max-width: 1000px) {
+            width: 15vw;
+        }
         .outSide {
             width: 70%;
             border-radius: 50%; 
@@ -375,7 +402,11 @@ div{
         justify-content: flex-start;
         padding-top: 10%; 
         flex-direction: column;
-        
+        @media(max-width: 1000px) {
+            padding: 0;
+            flex-direction: row;
+            align-items: center;
+        }
         .device { 
             // color: white; 
             flex-direction: column;

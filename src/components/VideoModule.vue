@@ -188,11 +188,11 @@ onUnmounted(() => {
         </canvas> -->
         <div class="videoArea" >
             <div class="contentWrapper" ref="contentWrapper">
-                <div class="playerWrapper">
+                <div class="playerWrapper" @click="play">
                     <div class="videoContent" :style="{
-                        'width': videoWitdth * displayPointer / 100 + 'px', 'height': videoHeight + 'px',
+                        'width': `${displayPointer}%`, 'height': videoHeight + 'px',
                         'border-right': displayPointer != 0 ? '2px solid white' : ''
-                        }" @click="play">
+                        }">
                         <video ref="videoInput" :src="videoUrl" id="videoInput"  :width="videoWitdth" :height="videoHeight"
                             loop crossorigin="true" muted> 
                         </video>
@@ -250,9 +250,17 @@ onUnmounted(() => {
     //border: 5px solid gray;
     left: 0;
     position: absolute;
+    @media (max-width: 1000px) {
+        width: 100vw;
+        height: 90vh;
+        top: 0;
+        flex-direction: column;
+        // background-color: white;
+        justify-content: flex-start;
+    }
     .videoArea {
         width: 90vw;
-        height: 93vh;
+        height: 90vh;
         display: flex;
         flex-direction: column;
         // background-color: black;
@@ -270,6 +278,10 @@ onUnmounted(() => {
             justify-content: space-between;
             align-items: center;
             border-radius: 10px;
+            @media(max-width: 1000px) {
+                width: calc(100vw - 30px);
+                height: 95%;
+            }
             .playerWrapper { 
                 justify-content: flex-start;
                 align-items: center;
@@ -288,8 +300,7 @@ onUnmounted(() => {
                     video {
                         position: absolute;
                         left: 0;
-                        top: 0;  
-                        object-fit: fill;
+                        top: 0;   
                         z-index: 1; 
                     } 
                     
@@ -355,6 +366,9 @@ onUnmounted(() => {
             border: 5px solid gray;
             background-color: gray;
             border-radius: 10px;
+            @media(max-width: 1000px) {
+                display: none;
+            }
         }
     }
 }

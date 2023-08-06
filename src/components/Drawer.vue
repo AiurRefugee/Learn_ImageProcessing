@@ -15,7 +15,7 @@ const router = useRouter()
 const refresh = ref(null) 
 const direction = ref("ltr")
 const labelWidth = ref(5)
-const filterBarLabel = ref(3)
+const filterBarLabel = ref(4)
 
 const contentWidth = ref(24 - labelWidth.value)
 const maxCollapseNum = ref(2)
@@ -204,17 +204,22 @@ div{
 
 .drawer-enter-from,
 .drawer-leave-to {
-  opacity: 1;
-  
-  transform: translateX(0);
+  opacity: 1; 
+  transform: translateY(0);
   -webkit-backdrop-filter: blur(10px); 
   backdrop-filter: blur(10px);
+  @media(max-width: 1000px) {
+      transform: translateY(-100%);
+    }
 }
 .drawer-enter-from,
 .drawer-leave-to {
     opacity: 0; 
     transform: translateX(-100%);
     backdrop-filter: blur(2px);
+    @media(max-width: 1000px) {
+      transform: translateY(-100%);
+    }
 } 
 :root {
   --el-color-primary: green;
@@ -230,6 +235,13 @@ div{
   left: 0;
   top: 0;
   z-index: 1;
+  @media(max-width) {
+    width: 100vw;
+    height: 90vh;
+  }
+}
+.el-col {
+  overflow: hidden;
 }
 .drawer {
     width: 40vw;
@@ -251,7 +263,12 @@ div{
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
-    
+    @media(max-width: 1000px) {   
+      left: 0;
+      width: 100vw;
+      margin: 0;
+      height: 90vh;
+    }
     .filterBar {
       width: 90%;
       height: 60px;

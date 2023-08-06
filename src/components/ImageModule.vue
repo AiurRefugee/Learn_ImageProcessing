@@ -64,9 +64,8 @@ const processImage = () =>  {
     }
 }
 
-function input() {
-    
-    document.querySelector('#fileInput').click()
+function input() { 
+    fileInput.valie.click()
 }
 function inputChange(e) {
     imageSrc.value.src = URL.createObjectURL(e.target.files[0]);
@@ -98,10 +97,10 @@ onMounted(() => {
             </div>
             <div class="labelArea">
                  <el-row justify="center" align="middle" style="width: 100%;">
-                    <el-col :span="6">
+                    <el-col :span="8">
                         <el-text size="large">Image Input</el-text>
                     </el-col>
-                    <el-col :span="6" :offset="1">
+                    <el-col :span="8" :offset="1">
                         <el-select v-model="imgName" placeholder="选择图片" size="large">
                             <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
                         </el-select>
@@ -116,7 +115,7 @@ onMounted(() => {
         <div class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
                 <div class="imgInoutput"> 
-                    <el-skeleton :rows="10" animated v-if="loading">
+                    <el-skeleton :rows="7" animated v-if="loading">
                     </el-skeleton>
 
                     <el-image :src="imageUrl" 
@@ -152,6 +151,12 @@ onMounted(() => {
     align-items: center;
     left: 0;
     position: absolute;
+    @media(max-width: 1000px) {
+        width: 100vw;
+        height: 90vh;
+        flex-direction: column;
+        justify-content: space-around;
+    }
     .inoutput { 
         display: flex;
         flex-direction: column;
@@ -161,6 +166,10 @@ onMounted(() => {
         border-radius: 12px;
         justify-content: space-around;
         box-shadow: 0px 0px 10px 5px gray;
+        @media(max-width: 1000px) {
+            width: 90vw;
+            height: 40vh;
+        }
         // background-color: rgba($color: white, $alpha: 0.8);
         .imageArea {
             width: 100%;
@@ -170,6 +179,9 @@ onMounted(() => {
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            @media(max-width: 1000px) {
+                padding: 0;;
+            }
             //padding-top: 10%;
             .imgInoutput { 
                 //display: flex;
@@ -191,6 +203,9 @@ onMounted(() => {
             letter-spacing: 3px;
             // border: 1px solid black;
             // font-weight: 800;
+            // @media(max-width: 1000px) {
+            //     width: 100%;
+            // }
             .selectArea {
                 display: block;
                 height: 50px; 
