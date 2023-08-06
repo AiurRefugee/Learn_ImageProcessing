@@ -5,9 +5,9 @@ import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'; 
 
 const store = useStore()
-const videoInput = ref(null) 
+const cameraInput = ref(null) 
 const size = ref(Object)
-const canvasOutput = ref(null)
+const cameraOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null)
@@ -32,41 +32,42 @@ defineExpose({
     }
 })
 
-async function init() { 
+async function init() {  
     navigator.mediaDevices.getUserMedia({ video: {facingMode: faceMode.value}, audio: false })
     .then(function(stream) {
         mediaStream = stream
-        videoInput.value.srcObject = stream;
-        videoInput.value.play();
+        cameraInput.value.srcObject = stream;
+        cameraInput.value.play();
     })
     .catch(function(error) {
         ElMessage.error(`${error}.`)
         console.log("An error occurred! " + error);
     });
     await nextTick()
-    width = videoInput.value.width
-    height = videoInput.value.height 
+    
+    width = cameraInput.value.width
+    height = cameraInput.value.height  
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     // srcTemp = new cv.Mat()
-    cap = new cv.VideoCapture(videoInput.value); 
+    cap = new cv.VideoCapture(cameraInput.value); 
     if(interval) {
         clearInterval(interval)
     } 
-    console.log('val', filtredConfigs.value)
+    console.log('val', cameraOutput.value)
     interval = setInterval( () => {
          
         try {
-            canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+            cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
             cap.read(src);  
             // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
             processVideo() 
             // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
             //     dst = src.clone()
             // }
-            cv.imshow('canvasOutput', dst);
+            cv.imshow('cameraOutput', dst);
         } catch(error) {
-            console.log(error)
+            // console.log(error)
         }
         
     }, 1000 / FPS)
@@ -108,6 +109,7 @@ onUnmounted(() => {
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
+        // cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
     } 
     if(interval) {
         clearInterval(interval)
@@ -119,10 +121,10 @@ onUnmounted(() => {
 </script>
 <template>
     <div ref="cameraWrapper" class="cameraWrapper"> 
-        <video ref="videoInput" id="videoInput" :width="size.width" :height="size.height">
+        <video ref="cameraInput" id="cameraInput" :width="size.width" :height="size.height">
 
         </video> 
-        <canvas ref="canvasOutput" id="canvasOutput">
+        <canvas ref="cameraOutput" id="cameraOutput">
 
         </canvas>
     </div>
@@ -139,12 +141,12 @@ onUnmounted(() => {
 .cameraWrapper {
     width: 100vw;
     height: 100vh;
-     #videoInput {
+     #cameraInput {
         display: none;
         width: 90vw;
         height: 100vh;
      }
-     #canvasOutput {
+     #cameraOutput {
         width: 100vw;
         height: 100vh;
         position: relative;

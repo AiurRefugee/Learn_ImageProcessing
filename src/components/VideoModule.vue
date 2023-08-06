@@ -32,8 +32,7 @@ const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
 let width, height, src, dst, cap, fgmask, interval, duration
 
-async function play() {
-    console.log('a')
+async function play() { 
     if(!playing.value && videoInput.value.src != ''){
         try {
             await videoInput.value.play()
@@ -78,7 +77,7 @@ async function play() {
                 // }
                 cv.imshow('canvasOutput', dst);
             } catch(error) {
-                console.log(error)
+                // console.log(error)
             }
         }, 1000 / FPS)  
     }
@@ -136,6 +135,8 @@ onMounted( async () => {
     await nextTick()
     width = videoInput.value.width
     height = videoInput.value.height 
+    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+
     videoInput.value.addEventListener('loadedmetadata', () => {
         duration = videoInput.value.duration
     })
@@ -164,7 +165,9 @@ onMounted( async () => {
 
 
 onUnmounted(() => { 
-     
+    console.log('video unmount')
+    playing.value = false
+    videoInput.value.pause()
     if(interval) {
         clearInterval(interval)
     }

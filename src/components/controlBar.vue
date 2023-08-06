@@ -58,6 +58,7 @@ function outputImage() {
 }
 
 async function control(option) {
+     
     if(option == 'camera' && cameraStatus.value != 'Normal') {
         console.log('cameraStatus', cameraStatus)
         router.push(`/noCamera/${cameraStatus}`) 
@@ -215,10 +216,10 @@ onMounted( () => {
                         <Refresh />
                     </el-icon>
                      
-                    <!-- {{ 'cameraStatus:' + cameraStatus }}
+                    {{ 'cameraStatus:' + cameraStatus }}
                     {{ 'curOpt:' + curOpt }}
-                    {{ 'cameraNum:' + cameraCount }} -->
-                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
+                    {{ 'cameraNum:' + cameraCount }}  
+                    {{ 'cameraStatus:' + cameraStatus }}
                 </div>
                 <div class="device">
                     <el-Switch style="--el-switch-on-color: gray"
