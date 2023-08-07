@@ -279,7 +279,7 @@ onUnmounted(() => {
             align-items: center;
             border-radius: 10px;
             @media(max-width: 1000px) {
-                width: calc(100vw - 30px);
+                width: calc(100vw - 50px);
                 height: 95%;
             }
             .playerWrapper { 
@@ -302,6 +302,7 @@ onUnmounted(() => {
                         left: 0;
                         top: 0;   
                         z-index: 1; 
+                        object-fit: fill;
                     } 
                     
                 }

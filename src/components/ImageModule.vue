@@ -115,7 +115,7 @@ onMounted(() => {
         <div class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
                 <div class="imgInoutput"> 
-                    <el-skeleton :rows="7" animated v-if="loading">
+                    <el-skeleton :rows="5" animated v-if="loading">
                     </el-skeleton>
 
                     <el-image :src="imageUrl" 

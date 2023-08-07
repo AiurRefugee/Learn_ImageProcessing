@@ -92,7 +92,9 @@ function changeHandle(val) {
 onMounted( async () => { 
   // console.log('test'. filtredConfigs.value)
   store.dispatch('set_filteredProcesses', filtredConfigs.value)
-  
+  window.addEventListener('resize', () => {
+    output()
+  })
    
 })
 onUnmounted( () => {
@@ -240,8 +242,10 @@ div{
     height: 90vh;
   }
 }
-.el-col {
-  overflow: hidden;
+.el-col-5 {
+  @media(max-width: 1000px) {
+    overflow: hidden;
+  }
 }
 .drawer {
     width: 40vw;
