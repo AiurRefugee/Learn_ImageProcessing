@@ -33,6 +33,4 @@ app.use(router)
 
 app.use(ElementPlus)
 
-app.use(Varlet)
-
 app.mount('#app')

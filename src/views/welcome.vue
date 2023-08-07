@@ -22,9 +22,16 @@ const iconWidth = ref(5)
 
 const router = useRouter()
 
+const iconTextSize = computed( () => {
+  if(window.innerWidth <= 1000 ) {
+    return 'small'
+  } else {
+    return 'large'
+  }
+})
 const iconsize = computed( () => { 
   if(window.innerWidth <= 1000 ) {
-    return 150
+    return 100
   } else {
     return 200
   }
@@ -45,13 +52,14 @@ function navigateTo(option) {
       case -1:
         router.push({
           path: `/imageProcessing/${option}`
-        })
+        });
+        break;
       case 0:      
-        router.push('/noCamera/No Camera Avaliable') 
+        router.push('/noCamera/No Camera Avaliable');break;
       case 1:
-        router.push('/noCamera/Failed to access device information')
+        router.push('/noCamera/Failed to access device information');break;
       case 2:
-        router.push('/noCamera/Browser does not support mediaDevices API')
+        router.push('/noCamera/Browser does not support mediaDevices API');break;
 
     }
      
@@ -85,7 +93,7 @@ onMounted(() => {
        
       <div class="drawerText">
         <p>
-          据官方介绍，Element Plus是首个使用 TypeScript + Vue 3.2 开发，提供完整的类型定义文档的Composition API 重构的组件库。由于 Vue 3.0 进行了大版本升级，Element 作为其生态的组件库希望借此机会丢掉历史包袱，所以开发团队对 Element 进行了一次深度重构。换句话说，Element Plus的诞生正是基于Vue3重写了每一行代码。
+          Vue 是一个框架，也是一个生态。其功能覆盖了大部分前端开发常见的需求。但 Web 世界是十分多样化的，不同的开发者在 Web 上构建的东西可能在形式和规模上会有很大的不同。考虑到这一点，Vue 的设计非常注重灵活性和“可以被逐步集成”这个特点。
         </p>
       </div> 
     </el-drawer>  
@@ -96,7 +104,7 @@ onMounted(() => {
        
       <div class="drawerText">
         <p>
-          Vue 是一个框架，也是一个生态。其功能覆盖了大部分前端开发常见的需求。但 Web 世界是十分多样化的，不同的开发者在 Web 上构建的东西可能在形式和规模上会有很大的不同。考虑到这一点，Vue 的设计非常注重灵活性和“可以被逐步集成”这个特点。
+          据官方介绍，Element Plus是首个使用 TypeScript + Vue 3.2 开发，提供完整的类型定义文档的Composition API 重构的组件库。由于 Vue 3.0 进行了大版本升级，Element 作为其生态的组件库希望借此机会丢掉历史包袱，所以开发团队对 Element 进行了一次深度重构。换句话说，Element Plus的诞生正是基于Vue3重写了每一行代码。
         </p>
       </div> 
     </el-drawer>  
@@ -114,17 +122,15 @@ onMounted(() => {
           <el-col :span="iconWidth" class="topItem">
             <el-link  underline="hover" @click="showVue = !showThree">Vue</el-link>
           </el-col>
-          <el-col :span="iconWidth" class="topItem">
-            <el-link   underline="hover" @click="showEle = !showEle">Element+</el-link>
+          <el-col :span="iconWidth + 1" class="topItem">
+            <el-link   underline="hover" @click="showEle = !showEle">Element +</el-link>
           </el-col>
-          <el-col :span="3" class="topItem">
+          <el-col :span="iconWidth" class="topItem">
             <el-switch v-model="theme" style="--el-switch-on-color: gray" @change="changeTheme">
             </el-switch>
             <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>
-          <el-col :span="2" class="topItem">
-            <var-icon name="github" :size="topbarIconSize"/>
-          </el-col>
+           
         </el-row>
       </div>
       <!-- <var-divider /> -->
@@ -136,7 +142,7 @@ onMounted(() => {
         <div class="centerItem" @click="navigateTo('image')">
           <el-icon :size="iconsize"><PictureFilled /></el-icon>
           <div class="text">
-            <el-text size="large">
+            <el-text :size="iconTextSize">
               <h1>从图片输入</h1>
             </el-text>
           </div>
@@ -144,7 +150,7 @@ onMounted(() => {
         <div class="centerItem" @click="navigateTo('video')">
           <el-icon :size="iconsize"><VideoPlay /></el-icon>
           <div class="text">
-            <el-text size="large">
+            <el-text :size="iconTextSize">
               <h1>从视频输入</h1>
             </el-text>
           </div>
@@ -152,7 +158,7 @@ onMounted(() => {
         <div class="centerItem" @click="navigateTo('camera')">
           <el-icon :size="iconsize"><CameraFilled /></el-icon>
           <div class="text">
-            <el-text size="large">
+            <el-text :size="iconTextSize">
               <h1>从摄像头输入</h1>
             </el-text>
           </div>
@@ -226,6 +232,7 @@ p{
     min-height: 10%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     @media (max-width: 1000px) {
       flex-direction: column;
       max-height: 150px;
@@ -241,13 +248,17 @@ p{
       justify-content: flex-start;
       font-weight: 900;
       font-family: math;
+      h1 {
+        font-size: 50px;
+      }
       @media (max-width: 1000px) {
         font-size: 26px;
         width: 95vw;
+        h1 {
+          font-size: 30px;
+        }
       }
-      h1 {
-        font-size: 30px;
-      }
+      
     }
     .topbarIcons{
        min-width: 40%;

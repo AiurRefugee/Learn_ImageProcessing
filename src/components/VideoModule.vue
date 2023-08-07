@@ -260,7 +260,7 @@ onUnmounted(() => {
     }
     .videoArea {
         width: 90vw;
-        height: 90vh;
+        height: 93vh;
         display: flex;
         flex-direction: column;
         // background-color: black;
@@ -334,6 +334,7 @@ onUnmounted(() => {
                 color: white;
                 background: linear-gradient(to bottom, gray 1px, black);
                 opacity: 0.8;
+                padding-bottom: 5px;
                 // position: absolute;
                 // bottom: 0;
                 // z-index: 2;
@@ -368,7 +369,13 @@ onUnmounted(() => {
             background-color: gray;
             border-radius: 10px;
             @media(max-width: 1000px) {
-                display: none;
+                position: absolute;
+                bottom: 0;
+                height: 5px;
+                border-color: #dddddd;
+                border: 1px solid #dddddd;
+                transform: translateY(-30px);
+                background-color: #dddddd;
             }
         }
     }
