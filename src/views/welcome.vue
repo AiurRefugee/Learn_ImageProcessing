@@ -16,11 +16,12 @@ const pos = ref('left')
 const topbarIconSize = ref(40)
 const showOpenCV = ref(false)
 const showVue = ref(false)
-const showEle = ref(false) 
-const status = ref(-1)
+const showEle = ref(false)  
 const iconWidth = ref(5)
 
 const router = useRouter()
+
+const status = computed( () => store.getters.cameraStatus)
 
 const iconTextSize = computed( () => {
   if(window.innerWidth <= 1000 ) {
@@ -43,26 +44,20 @@ function changeTheme() {
 }
 function navigateTo(option) {
   store.dispatch('set_currentOption', option)
-  if(status != "camera") {
+  if(option != "camera") {
       router.push({
         path: `/imageProcessing/${option}`
       })
   } else { 
-    switch(status.value ) {
-      case -1:
-        router.push({
-          path: `/imageProcessing/${option}`
-        });
-        break;
-      case 0:      
-        router.push('/noCamera/No Camera Avaliable');break;
-      case 1:
-        router.push('/noCamera/Failed to access device information');break;
-      case 2:
-        router.push('/noCamera/Browser does not support mediaDevices API');break;
-
-    }
-     
+     if(status.value == 'Normal') {
+      router.push({
+        path: `/imageProcessing/${option}`
+      })
+     } else {
+      router.push({
+        path: `/noCamera/${status.value}`
+      })
+     }
   }
 }
 
@@ -76,7 +71,7 @@ onMounted(() => {
 
   <div class="appContainer">
     <div class="three" ref="canvasdom"></div>
-    <el-drawer v-model="showOpenCV" direction="btt" title="OpenCV" :show-close="false">
+    <!-- <el-drawer v-model="showOpenCV" direction="btt" title="OpenCV" :show-close="false">
       <div class="drawerImage">
         <img src="src/assets/imgs/opencv-logo.png"/>
       </div>
@@ -107,7 +102,7 @@ onMounted(() => {
           据官方介绍，Element Plus是首个使用 TypeScript + Vue 3.2 开发，提供完整的类型定义文档的Composition API 重构的组件库。由于 Vue 3.0 进行了大版本升级，Element 作为其生态的组件库希望借此机会丢掉历史包袱，所以开发团队对 Element 进行了一次深度重构。换句话说，Element Plus的诞生正是基于Vue3重写了每一行代码。
         </p>
       </div> 
-    </el-drawer>  
+    </el-drawer>   -->
     <div class="topBar">
       <div class="title">
         <el-text size="large">

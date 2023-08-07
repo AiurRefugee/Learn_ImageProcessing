@@ -65,7 +65,7 @@ const processImage = () =>  {
 }
 
 function input() { 
-    fileInput.valie.click()
+    fileInput.value.click()
 }
 function inputChange(e) {
     imageSrc.value.src = URL.createObjectURL(e.target.files[0]);

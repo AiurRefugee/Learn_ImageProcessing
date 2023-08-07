@@ -22,7 +22,7 @@ const curOpt = computed( () => store.getters.currentOption )
 const cameraStatus = computed( () => store.getters.cameraStatus )
 
 onMounted(() => {
-  store.dispatch('systemInit')
+  // store.dispatch('systemInit')
   console.log('aaa', cameraStatus.value)
 })
 
