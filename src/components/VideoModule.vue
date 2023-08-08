@@ -28,6 +28,9 @@ const videoHeight = ref(0)
 const displayPointer = ref(50)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
+ 
+
+
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
 let width, height, src, dst, cap, fgmask, interval, duration
@@ -88,10 +91,11 @@ function processVideo() {
     filtredConfigs.value.map( (process, index) => {  
         try { 
             if(process.selected) {
+                console.log('aaa', process.params.map( item => item.paramValue))
                 let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-                if(!res) {
-                    process.selected = !process.selected 
-                }
+                // if(!res) {
+                //     process.selected = !process.selected 
+                // }
             }
         } catch (error) {  
             // clearInterval(interval)
@@ -369,13 +373,14 @@ onUnmounted(() => {
             background-color: gray;
             border-radius: 10px;
             @media(max-width: 1000px) {
-                position: absolute;
-                bottom: 0;
-                height: 5px;
-                border-color: #dddddd;
-                border: 1px solid #dddddd;
-                transform: translateY(-30px);
-                background-color: #dddddd;
+                // position: absolute;
+                // bottom: 0;
+                // height: 5px;
+                // border-color: #dddddd;
+                // border: 1px solid #dddddd;
+                // transform: translateY(-30px);
+                // background-color: #dddddd;
+                display: none;
             }
         }
     }

@@ -17,7 +17,7 @@ const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
-let width, height, src, srcTemp,  dst, cap, mediaStream, fgmask, interval
+let width, height, src, srcTemp,  dst, cap, mediaStream, fgmask, interval, faces, classifier
  
 
 
@@ -66,6 +66,7 @@ async function init() {
             //     dst = src.clone()
             // }
             cv.imshow('cameraOutput', dst);
+            // faceDetect()
         } catch(error) {
             // console.log(error)
         }
@@ -95,13 +96,38 @@ function processVideo() {
     
 };
 
+function faceDetect() {
+    cap.read(src);
+    src.copyTo(dst);
+    cv.cvtColor(dst, dst, cv.COLOR_RGBA2GRAY, 0);
+    // detect faces.
+    classifier.detectMultiScale(dst, faces, 1.1, 3, 0);
+    // draw faces.
+    for (let i = 0; i < faces.size(); ++i) {
+        let face = faces.get(i);
+        let point1 = new cv.Point(face.x, face.y);
+        let point2 = new cv.Point(face.x + face.width, face.y + face.height);
+        cv.rectangle(dst, point1, point2, [255, 0, 0, 255]);
+    }
+    cv.imshow('canvasOutput', dst);
+}
+
 onMounted(async () => { 
     console.log(' camera mount ') 
     size.value = {
         width: window.innerWidth,
         height: window.innerHeight
     } 
-    init()
+    init() 
+    faces = new cv.RectVector();
+    classifier = new cv.CascadeClassifier();
+
+    // load pre-trained classifiers
+    try {
+        classifier.load('/src/opencv/haarcascade_frontalface_default.xml');
+    } catch(error) {
+        console.log(error)
+    }
 
 })
 
@@ -123,7 +149,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div ref="cameraWrapper" class="cameraWrapper"> 
-        <video ref="cameraInput" id="cameraInput" :width="size.width" :height="size.height">
+        <video ref="cameraInput" id="cameraInput" :width="1920" :height="1080">
 
         </video> 
         <canvas ref="cameraOutput" id="cameraOutput">
