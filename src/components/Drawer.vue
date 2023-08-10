@@ -6,12 +6,16 @@ import { classification, configs } from '@/opencv/configs.js'
 import cv from 'opencv.js' 
 import { ElMessage } from 'element-plus';  
 import { useDark, useToggle } from '@vueuse/core' 
+import InfoDialog from '@/components/InfoDialog.vue'
 const emit = defineEmits(['outputImage']) 
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 const store = useStore()
 const router = useRouter()
+
+const infoList = ref([])
+const infoVisible = ref(false)
 const refresh = ref(null) 
 const direction = ref("ltr")
 const labelWidth = ref(5)
@@ -51,6 +55,12 @@ function output() {
   if(curOpt.value == 'image') {  
     emit('outputImage')
   }  
+}
+
+function openDialog(list) {
+  infoList.value = list
+  console.log(list)
+  infoVisible.value = true
 }
 
 function processImage() {
@@ -104,8 +114,9 @@ onUnmounted( () => {
 
 </script>
 <template> 
+    <InfoDialog :infoVisible="infoVisible" :infoList="infoList"></InfoDialog>
      <transition name="drawer" >
-        <div class="drawer" v-show="drawerSwitch" @click="output" ref="el"
+        <div class="drawer" v-show="drawerSwitch" ref="el"
           :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'}">
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
@@ -143,9 +154,9 @@ onUnmounted( () => {
                         
                         <el-row align="middle" justify="space-between">
                            
-                            <el-switch v-model="process.selected"></el-switch>
+                            <el-switch v-model="process.selected" @change="output"></el-switch>
                             
-                            <el-link :underline="false">
+                            <el-link :underline="false" @click="openDialog(process)">
                               <el-icon><View /></el-icon>Learn More
                             </el-link> 
                         </el-row>
@@ -156,7 +167,7 @@ onUnmounted( () => {
                                 justify="start" align="middle" :key="index">
                                 <el-col :span="8">{{ Switch.paramName }}</el-col>
                                 <el-col :span="8">
-                                  <el-switch v-model="Switch.paramValue"></el-switch>
+                                  <el-switch v-model="Switch.paramValue" @change="output"></el-switch>
                                 </el-col>
                               </el-row>
                             </div>
@@ -166,7 +177,7 @@ onUnmounted( () => {
                           justify="center" :key="index">
                           <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
                           <el-col :span="contentWidth">
-                            <el-slider v-model="slider.paramValue" show-input
+                            <el-slider v-model="slider.paramValue" show-input @change="output"
                               show-stop="true" input-size="small" :step="slider.widget.step"
                               :min="slider.widget.min" :max="slider.widget.max">
                             </el-slider>
@@ -176,7 +187,7 @@ onUnmounted( () => {
                           justify="center" :key="index">
                           <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
                           <el-col :span="contentWidth">
-                            <el-select v-model="selecter.paramValue" placeholder="" size="small">
+                            <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output">
                               <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
                             </el-select>
                           </el-col>

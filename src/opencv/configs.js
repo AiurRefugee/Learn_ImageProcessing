@@ -43,11 +43,212 @@ export const classification = [
       
     }
   ],
-  f: () => {
+  f: (title, src, dst, params) => {
+    try {
+       
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: `+ error)
+      return false
+    }
+    return false
+  } 
 
   } 
 */
 export  const configs =  [
+{
+  title: 'cvtColorSpace',
+  primaryClass: '图像变换',
+  secondrayClass: '颜色空间变换',
+  selected: false,
+  imageAvaliable: true,
+  params: [
+    {
+      paramName: 'code',
+      paramDesc: 'color space conversion code',
+      paramValue: cv.COLOR_RGBA2GRAY,
+      widget:{ 
+        type: "selecter",
+         selectLabels: [
+          'cv.COLOR_RGBA2GRAY',
+          'cv.COLOR_RGB2RGBA',
+          'cv.COLOR_BGRA2BGR',
+          'cv.COLOR_RGBA2RGB',
+          'cv.COLOR_BGR2RGBA',
+         ],
+         selectValues: [
+          cv.COLOR_RGBA2GRAY,
+          cv.COLOR_RGB2RGBA,
+          cv.COLOR_BGRA2BGR,
+          cv.COLOR_RGBA2RGB,
+          cv.COLOR_BGR2RGBA,
+         ] 
+      }
+      
+    },
+    {
+      paramName: 'dstCn',
+      paramDesc: 'number of channels in the destination image; if the parameter is 0, the number of the channels is derived automatically from src and code',
+      paramValue: 0,
+      widget:{
+        type: "slider",
+        min: 0,
+        max: 4,
+        step: 1
+        
+      }
+      
+    }
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      console.log(`${title} params:`,src, dst, ...params)
+      let [code, dstCn] = [...params] 
+      cv.cvtColor(src, dst, code, dstCn);
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: `+ error)
+    }
+    return false
+  } 
+},
+{
+  title: 'Erosion',
+  primaryClass: '图像变换',
+  secondrayClass: '形态学变换',
+  selected: false,
+  imageAvaliable: true,
+  params: [
+    {
+      paramName: 'kernelSize',
+      paramDesc: 'structuring element used for erosion.',
+      paramValue: 5,
+      widget:{
+        type: "slider",
+        min: 3, 
+        max: 9,
+        step: 1 
+      } 
+    },
+    {
+      paramName: 'iterations',
+      paramDesc: 'number of times erosion is applied.',
+      paramValue: 1,
+      widget:{
+        type: "slider",
+        min: 1, 
+        max: 5,
+        step: 1 
+      } 
+    },
+    {
+      paramName: 'borderType',
+      paramDesc: 'pixel extrapolation method.',
+      paramValue: 1,
+      widget:{
+        type: "selecter",
+        selectLabels: [
+          'cv.BORDER_CONSTANT',
+          'cv.BORDER_REPLICATE',
+          'cv.BORDER_REFLECT',
+          'cv.BORDER_WRAP',
+          'cv.BORDER_REFLECT_101'
+        ],
+        selectValues: [
+          cv.BORDER_CONSTANT,
+          cv.BORDER_REPLICATE,
+          cv.BORDER_REFLECT,
+          cv.BORDER_WRAP,
+          cv.BORDER_REFLECT_101
+        ]
+      } 
+    }
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      let [kernelSize, iterations, borderType] = [...params]
+      let M = cv.Mat.ones(kernelSize, kernelSize, cv.CV_8U);
+      let anchor = new cv.Point(-1, -1);
+      cv.erode(src, dst, M, anchor, iterations, borderType, cv.morphologyDefaultBorderValue());
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: `+ error)
+      return false
+    }
+    return false
+  } 
+},
+{
+  title: 'Dilate',
+  primaryClass: '图像变换',
+  secondrayClass: '形态学变换',
+  selected: false,
+  imageAvaliable: true,
+  params: [
+    {
+      paramName: 'kernelSize',
+      paramDesc: 'structuring element used for erosion.',
+      paramValue: 5,
+      widget:{
+        type: "slider",
+        min: 3, 
+        max: 9,
+        step: 1 
+      } 
+    },
+    {
+      paramName: 'iterations',
+      paramDesc: 'number of times erosion is applied.',
+      paramValue: 1,
+      widget:{
+        type: "slider",
+        min: 1, 
+        max: 5,
+        step: 1 
+      } 
+    },
+    {
+      paramName: 'borderType',
+      paramDesc: 'pixel extrapolation method.',
+      paramValue: 1,
+      widget:{
+        type: "selecter",
+        selectLabels: [
+          'cv.BORDER_CONSTANT',
+          'cv.BORDER_REPLICATE',
+          'cv.BORDER_REFLECT',
+          'cv.BORDER_WRAP',
+          'cv.BORDER_REFLECT_101'
+        ],
+        selectValues: [
+          cv.BORDER_CONSTANT,
+          cv.BORDER_REPLICATE,
+          cv.BORDER_REFLECT,
+          cv.BORDER_WRAP,
+          cv.BORDER_REFLECT_101
+        ]
+      } 
+    }
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      let [kernelSize, iterations, borderType] = [...params]
+      let M = cv.Mat.ones(kernelSize, kernelSize, cv.CV_8U);
+      let anchor = new cv.Point(-1, -1);
+      cv.dilate(src, dst, M, anchor, iterations, borderType, cv.morphologyDefaultBorderValue());
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: `+ error)
+      return false
+    }
+    return false
+  } 
+},
 {
   title: "2D Convolution ( Image Filtering )",
   primaryClass: '图像增强',
@@ -94,11 +295,11 @@ export  const configs =  [
     widget: {
       type: "selecter", 
       selectLabels: [
-        'cv.BORDER_CONSTANT ', 'cv.BORDER_REPLICATE', 'cv.BORDER_REFLECT', 'cv.BORDER_WRAP', 'cv.BORDER_REFLECT_101',
+        'cv.BORDER_DEFAULT', 'cv.BORDER_CONSTANT ', 'cv.BORDER_REPLICATE', 'cv.BORDER_REFLECT', 'cv.BORDER_WRAP', 'cv.BORDER_REFLECT_101',
         'cv.BORDER_TRANSPARENT', 'cv.BORDER_REFLECT101', 'cv.BORDER_DEFAULT', 'cv.BORDER_ISOLATED'
       ],
       selectValues: [
-        cv.BORDER_CONSTANT , cv.BORDER_REPLICATE, cv.BORDER_REFLECT, cv.BORDER_WRAP, cv.BORDER_REFLECT_101,
+        cv.BORDER_DEFAULT, cv.BORDER_CONSTANT , cv.BORDER_REPLICATE, cv.BORDER_REFLECT, cv.BORDER_WRAP, cv.BORDER_REFLECT_101,
         cv.BORDER_TRANSPARENT, cv.BORDER_REFLECT101, cv.BORDER_DEFAULT, cv.BORDER_ISOLATED
       ]
     }
@@ -117,7 +318,8 @@ export  const configs =  [
     }
     return false
   }
-}, {
+}, 
+{
   title: "Fixed Threshold",
   primaryClass: '图像分割',
   secondrayClass: '阈值分割',
@@ -182,7 +384,8 @@ export  const configs =  [
       }
       return false
   }
-}, {
+}, 
+{
   title: "Adaptive Thresholding",
   primaryClass: "图像分割",
   secondrayClass: "阈值分割",
@@ -262,7 +465,8 @@ export  const configs =  [
     }
     return false
   }
-}, {
+}, 
+{
   title: "Canny Edge Detection",
   primaryClass: "图像分割",
   secondrayClass: "边界分割",
@@ -318,7 +522,8 @@ export  const configs =  [
     } 
     return false
   }
-}, {
+}, 
+{
   title: 'Rotation Transform',
   primaryClass: '图像变换',
   secondrayClass: '几何变换',
@@ -381,6 +586,226 @@ export  const configs =  [
     return false
   }
 }, 
+{
+  title: 'Fourier Transform',
+  primaryClass: '图像变换',
+  secondrayClass: '频域变换',
+  selected: false,
+  imageAvaliable: true,
+  params: [
+  //   {
+  //     paramName: 'flags',
+  //     paramDesc: 'transformation flags, representing a combination of the cv.DftFlags.',
+  //     paramValue: 50,
+  //     widget: {
+  //        type: 'slider',
+  //        min: 0,
+  //        max: 100
+  //     }
+      
+  //   }, {
+  //     paramName: 'nonzeroRows',
+  //     paramDesc: 'when the parameter is not zero, the function assumes that only the first nonzeroRows rows of the input array (DFT_INVERSE is not set) or only the first nonzeroRows of the output array (DFT_INVERSE is set) contain non-zeros, thus, the function can handle the rest of the rows more efficiently and save some time; this technique is very useful for calculating array cross-correlation or convolution using DFT.',
+  //     paramValue: 50,
+  //     widget: {
+  //       type: 'slider',
+  //       min: 0,
+  //       max: 100
+  //     }
+      
+  //   }, {
+  //     paramName: 'angle',
+  //     paramDesc: '',
+  //     paramValue: 45,
+  //     widget: {
+  //       type: 'slider',
+  //       min: 0,
+  //       max: 180
+  //     }
+  //   }, {
+  //     paramName: 'scale',
+  //     paramDesc: 'isotropic scale factor',
+  //     paramValue: 1,
+  //     widget: {
+  //       type: 'slider',
+  //       min: 0.1,
+  //       max: 10
+  //     } 
+  //   }
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
+
+      // get optimal size of DFT
+      let optimalRows = cv.getOptimalDFTSize(src.rows);
+      let optimalCols = cv.getOptimalDFTSize(src.cols);
+      let s0 = cv.Scalar.all(0);
+      let padded = new cv.Mat();
+      cv.copyMakeBorder(dst, padded, 0, optimalRows - dst.rows, 0,
+                        optimalCols - dst.cols, cv.BORDER_CONSTANT, s0);
+
+      // use cv.MatVector to distribute space for real part and imaginary part
+      let plane0 = new cv.Mat();
+      padded.convertTo(plane0, cv.CV_32F);
+      let planes = new cv.MatVector();
+      let complexI = new cv.Mat();
+      let plane1 = new cv.Mat.zeros(padded.rows, padded.cols, cv.CV_32F);
+      planes.push_back(plane0);
+      planes.push_back(plane1);
+      cv.merge(planes, complexI);
+
+      // in-place dft transform
+      cv.dft(complexI, complexI);
+
+      // compute log(1 + sqrt(Re(DFT(img))**2 + Im(DFT(img))**2))
+      cv.split(complexI, planes);
+      cv.magnitude(planes.get(0), planes.get(1), planes.get(0));
+      let mag = planes.get(0);
+      let m1 = new cv.Mat.ones(mag.rows, mag.cols, mag.type());
+      cv.add(mag, m1, mag);
+      cv.log(mag, mag);
+
+      // crop the spectrum, if it has an odd number of rows or columns
+      let rect = new cv.Rect(0, 0, mag.cols & -2, mag.rows & -2);
+      mag = mag.roi(rect);
+
+      // rearrange the quadrants of Fourier image
+      // so that the origin is at the image center
+      let cx = mag.cols / 2;
+      let cy = mag.rows / 2;
+      let tmp = new cv.Mat();
+
+      let rect0 = new cv.Rect(0, 0, cx, cy);
+      let rect1 = new cv.Rect(cx, 0, cx, cy);
+      let rect2 = new cv.Rect(0, cy, cx, cy);
+      let rect3 = new cv.Rect(cx, cy, cx, cy);
+
+      let q0 = mag.roi(rect0);
+      let q1 = mag.roi(rect1);
+      let q2 = mag.roi(rect2);
+      let q3 = mag.roi(rect3);
+
+      // exchange 1 and 4 quadrants
+      q0.copyTo(tmp);
+      q3.copyTo(q0);
+      tmp.copyTo(q3);
+
+      // exchange 2 and 3 quadrants
+      q1.copyTo(tmp);
+      q2.copyTo(q1);
+      tmp.copyTo(q2);
+
+      // The pixel value of cv.CV_32S type image ranges from 0 to 1.
+      cv.normalize(mag, mag, 0, 1, cv.NORM_MINMAX);
+      mag.copyTo(dst)
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: ` + error)
+    }
+    return false
+  }
+}, 
+{
+  title: 'Sobel Derivatives',
+  primaryClass: '图像增强',
+  secondrayClass: '锐化',
+  theory: 'OpenCV provides three types of gradient filters or High-pass filters, Sobel, Scharr and Laplacian. We will see each one of them.',
+  selected: false,
+  imageAvaliable: true,
+  params: [
+    {
+      paramName: 'xyOrder',
+      paramDesc: 'order of the derivative x,y.',
+      paramValue: true,
+      widget:{ 
+        type: "switch"
+      } 
+    },
+    {
+      paramName: 'kernelSize',
+      paramDesc: 'size of the extended Sobel kernel; it must be 1, 3, 5, or 7....',
+      paramValue: 5,
+      widget:{ 
+        type: 'slider',
+        min: 1,
+        max: 13
+      } 
+    },
+    {
+      paramName: 'delta',
+      paramDesc: 'optional delta value that is added to the results prior to storing them in dst.',
+      paramValue: 0,
+      widget:{ 
+        type: 'slider',
+        min: -122,
+        max: 122
+      } 
+    },
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      let [dx, ksize, delta] = [...params]
+      cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
+      if(dx) {
+        cv.Sobel(src, dst, cv.CV_8U, 1, 0, ksize, 1,delta , cv.BORDER_DEFAULT);
+      } else {
+        cv.Sobel(src, dst, cv.CV_8U, 0, 1, ksize, 1,delta , cv.BORDER_DEFAULT);
+      }
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: `+ error)
+      return false
+    }
+    return false
+  } 
+
+},
+{
+  title: 'Laplacian Derivatives',
+  primaryClass: '图像增强',
+  secondrayClass: '锐化',
+  selected: false,
+  imageAvaliable: true,
+  params: [ 
+    {
+      paramName: 'kernelSize',
+      paramDesc: 'size of the extended Sobel kernel; it must be 1, 3, 5, or 7....',
+      paramValue: 5,
+      widget:{ 
+        type: 'slider',
+        min: 1,
+        max: 13
+      } 
+    },
+    {
+      paramName: 'delta',
+      paramDesc: 'optional delta value that is added to the results prior to storing them in dst.',
+      paramValue: 0,
+      widget:{ 
+        type: 'slider',
+        min: -122,
+        max: 122
+      } 
+    },
+  ],
+  f: (title, src, dst, params) => {
+    try {
+      let [ksize, delta] = [...params]
+      cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0); 
+        cv.Laplacian(src, dst, cv.CV_8U, ksize, 1, delta, cv.BORDER_DEFAULT); 
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: `+ error)
+      return false
+    }
+    return false
+  } 
+
+}
 // {
 //   title: 'Face Detection',
 //   primaryClass: '图像识别',
