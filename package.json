@@ -17,6 +17,8 @@
     "@vueuse/shared": "^10.2.1",
     "element-plus": "^2.3.8",
     "hammer": "0.0.5",
+    "markdown-it": "^13.0.1",
+    "marked": "^7.0.2",
     "moment": "^2.29.4",
     "opencv.js": "^1.2.1",
     "opencv4js": "^3.4.3",
