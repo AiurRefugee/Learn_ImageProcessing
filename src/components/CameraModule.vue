@@ -179,6 +179,7 @@ onUnmounted(() => {
         height: 100vh;
         position: relative;
         background-color: black;
+        z-index: 1;
      }
      // animation: rotate360 1s linear;
 }

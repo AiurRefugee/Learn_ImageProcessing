@@ -4,7 +4,7 @@ export const classification = [
 {
   primaryClass: '图像变换',
   secondrayClass: [
-    '几何变换', '图像增广', '尺度变换', '频域变换', '颜色空间变换', '形态学变换'
+    '几何变换', '尺度变换', '频域变换', '颜色空间变换', '形态学变换'
   ]
 }, {
   primaryClass: '图像增强',
@@ -60,6 +60,10 @@ export const classification = [
 export  const configs =  [
 {
   title: 'cvtColorSpace',
+  theory: `There are more than 150 color-space conversion methods available in OpenCV. But we will look into the most widely used one: RGB ↔ Gray.
+
+We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
+  steps: [],
   primaryClass: '图像变换',
   secondrayClass: '颜色空间变换',
   selected: false,
@@ -117,6 +121,7 @@ export  const configs =  [
 },
 {
   title: 'Erosion',
+  theory: `The basic idea of erosion is just like soil erosion only, it erodes away the boundaries of foreground object (Always try to keep foreground in white). So what it does? The kernel slides through the image (as in 2D convolution). A pixel in the original image (either 1 or 0) will be considered 1 only if all the pixels under the kernel is 1, otherwise it is eroded (made to zero).`,
   primaryClass: '图像变换',
   secondrayClass: '形态学变换',
   selected: false,
@@ -184,6 +189,7 @@ export  const configs =  [
 },
 {
   title: 'Dilate',
+  theory: `It is just opposite of erosion. Here, a pixel element is '1' if at least one pixel under the kernel is '1'. So it increases the white region in the image or size of foreground object increases. Normally, in cases like noise removal, erosion is followed by dilation. Because, erosion removes white noises, but it also shrinks our object. So we dilate it. Since noise is gone, they won't come back, but our object area increases. It is also useful in joining broken parts of an object.`,
   primaryClass: '图像变换',
   secondrayClass: '形态学变换',
   selected: false,
@@ -251,6 +257,7 @@ export  const configs =  [
 },
 {
   title: "2D Convolution ( Image Filtering )",
+  theory: `As in one-dimensional signals, images also can be filtered with various low-pass filters(LPF), high-pass filters(HPF) etc. LPF helps in removing noises, blurring the images etc. HPF filters helps in finding edges in the images.`,
   primaryClass: '图像增强',
   secondrayClass: '降噪',
   selected: false,
@@ -321,6 +328,7 @@ export  const configs =  [
 }, 
 {
   title: "Fixed Threshold",
+  theory: `Here, the matter is straight forward. If pixel value is greater than a threshold value, it is assigned one value (may be white), else it is assigned another value (may be black).`,
   primaryClass: '图像分割',
   secondrayClass: '阈值分割',
   selected: false,
@@ -387,6 +395,7 @@ export  const configs =  [
 }, 
 {
   title: "Adaptive Thresholding",
+  theory: `In the previous section, we used a global value as threshold value. But it may not be good in all the conditions where image has different lighting conditions in different areas. In that case, we go for adaptive thresholding. In this, the algorithm calculate the threshold for a small regions of the image. So we get different thresholds for different regions of the same image and it gives us better results for images with varying illumination.`,
   primaryClass: "图像分割",
   secondrayClass: "阈值分割",
   selected: false,
@@ -547,6 +556,7 @@ export  const configs =  [
 }, 
 {
   title: 'Rotation Transform',
+  theory: `In affine transformation, all parallel lines in the original image will still be parallel in the output image. To find the transformation matrix, we need three points from input image and their corresponding locations in output image. Then cv.getAffineTransform will create a 2x3 matrix which is to be passed to cv.warpAffine.`,
   primaryClass: '图像变换',
   secondrayClass: '几何变换',
   selected: false,
@@ -574,7 +584,7 @@ export  const configs =  [
       
     }, {
       paramName: 'angle',
-      paramDesc: '',
+      paramDesc: 'rotation angle in degrees. Positive values mean counter-clockwise rotation (the coordinate origin is assumed to be the top-left corner).',
       paramValue: 45,
       widget: {
         type: 'slider',
@@ -610,6 +620,7 @@ export  const configs =  [
 }, 
 {
   title: 'Fourier Transform',
+  theory: `Fourier Transform is used to analyze the frequency characteristics of various filters. For images, 2D Discrete Fourier Transform (DFT) is used to find the frequency domain. A fast algorithm called Fast Fourier Transform (FFT) is used for calculation of DFT. Details about these can be found in any image processing or signal processing textbooks.`,
   primaryClass: '图像变换',
   secondrayClass: '频域变换',
   selected: false,
@@ -787,6 +798,9 @@ export  const configs =  [
 },
 {
   title: 'Laplacian Derivatives',
+  theory: `It calculates the Laplacian of the image given by the relation, Δsrc=∂2src∂x2+∂2src∂y2 where each derivative is found using Sobel derivatives. If ksize = 1, then following kernel is used for filtering:
+
+kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
   primaryClass: '图像增强',
   secondrayClass: '锐化',
   selected: false,

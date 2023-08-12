@@ -16,9 +16,11 @@ body {
     justify-content: center;
     align-items: center;
     //background-color: black;
+    overflow: hidden;
     position: relative;
     @media(max-width: 1000px) {
         flex-direction: column;
         justify-content: flex-start;
+        align-items: center;
     }
 }

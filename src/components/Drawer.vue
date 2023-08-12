@@ -58,9 +58,12 @@ function output() {
 }
 
 function openDialog(list) {
-  infoList.value = list
-  console.log(list)
+  infoList.value = list 
   infoVisible.value = true
+}
+
+function close() {
+  infoVisible.value = false
 }
 
 function processImage() {
@@ -114,7 +117,7 @@ onUnmounted( () => {
 
 </script>
 <template> 
-    <InfoDialog :infoVisible="infoVisible" :infoList="infoList"></InfoDialog>
+    <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close"></InfoDialog>
      <transition name="drawer" >
         <div class="drawer" v-show="drawerSwitch" ref="el"
           :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'}">
@@ -204,6 +207,21 @@ onUnmounted( () => {
 </template>
 <style lang="scss" scoped>
 $button_Color: #ffb444;
+/* 隐藏滚动条及滚动轨道 */
+::-webkit-scrollbar {
+  width: 0; /* 隐藏垂直滚动条 */
+  height: 0; /* 隐藏水平滚动条 */
+}
+
+/* 隐藏滚动条的滑块 */
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+/* 隐藏滚动条的滑轨 */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
 div{
     // display: flex;
     // justify-content: center;
@@ -275,14 +293,14 @@ div{
     align-items: center;
     left: 0;
     z-index: 999;
+    background-color: transparent;
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
-    @media(max-width: 1000px) {   
-      left: 0;
-      width: 100vw;
-      margin: 0;
-      height: 90vh;
+    @media(max-width: 1000px) {    
+      width: 98%; 
+      margin: 1%;
+      height: 90vh; 
     }
     .filterBar {
       width: 90%;

@@ -77,3 +77,9 @@ $--el-switch-on-color: #ffb444;
 .el-image-viewer__wrapper {
     backdrop-filter: blur(10px);
 }
+.el-overlay-dialog {
+    overflow: hidden;
+}
+.el-dialog {
+    overflow: hidden;
+}

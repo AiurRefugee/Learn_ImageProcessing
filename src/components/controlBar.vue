@@ -101,7 +101,7 @@ function downloadVideo(data) {
     element.setAttribute('download', "output");
     element.style.display = 'none';
     document.body.appendChild(element);
-    // element.click();
+    element.click();
     document.body.removeChild(element); 
 }
 
@@ -222,7 +222,7 @@ onMounted( async () => {
             </div>
         </div>
         <div class="controllerWrapper" ref="controllerWrapper" @click="outputImage">
-            <div class="outSide" :style="{border: cameraMode? '8px solid gray': '2px dashed #ffb444'}">
+            <div class="outSide" :style="{border: cameraMode? '5px solid gray': '2px dashed #ffb444'}">
                 <div class="controller" ref="controller"
                     :style="{
                         'background-color': cameraMode? '#636363': 'red',
@@ -242,10 +242,10 @@ onMounted( async () => {
                         <Refresh />
                     </el-icon>
                      
-                    <!-- {{ 'cameraStatus:' + cameraStatus }}
-                    {{ 'curOpt:' + curOpt }}
-                    {{ 'cameraNum:' + cameraCount }}  
-                    {{ 'cameraStatus:' + cameraStatus }} -->
+                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
+                    <!-- {{ 'curOpt:' + curOpt }} -->
+                    <!-- {{ 'cameraNum:' + cameraCount }}   -->
+                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
                     <el-Switch style="--el-switch-on-color: gray"
@@ -259,6 +259,7 @@ onMounted( async () => {
                         v-model="cameraMode"
                     />  
                 </div>
+                <div class="space"></div>
                 <div class="device"> 
                     <el-icon :color="gray" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
                 </div>
@@ -295,8 +296,8 @@ div{
     // display: none;
     position: absolute;
     left: 50%;
-    top: 2%;
-    width: 8%;
+    top: 2%; 
+    padding: 0 5%;
     height: 30px; 
     display: inline-block;
     justify-content: center;
@@ -327,6 +328,8 @@ div{
         flex-direction: row;
         align-content: center;
         bottom: 0;
+        padding-bottom: 15px;
+
     }
     .spacer {
         width: 100%;
@@ -374,12 +377,14 @@ div{
     }
     
     .controllerWrapper { 
-        width: 5vw;
+        width: 50%;
         aspect-ratio: 1/1; 
         cursor: pointer;
         
         @media (max-width: 1000px) {
-            width: 15vw;
+            height: 80%;
+            width: auto;
+            aspect-ratio: 1/1;
         }
         .outSide {
             width: 70%;
@@ -423,6 +428,19 @@ div{
                 // border: 1px solid white;
                 width: 100px;
                 height: 50px;
+            }
+        }
+        .device:last-child { 
+            @media(max-width: 1000px) { 
+                margin-right: 10%;
+            }
+        }
+        .space {
+            width: 0px;
+            @media (max-width: 1000px) { 
+                display: flex;
+                flex: 1; 
+                transform: scaleX(0.8)
             }
         }
     }

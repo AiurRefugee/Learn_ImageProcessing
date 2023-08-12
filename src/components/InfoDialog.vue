@@ -6,12 +6,18 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  
 import { useDark, useToggle } from '@vueuse/core'  
 
+const emit = defineEmits(['close']) 
+
 const props = defineProps(['infoVisible', 'infoList']) 
 
 const markedOption = {
     gfm: true,
     breaks: true
 
+}
+
+function close() {
+    emit('close')
 }
 
 function parse(mark) {
@@ -26,34 +32,40 @@ function parse(mark) {
 
 </script>
 <template> 
+    
     <el-dialog
         v-model="props.infoVisible"
         title="Details"  
-        width="60%" 
+        width="98%" 
+        top="5vh"
+        @close="close"
+        @close-auto-focus="close" 
     >   
-        
-        <el-descriptions
-            :title="infoList.title"
-            :extra="infoList.theory || ''" 
-            :column="1"
-            :size="size"
-            border
-        >
-            <el-descriptions-item :label="'steps'" >
-                <el-carousel :autoplay="false" direction="horizontal" indicator-position="outside">
-                    <el-carousel-item v-for="(item, index) in infoList.steps" :key="index"> 
-                        <h3>{{ item.label }}</h3>
-                        <div class="desc" v-html="parse(item.desc)"> 
-                        </div>
-                    </el-carousel-item>  
-                </el-carousel>
-            </el-descriptions-item>
-            <el-descriptions-item :label="item.paramName" v-for="(item, index) in infoList.params" :key="index">
-                {{ item.paramDesc }}
-            </el-descriptions-item>
+        <div class="dialog">
+            <el-descriptions
+                :title="infoList.title"
+                :extra="infoList.theory || ''" 
+                :column="1"
+                :size="size"
+                border
+            >
+                <el-descriptions-item :label="'steps'"  v-if="infoList.steps && infoList.steps.length ">
+                    <el-carousel :autoplay="false" direction="horizontal" indicator-position="outside">
+                        <el-carousel-item v-for="(item, index) in infoList.steps" :key="index"> 
+                            <h3>{{ item.label }}</h3>
+                            <div class="desc" v-html="parse(item.desc)"> 
+                            </div>
+                        </el-carousel-item>  
+                    </el-carousel>
+                </el-descriptions-item>
+                <el-descriptions-item :label="item.paramName" v-for="(item, index) in infoList.params" :key="index">
+                    {{ item.paramDesc }}
+                </el-descriptions-item>
              
-    </el-descriptions>
+             </el-descriptions>
+        </div>
     </el-dialog>
+   
 </template>
 <style lang="scss" scoped> 
 $paddingLR: 5%;
@@ -74,20 +86,44 @@ $paddingLR: 5%;
 }
 ::v-deep(.el-descriptions__title) {
     font-size: 40px;
-    letter-spacing: 2px;
+    letter-spacing: 2px; 
+    max-width: 60vw;
+    margin-right: 2%;
 }
 :deep(.el-descriptions__label) {
     text-align: center;
 }
+:deep(.el-dialog) { 
+    overflow: hidden;
+}
+:deep(.el-carousel__arrow--left) {
+    @media(max-width: 1000px) {
+        display: none;
+    }
+}
+:deep(.el-carousel__arrow--right) {
+    @media(max-width: 1000px) {
+        display: none;
+    }
+}
 :deep(.el-dialog) {
-   height: 200px;
+    overflow: hidden;
 }
 .el-carousel__item {
-    overflow: auto;
-
-} 
+    overflow: auto; 
+}  
 hr {
     width: 100%;
+}
+:deep(.el-descriptions__extra) {
+    text-indent: 20px; 
+    max-height: 150px;
+    overflow-y: auto;
+}
+.dialog {
+    max-height: 80vh;
+    overflow: auto;
+    
 }
 .desc {
     display: flex;

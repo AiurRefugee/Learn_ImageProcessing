@@ -21,29 +21,30 @@ let dst = new cv.Mat()
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
 defineExpose( {
-    outputImage: () => {
-        imageUrl.value = null
-        imageUrlList.value = []
-        loading.value = false
-        try {  
-            src = cv.imread(imageSrc.value)  
-
-            cv.imshow('imageOutput', src);
-            imageUrl.value = imageOutput.value.toDataURL()
-            imageUrlList.value.push(imageUrl.value)
-
-            processImage()   
-            
-            // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
-            // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
-            // imageUrlList.value.push(imageOutput.value.toDataURL())
-        } catch(error) {
-            console.log(error)
-            ElMessage.error(`${error}.`)
-        }
-    }, 
-    
+    outputImage
 })
+
+function outputImage() {
+    imageUrl.value = null
+    imageUrlList.value = []
+    loading.value = false
+    try {  
+        src = cv.imread(imageSrc.value)  
+
+        cv.imshow('imageOutput', src);
+        imageUrl.value = imageOutput.value.toDataURL()
+        imageUrlList.value.push(imageUrl.value)
+
+        processImage()   
+        
+        // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
+        // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
+        // imageUrlList.value.push(imageOutput.value.toDataURL())
+    } catch(error) {
+        console.log(error)
+        ElMessage.error(`${error}.`)
+    }
+}
 
 const processImage = () =>  {
     for (const process of filtredConfigs.value) { 
@@ -62,6 +63,11 @@ const processImage = () =>  {
             // imageUrlList.value.push(imageOutput.value.toDataURL())
         }
     }
+}
+
+function output() {
+    console.log('a')
+    outputImage()
 }
 
 function input() { 
@@ -133,7 +139,7 @@ onMounted(() => {
             <div class="labelArea" justify="center">
                 <el-row>
                     <el-col :span="24">
-                        <el-text size="large"> Image Output</el-text>
+                        <el-button size="large" @click="outputImage"> Image Output</el-button>
                     </el-col>
                 </el-row>
             </div>
@@ -205,13 +211,7 @@ onMounted(() => {
             // font-weight: 800;
             // @media(max-width: 1000px) {
             //     width: 100%;
-            // }
-            .selectArea {
-                display: block;
-                height: 50px; 
-                width: 300px; 
-
-            }
+            // } 
         }
     }  
     

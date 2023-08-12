@@ -264,7 +264,7 @@ onUnmounted(() => {
     }
     .videoArea {
         width: 90vw;
-        height: 93vh;
+        height: 90vh;
         display: flex;
         flex-direction: column;
         // background-color: black;
