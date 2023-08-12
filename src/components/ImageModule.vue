@@ -106,7 +106,7 @@ onMounted(() => {
                     <el-col :span="8">
                         <el-text size="large">Image Input</el-text>
                     </el-col>
-                    <el-col :span="8" :offset="1">
+                    <el-col :span="8" :offset="1" >
                         <el-select v-model="imgName" placeholder="选择图片" size="large">
                             <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
                         </el-select>
@@ -173,7 +173,7 @@ onMounted(() => {
         justify-content: space-around;
         box-shadow: 0px 0px 10px 5px gray;
         @media(max-width: 1000px) {
-            width: 90vw;
+            width: 80vw;
             height: 40vh;
         }
         // background-color: rgba($color: white, $alpha: 0.8);

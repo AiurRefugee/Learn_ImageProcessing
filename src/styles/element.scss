@@ -83,3 +83,8 @@ $--el-switch-on-color: #ffb444;
 .el-dialog {
     overflow: hidden;
 }
+.el-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

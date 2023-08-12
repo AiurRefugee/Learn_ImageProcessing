@@ -10,10 +10,8 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
 const store = useStore()
-const theme = ref(false) 
-const topTextSize = ref('20')
-const pos = ref('left')
-const topbarIconSize = ref(40)
+const theme = ref(false)  
+const pos = ref('left') 
 const showOpenCV = ref(false)
 const showVue = ref(false)
 const showEle = ref(false)  
@@ -32,7 +30,7 @@ const iconTextSize = computed( () => {
 })
 const iconsize = computed( () => { 
   if(window.innerWidth <= 1000 ) {
-    return 100
+    return '27vw'
   } else {
     return 200
   }
@@ -69,8 +67,7 @@ onMounted(() => {
 
 <template>
 
-  <div class="appContainer">
-    <div class="three" ref="canvasdom"></div>
+  <div class="appContainer"> 
     <!-- <el-drawer v-model="showOpenCV" direction="btt" title="OpenCV" :show-close="false">
       <div class="drawerImage">
         <img src="src/assets/imgs/opencv-logo.png"/>
@@ -115,7 +112,7 @@ onMounted(() => {
             <el-link   underline="hover" @click="showOpenCV = !showOpenCV">OpenCV</el-link>
           </el-col> 
           <el-col :span="iconWidth" class="topItem">
-            <el-link  underline="hover" @click="showVue = !showThree">Vue</el-link>
+            <el-link  underline="hover" @click="showVue = !showVue">Vue</el-link>
           </el-col>
           <el-col :span="iconWidth + 1" class="topItem">
             <el-link   underline="hover" @click="showEle = !showEle">Element +</el-link>
@@ -135,7 +132,7 @@ onMounted(() => {
       
       <div class="showArea">
         <div class="centerItem" @click="navigateTo('image')">
-          <el-icon :size="iconsize"><PictureFilled /></el-icon>
+          <el-icon :size="iconsize" color="gray"><PictureFilled /></el-icon>
           <div class="text">
             <el-text :size="iconTextSize">
               <h1>从图片输入</h1>
@@ -143,7 +140,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('video')">
-          <el-icon :size="iconsize"><VideoPlay /></el-icon>
+          <el-icon :size="iconsize" color="gray"><VideoPlay /></el-icon>
           <div class="text">
             <el-text :size="iconTextSize">
               <h1>从视频输入</h1>
@@ -151,7 +148,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('camera')">
-          <el-icon :size="iconsize"><CameraFilled /></el-icon>
+          <el-icon :size="iconsize" color="gray"><CameraFilled /></el-icon>
           <div class="text">
             <el-text :size="iconTextSize">
               <h1>从摄像头输入</h1>
@@ -211,12 +208,7 @@ p{
   :deep(.el-drawer__content){
     width: 50vw;
     max-height: 60vh;
-  }
-  .three{
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
+  } 
   .popup-example-block {
     padding: 20px 24px;
     width: 250px;
@@ -239,10 +231,10 @@ p{
       font-style: italic;
       letter-spacing: 3px;
       @include center();
-      padding-left: 2%;
-      justify-content: flex-start;
-      font-weight: 900;
-      font-family: math;
+        padding-left: 2%;
+        justify-content: flex-start;
+        font-weight: 900;
+        font-family: math;
       h1 {
         font-size: 50px;
       }
@@ -250,7 +242,7 @@ p{
         font-size: 26px;
         width: 95vw;
         h1 {
-          font-size: 30px;
+          font-size: 56px;
         }
       }
       
