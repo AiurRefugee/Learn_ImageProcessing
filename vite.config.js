@@ -14,13 +14,13 @@ export default defineConfig({
     }
   },
   server: {
-    host: ['127.0.0.1', '192.168.2.99', '192.168.2.77', '192.168.3.127'],
+    host: ['127.0.0.1', '192.168.2.99', '192.168.2.6', '192.168.3.127'],
     // host: '127.0.0.1',
     port: 1146,
-    https: {
+    // https: {
 
-      key: 'mydomain.key',
-      cert: 'mydomain.crt',
-    }
+    //   key: 'mydomain.key',
+    //   cert: 'mydomain.crt',
+    // }
   }
 })

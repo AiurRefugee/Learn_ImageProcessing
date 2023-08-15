@@ -327,6 +327,73 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   }
 }, 
 {
+  title: "Hough Transform",
+  theory: `Everything explained above is encapsulated in the OpenCV function, cv.HoughLines(). It simply returns an array of ( (ρ,θ) values. ρ is measured in pixels and θ is measured in radians. First parameter, Input image should be a binary image, so apply threshold or use canny edge detection before applying hough transform.`,
+  primaryClass: '图像分割',
+  secondrayClass: '边界分割',
+  selected: false,
+  imageAvaliable: true,
+  params: [{
+    paramName: "rho",
+    paramDesc: "distance resolution of the accumulator in pixels.",
+    paramValue: 1 ,
+    widget: {
+      type: "slider", 
+      min: 1,
+      max: 5
+    },
+    
+  },{
+    paramName: "theta",
+    paramDesc: "angle resolution of the accumulator in radians.",
+    paramValue: Math.PI / 180,
+    widget: {
+      type: "slider", 
+      min: Math.PI / 180,
+      max: Math.PI / 180 * 30,
+      step: Math.PI / 180
+    }
+  },{
+    paramName: "threshold",
+    paramDesc: "accumulator threshold parameter. Only those lines are returned that get enough votes.",
+    paramValue: 30, 
+    widget: {
+      type: "slider", 
+      min: 15,
+      max: 60
+    }
+  }],
+  f: (title, src, dst, params) => {
+    try {
+      // console.log(`${title} params:`,src, dst, ...params)
+      let [rho, theta, threshold] = [...params]
+      let lines = new cv.Mat();
+      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+      cv.Canny(src, src, 50, 200, 3);
+      // You can try more different parameters
+      cv.HoughLines(src, lines, 1, Math.PI / 180,
+              30, 0, 0, 0, Math.PI);
+      // draw lines
+      for (let i = 0; i < lines.rows; ++i) {
+          let rho = lines.data32F[i * 2];
+          let theta = lines.data32F[i * 2 + 1];
+          let a = Math.cos(theta);
+          let b = Math.sin(theta);
+          let x0 = a * rho;
+          let y0 = b * rho;
+          let startPoint = {x: x0 - 1000 * b, y: y0 + 1000 * a};
+          let endPoint = {x: x0 + 1000 * b, y: y0 - 1000 * a};
+          cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
+      }
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      // console.log(`${title}: `+ error)
+    }
+    return false
+  }
+}, 
+{
   title: "Fixed Threshold",
   theory: `Here, the matter is straight forward. If pixel value is greater than a threshold value, it is assigned one value (may be white), else it is assigned another value (may be black).`,
   primaryClass: '图像分割',
@@ -841,6 +908,116 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
     return false
   } 
 
+},
+{
+  title: 'Foreground Extraction',
+  theory: 
+  'GrabCut algorithm was designed by Carsten Rother, Vladimir Kolmogorov & Andrew Blake from Microsoft Research Cambridge, UK. in their paper, "GrabCut": interactive foreground extraction using iterated graph cuts . An algorithm was needed for foreground extraction with minimal user interaction, and the result was GrabCut.',
+  primaryClass: '图像分割',
+  secondrayClass: '区域分割',
+  selected: false,
+  imageAvaliable: true,
+  videoAvaliable: false,
+  params: [
+    {
+      paramName: 'rect start x',
+      paramDesc: 'rect start x',
+      paramValue: 10,
+      widget:{
+        type: "slider",
+        min: 0,
+        max: 100,
+        step: 1
+      } 
+    },
+    {
+      paramName: 'rect start y',
+      paramDesc: 'rect start y',
+      paramValue: 10,
+      widget:{
+        type: "slider",
+        min: 0,
+        max: 100,
+        step: 1
+      } 
+    },
+    {
+      paramName: 'rect end x',
+      paramDesc: 'rect end x',
+      paramValue: 50,
+      widget:{
+        type: "slider",
+        min: 0,
+        max: 100,
+        step: 1
+      } 
+    },
+    {
+      paramName: 'rect end y',
+      paramDesc: 'rect end y',
+      paramValue: 50,
+      widget:{
+        type: "slider",
+        min: 0,
+        max: 100,
+        step: 1
+      } 
+    },
+    {
+      paramName: 'iterCount',
+      paramDesc: 'number of iterations the algorithm should make before returning the result. Note that the result can be refined with further calls with mode==GC_INIT_WITH_MASK or mode==GC_EVAL .',
+      paramValue: 1,
+      widget:{
+        type: "slider",
+        min: 1,
+        max: 3,
+        step: 1
+      } 
+    },
+    {
+      paramName: 'mode',
+      paramDesc: 'operation mode that could be one of the cv::GrabCutModes.',
+      paramValue: cv.GC_INIT_WITH_RECT,
+      widget:{
+        type: "selecter",
+        selectLabels: ['cv.GC_INIT_WITH_RECT', 'cv.GC_INIT_WITH_MASK', 'cv.GC_EVAL', 'cv.GC_EVAL_FREEZE_MODEL'],
+        selectValues: [cv.GC_INIT_WITH_RECT, cv.GC_INIT_WITH_MASK, cv.GC_EVAL, cv.GC_EVAL_FREEZE_MODEL]
+      } 
+    }
+  ],
+  f: (title, src, dst, params) => {
+    let [startX, startY, endX, endY, iterCount, mode] = [...params]
+    try {
+      src.copyTo(dst)
+      cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
+      let mask = new cv.Mat();
+      let bgdModel = new cv.Mat();
+      let fgdModel = new cv.Mat();
+      let rect = new cv.Rect(startX / 100 * src.rows, startY  / 100 * src.cols, endX  / 100 * src.rows, endY  / 100 * src.cols);
+      cv.grabCut(src, mask, rect, bgdModel, fgdModel, 1, cv.GC_INIT_WITH_RECT);
+      // draw foreground
+      for (let i = 0; i < src.rows; i++) {
+          for (let j = 0; j < src.cols; j++) {
+              if (mask.ucharPtr(i, j)[0] == 0 || mask.ucharPtr(i, j)[0] == 2) {
+                  dst.ucharPtr(i, j)[0] = 0;
+                  dst.ucharPtr(i, j)[1] = 0;
+                  dst.ucharPtr(i, j)[2] = 0;
+              }
+          }
+      }
+      // draw grab rect
+      let color = new cv.Scalar(255, 0, 0);
+      let point1 = new cv.Point(rect.x, rect.y);
+      let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+      cv.rectangle(dst, point1, point2, color);
+      return true
+    } catch(error) {
+      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      console.log(`${title}: `+ error)
+      return false
+    }
+    return false
+  } 
 }
 // {
 //   title: 'Face Detection',

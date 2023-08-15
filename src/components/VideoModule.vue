@@ -90,12 +90,17 @@ function processVideo() {
     src.copyTo(dst)
     filtredConfigs.value.map( (process, index) => {  
         try { 
-            if(process.selected) {
+            if(process.selected && process.videoAvaliable) {
+                
                 console.log('aaa', process.params.map( item => item.paramValue))
                 let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
                 // if(!res) {
                 //     process.selected = !process.selected 
                 // }
+            }
+            if(!process.videoAvaliable) {
+                console.log('falsse')
+                process.selected = false
             }
         } catch (error) {  
             // clearInterval(interval)

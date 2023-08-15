@@ -14,7 +14,7 @@ const imageSrc = ref(null) // <img>
 const fileInput = ref(null) // <input>
 const imageOutput = ref(null) // <canvas></canvas>
 const imgName = ref("Lena.png")
-const srcList = ref(["Lena.png", "girl.jpeg", "milkyWay.jpg", "gang.webp", "gundam.jpeg", "trans.webp", "car.webp"])
+const srcList = ref(["Lena.png", "line.png", "girl.jpeg", "milkyWay.jpg", "gang.webp", "gundam.jpeg", "trans.webp", "car.webp"])
 let src
 let dst = new cv.Mat()
 
