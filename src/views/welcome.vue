@@ -132,7 +132,7 @@ onMounted(() => {
       
       <div class="showArea">
         <div class="centerItem" @click="navigateTo('image')">
-          <el-icon :size="iconsize" color="gray"><PictureFilled /></el-icon>
+          <el-icon :size="iconsize"  ><PictureFilled /></el-icon>
           <div class="text">
             <el-text :size="iconTextSize">
               <h1>从图片输入</h1>
@@ -140,7 +140,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('video')">
-          <el-icon :size="iconsize" color="gray"><VideoPlay /></el-icon>
+          <el-icon :size="iconsize"  ><VideoPlay /></el-icon>
           <div class="text">
             <el-text :size="iconTextSize">
               <h1>从视频输入</h1>
@@ -148,7 +148,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('camera')">
-          <el-icon :size="iconsize" color="gray"><CameraFilled /></el-icon>
+          <el-icon :size="iconsize"  ><CameraFilled /></el-icon>
           <div class="text">
             <el-text :size="iconTextSize">
               <h1>从摄像头输入</h1>

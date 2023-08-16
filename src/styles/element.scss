@@ -1,4 +1,3 @@
-$--el-switch-on-color: #ffb444;
 
 @forward 'element-plus/theme-chalk/src/common/var.scss' with (
   $colors: (
@@ -6,8 +5,7 @@ $--el-switch-on-color: #ffb444;
       'base': green,
     ),
   ),
-);
-
+); 
 .el-scrollbar{
     width: 100%;
 }
