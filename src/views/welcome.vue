@@ -115,10 +115,10 @@ onMounted(() => {
             <el-link :underline="false" @click="showVue = !showVue">Vue</el-link>
           </el-col>
           <el-col :span="iconWidth + 1" class="topItem">
-            <el-link :underline="false" @click="showEle = !showEle">Element Plus</el-link>
+            <el-link :underline="false" @click="showEle = !showEle">Element +</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
-            <el-switch v-model="theme" :active-action-icon="Sunny" :inactive-action-icon="Moon"  style="--el-switch-on-color: gray" @change="changeTheme">
+            <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny"  style="--el-switch-on-color: gray" @change="changeTheme">
             </el-switch>
             <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>
