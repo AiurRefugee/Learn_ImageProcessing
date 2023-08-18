@@ -1,19 +1,14 @@
-// import './assets/main.css' 
 
-import Varlet from '@varlet/ui'
 import { createApp } from 'vue'
 
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
-import '@/styles/elementDark.scss' 
+// import '@/styles/index.scss' 
 
 import '@/styles/element.scss'
-
-import '@/styles/common.scss'
-import '@/styles/varlet.scss'
-
-import '@varlet/ui/es/style'
+import '@/styles/elementDark.scss'
+import '@/styles/common.scss'  
 
 import App from './App.vue'
 import router from './router'

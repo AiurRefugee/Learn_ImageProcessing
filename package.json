@@ -15,7 +15,7 @@
     "@varlet/ui": "^2.13.4",
     "@vueuse/core": "^10.2.1",
     "@vueuse/shared": "^10.2.1",
-    "element-plus": "^2.3.8",
+    "element-plus": "^2.3.9",
     "hammer": "0.0.5",
     "markdown-it": "^13.0.1",
     "marked": "^7.0.2",

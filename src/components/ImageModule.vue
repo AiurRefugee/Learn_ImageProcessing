@@ -65,11 +65,6 @@ const processImage = () =>  {
     }
 }
 
-function output() {
-    console.log('a')
-    outputImage()
-}
-
 function input() { 
     fileInput.value.click()
 }

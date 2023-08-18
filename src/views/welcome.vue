@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref, watch, nextTick, computed} from 'vue'
-import { useRouter } from 'vue-router';
-import { StyleProvider, Themes } from '@varlet/ui'
+import { useRouter } from 'vue-router'; 
 import { useStore } from 'vuex'; 
+import { Sunny, Moon } from '@element-plus/icons-vue'
 
 import { useDark, useToggle } from '@vueuse/core'
 
@@ -68,9 +68,9 @@ onMounted(() => {
 <template>
 
   <div class="appContainer"> 
-    <!-- <el-drawer v-model="showOpenCV" direction="btt" title="OpenCV" :show-close="false">
+    <el-drawer v-model="showOpenCV" direction="ltr" title="OpenCV" :show-close="false">
       <div class="drawerImage">
-        <img src="src/assets/imgs/opencv-logo.png"/>
+        <img src="src/assets/imgs/opencv.png"/>
       </div>
        
       <div class="drawerText">
@@ -78,7 +78,7 @@ onMounted(() => {
       </div>
      
     </el-drawer>
-    <el-drawer v-model="showVue" direction="btt" title="Vue" :show-close="false">
+    <el-drawer v-model="showVue" direction="ltr" title="Vue" :show-close="false">
       <div class="drawerImage">
         <el-image src="src/assets/imgs/logo.svg"></el-image> 
       </div>
@@ -89,7 +89,7 @@ onMounted(() => {
         </p>
       </div> 
     </el-drawer>  
-    <el-drawer v-model="showEle" direction="btt" title="ElementPlus" :show-close="false">
+    <el-drawer v-model="showEle" direction="ltr" title="ElementPlus" :show-close="false">
       <div class="drawerImage">
         <img src="src/assets/imgs/element-plus-logo.svg"/> 
       </div>
@@ -99,7 +99,7 @@ onMounted(() => {
           据官方介绍，Element Plus是首个使用 TypeScript + Vue 3.2 开发，提供完整的类型定义文档的Composition API 重构的组件库。由于 Vue 3.0 进行了大版本升级，Element 作为其生态的组件库希望借此机会丢掉历史包袱，所以开发团队对 Element 进行了一次深度重构。换句话说，Element Plus的诞生正是基于Vue3重写了每一行代码。
         </p>
       </div> 
-    </el-drawer>   -->
+    </el-drawer>  
     <div class="topBar">
       <div class="title">
         <el-text size="large">
@@ -109,16 +109,16 @@ onMounted(() => {
       <div class="topbarIcons">
         <el-row style="width:100%;" :gutter="2" justify="end" align="middle">
           <el-col :span="iconWidth" class="topItem">
-            <el-link   underline="hover" @click="showOpenCV = !showOpenCV">OpenCV</el-link>
+            <el-link :underline="false" @click="showOpenCV = !showOpenCV">OpenCV</el-link>
           </el-col> 
           <el-col :span="iconWidth" class="topItem">
-            <el-link  underline="hover" @click="showVue = !showVue">Vue</el-link>
+            <el-link :underline="false" @click="showVue = !showVue">Vue</el-link>
           </el-col>
           <el-col :span="iconWidth + 1" class="topItem">
-            <el-link   underline="hover" @click="showEle = !showEle">Element +</el-link>
+            <el-link :underline="false" @click="showEle = !showEle">Element Plus</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
-            <el-switch v-model="theme" style="--el-switch-on-color: gray" @change="changeTheme">
+            <el-switch v-model="theme" :active-action-icon="Sunny" :inactive-action-icon="Moon"  style="--el-switch-on-color: gray" @change="changeTheme">
             </el-switch>
             <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>
@@ -171,10 +171,16 @@ p{
   text-indent: 20px;
 } 
 .drawerImage {
-  width: 100vw;
+  width: 100%;
   height: 40%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  img {
+    object-fit: fill;
+    width: 60%;
+    max-height: 100%;
+  }
 }
 .drawerText {
   width: 100%;
