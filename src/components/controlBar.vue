@@ -214,9 +214,8 @@ onMounted( async () => {
         <div class="spacer" >
             <div class="swipeWrapper">
                 <div class="contentWrapper"> 
-                    <div class="swipeItem" v-for="(item, index) in options" :key="index" 
-                        :class="{active: curOpt == item}" @click="control(item)">
-                        <el-text :type="curOpt == item ? 'warning' : 'info'">{{ item }}</el-text>
+                    <div class="swipeItem" v-for="(item, index) in options" :key="index" @click="control(item)">
+                        <div :class="{active: curOpt == item}">{{ item }}</div>
                     </div>
                 </div>
             </div>
@@ -361,6 +360,8 @@ div{
                 .swipeItem{
                     width: 100%;
                     height: 80px;
+                    font-size: 10px;
+                    text-shadow: 0 2px 2px black;
                     cursor: pointer;
                     @media (max-width: 1000px) {
                         width: 30%;
@@ -369,7 +370,7 @@ div{
                 }
                 .active {
                     color: $button_Color;
-                    transform: scale(1.5); 
+                    font-size: 15px;
                     transition: all 0.2s ease-in-out;
                 }
             }

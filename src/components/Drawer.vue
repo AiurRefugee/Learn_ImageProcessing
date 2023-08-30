@@ -268,7 +268,7 @@ div{
   z-index: 1;
   @media(max-width) {
     width: 100vw;
-    height: 90vh;
+    height: 100vh;
   }
 }
 .el-col-5 {
@@ -289,18 +289,19 @@ div{
     position: absolute;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     left: 0;
-    z-index: 999;
+    z-index: 99;
     background-color: transparent;
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
-    @media(max-width: 1000px) {    
-      width: 98%; 
-      margin: 1%;
-      height: 90vh; 
+    @media(max-width: 1000px) {     
+      width: 100%;
+      border-radius: 0;
+      margin-left: 0;
+      height: 100vh;
     }
     .filterBar {
       width: 90%;
@@ -308,8 +309,11 @@ div{
       // color: gray;
     } 
     .scrollerWrapper {
-      width: 90%;
-      height: 90%;
+      width: 88%;
+      height: 90%; 
+      @media(max-width: 1000px) {
+        height: calc(100% - 10vh - 10%);
+      }
     }
     .switchGrid {
       width: 100%;

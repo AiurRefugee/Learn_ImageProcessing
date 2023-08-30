@@ -59,8 +59,7 @@ function navigateTo(option) {
   }
 }
 
-onMounted(() => {  
-  localStorage['vueuse-color-scheme'] = 'dark'
+onMounted(() => {   
   store.dispatch('systemInit') 
 })
 </script>

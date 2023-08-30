@@ -99,7 +99,7 @@ onMounted(() => {
             <div class="labelArea">
                  <el-row justify="center" align="middle" style="width: 100%;">
                     <el-col :span="8">
-                        <el-text size="large">Image Input</el-text>
+                        <div style="font-size: 12px;">Image Input</div>
                     </el-col>
                     <el-col :span="8" :offset="1" >
                         <el-select v-model="imgName" placeholder="选择图片" size="large">
@@ -116,7 +116,7 @@ onMounted(() => {
         <div class="inoutput" :elevation="12" :radius="12">
             <div class="imageArea">
                 <div class="imgInoutput"> 
-                    <el-skeleton :rows="5" animated v-if="loading">
+                    <el-skeleton :rows="4" animated v-if="loading">
                     </el-skeleton>
 
                     <el-image :src="imageUrl" 
@@ -151,6 +151,7 @@ onMounted(() => {
     justify-content: flex-start;
     align-items: center;
     left: 0;
+    top: 0;
     position: absolute;
     @media(max-width: 1000px) {
         width: 100vw;
@@ -186,7 +187,7 @@ onMounted(() => {
             //padding-top: 10%;
             .imgInoutput { 
                 //display: flex;
-                max-height: 90%;
+                max-height: 80%;
                 max-width: 90%;
                 min-width: 55%;
                 // padding-top: 5%;
@@ -201,6 +202,7 @@ onMounted(() => {
             justify-content: center;
             align-items: center;
             height: 15%; 
+            padding-bottom: 20px;
             letter-spacing: 3px;
             // border: 1px solid black;
             // font-weight: 800;
