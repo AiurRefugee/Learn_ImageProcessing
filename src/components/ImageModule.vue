@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick} from 'vue' 
+import { onMounted, ref, computed, onDeactivated} from 'vue' 
 import cv from 'opencv.js';  
 import { ElMessage } from 'element-plus';  
 import { useStore } from 'vuex';
@@ -85,6 +85,10 @@ onMounted(() => {
         
     };
         
+})
+
+onDeactivated( () => {
+    console.log('onDeactivated')
 })
 
 </script>

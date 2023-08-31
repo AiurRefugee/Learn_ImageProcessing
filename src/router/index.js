@@ -32,10 +32,10 @@ const router = createRouter({
   ]
 })
 
-// router.beforeEach((to, from) => {
-//   document.title = to.meta.title
-//   document.getElementsByTagName('link')[0].href = '/src/assets/icons/logo.ico'
-// })
+router.beforeEach((to, from) => {
+  document.title = to.meta.title
+  document.getElementsByTagName('link')[0].href = '/src/assets/icons/logo.ico'
+})
 
 
 export default router

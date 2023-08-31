@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, onUnmounted} from 'vue' 
+import { onMounted, ref, computed, nextTick, onUnmounted, onDeactivated} from 'vue' 
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex';  
@@ -186,6 +186,19 @@ onUnmounted(() => {
     }
 })
 
+onDeactivated( () => { 
+    console.log('video deactive')
+    playing.value = false 
+    if(interval) {
+        clearInterval(interval)
+    }
+    src.delete()
+    dst.delete()
+    if(videoInput.value) {
+        canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    }
+})
+
 </script>
 <template> 
     <div ref="videoWrapper" class="videoWrapper"> 
@@ -264,7 +277,8 @@ onUnmounted(() => {
         top: 0;
         flex-direction: column;
         // background-color: white;
-        justify-content: flex-start;
+        justify-content: center;
+        padding: 0;
     }
     .videoArea {
         width: 85vw;

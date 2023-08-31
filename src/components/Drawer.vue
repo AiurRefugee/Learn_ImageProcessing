@@ -269,7 +269,7 @@ div::-webkit-scrollbar-track {
     height: 100vh;
   }
 }
-.el-col-5 {
+.el-col {
   display: flex;
   justify-content: flex-start;
   @media(max-width: 1000px) {

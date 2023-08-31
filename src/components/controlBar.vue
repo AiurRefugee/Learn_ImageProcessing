@@ -176,7 +176,9 @@ function endRecord() {
     ElMessage.closeAll()
     console.log('stop record')
     // timeString.value = '00:00:00'
-    recorder.value.stop() 
+    if(recorder.value) {
+        recorder.value.stop() 
+    }
     controllerWrapper.value.animate([
         { transform: 'rotate(0)'},
         { transform: 'rotate(360deg)'}
@@ -236,7 +238,7 @@ onMounted( async () => {
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
                 <div class="device" ref="refresh">
                     <el-icon class="refresh" 
-                        v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"
+                        v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'"
                         
                         @click="toggleMode" :size="30" >
                         <Refresh />
