@@ -36,8 +36,8 @@ function parse(mark) {
     <el-dialog
         v-model="props.infoVisible"
         title="Details"  
-        width="98%" 
-        top="5vh"
+        width="65%" 
+        align-center
         @close="close"
         @close-auto-focus="close" 
     >   

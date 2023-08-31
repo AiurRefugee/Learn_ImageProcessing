@@ -99,7 +99,7 @@ onMounted(() => {
             <div class="labelArea">
                  <el-row justify="center" align="middle" style="width: 100%;">
                     <el-col :span="8">
-                        <div style="font-size: 12px;">Image Input</div>
+                        <div>Image Input</div>
                     </el-col>
                     <el-col :span="8" :offset="1" >
                         <el-select v-model="imgName" placeholder="选择图片" size="large">
@@ -121,7 +121,7 @@ onMounted(() => {
 
                     <el-image :src="imageUrl" 
                         :preview-src-list="imageUrlList"
-                        fit="cover"
+                        fit="cover" 
                         v-if="!loading"
                         >
                     </el-image>
@@ -142,7 +142,19 @@ onMounted(() => {
     </div>
 </template>
 <style lang="scss">
- 
+.el-input--large .el-input__wrapper {
+    @media(max-width: 1000px) {
+        height: 30px;
+    }
+}
+.el-image {
+    max-height: 60vh;
+}
+.el-button--large {
+    @media(max-width: 1000px) {
+        height: 30px;
+    }
+}
 .imageWrapper {
     display: flex;
     width: 90vw;
@@ -203,12 +215,10 @@ onMounted(() => {
             align-items: center;
             height: 15%; 
             padding-bottom: 20px;
-            letter-spacing: 3px;
-            // border: 1px solid black;
-            // font-weight: 800;
-            // @media(max-width: 1000px) {
-            //     width: 100%;
-            // } 
+            letter-spacing: 3px; 
+            @media(max-width: 1000px) {
+                font-size: 12px;
+            } 
         }
     }  
     

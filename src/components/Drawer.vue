@@ -157,7 +157,11 @@ onUnmounted( () => {
                         
                         <el-row align="middle" justify="space-between">
                            
-                            <el-switch v-model="process.selected" @change="output"></el-switch>
+                            <div> 
+                              {{ process.selected ? 'On' : 'Off' }}
+                              <el-switch v-model="process.selected" @change="output"></el-switch>
+                             
+                            </div>
                             
                             <el-link :underline="false" @click="openDialog(process)">
                               <el-icon><View /></el-icon>Learn More
@@ -208,18 +212,18 @@ onUnmounted( () => {
 <style lang="scss" scoped>
 $button_Color: #ffb444;
 /* 隐藏滚动条及滚动轨道 */
-::-webkit-scrollbar {
+div::-webkit-scrollbar {
   width: 0; /* 隐藏垂直滚动条 */
   height: 0; /* 隐藏水平滚动条 */
 }
 
 /* 隐藏滚动条的滑块 */
-::-webkit-scrollbar-thumb {
+div::-webkit-scrollbar-thumb {
   background-color: transparent;
 }
 
 /* 隐藏滚动条的滑轨 */
-::-webkit-scrollbar-track {
+div::-webkit-scrollbar-track {
   background-color: transparent;
 }
 .drawer-enter-active,
@@ -259,13 +263,15 @@ $button_Color: #ffb444;
   background-color: transparent;
   left: 0;
   top: 0;
-  z-index: 1;
+  z-index: 10;
   @media(max-width) {
     width: 100vw;
     height: 100vh;
   }
 }
 .el-col-5 {
+  display: flex;
+  justify-content: flex-start;
   @media(max-width: 1000px) {
     overflow: hidden;
   }
@@ -291,6 +297,7 @@ $button_Color: #ffb444;
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
+    
     @media(max-width: 1000px) {     
       width: 100%;
       border-radius: 0;
@@ -303,7 +310,7 @@ $button_Color: #ffb444;
       // color: gray;
     } 
     .scrollerWrapper {
-      width: 88%;
+      width: 90%;
       height: 90%; 
       @media(max-width: 1000px) {
         height: calc(100% - 10vh - 10%);

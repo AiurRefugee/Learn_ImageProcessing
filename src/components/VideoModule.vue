@@ -90,7 +90,7 @@ function processVideo() {
     src.copyTo(dst)
     filtredConfigs.value.map( (process, index) => {  
         try { 
-            if(process.selected && process.videoAvaliable) {
+            if(process.selected && process.videoAvaliable != false) {
                 
                 console.log('aaa', process.params.map( item => item.paramValue))
                 let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
@@ -98,8 +98,8 @@ function processVideo() {
                 //     process.selected = !process.selected 
                 // }
             }
-            if(!process.videoAvaliable) {
-                console.log('falsse')
+            if(process.videoAvaliable == false) {
+                console.log('false')
                 process.selected = false
             }
         } catch (error) {  
@@ -250,15 +250,14 @@ onUnmounted(() => {
 <style lang="scss"> 
 
 .videoWrapper {
-    width: 95vw;
+    width: 100vw;
     height: 100vh;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-left: 5vw;
     align-items: center; 
     overflow: hidden;
-    //border: 5px solid gray;
-    left: 0;
-    position: absolute;
+    //border: 5px solid gray; 
     @media (max-width: 1000px) {
         width: 100vw;
         height: 90vh;
@@ -268,7 +267,7 @@ onUnmounted(() => {
         justify-content: flex-start;
     }
     .videoArea {
-        width: 90vw;
+        width: 85vw;
         height: 90vh;
         display: flex;
         flex-direction: column;
@@ -276,7 +275,7 @@ onUnmounted(() => {
         align-items: center;
         justify-content: center;
         .contentWrapper {
-            width: 85vw;
+            width: calc(85vw - 15px * 2);
             // height: 100%;
             aspect-ratio: 16/9; 
             max-height: 90vh;

@@ -1,6 +1,6 @@
 const options = {
     state: {
-        drawerSwitch: true,
+        drawerSwitch: false,
         filteredProcesses: []
        
     },
