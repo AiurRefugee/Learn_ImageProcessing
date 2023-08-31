@@ -222,12 +222,6 @@ $button_Color: #ffb444;
 ::-webkit-scrollbar-track {
   background-color: transparent;
 }
-div{
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
-    // border: 1px solid white;
-}
 .drawer-enter-active,
 .drawer-leave-active {
   transition: all 0.5s ease;

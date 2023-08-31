@@ -28,14 +28,14 @@ const iconTextSize = computed( () => {
     return 'large'
   }
 })
-const iconsize = computed( () => { 
-  if(window.innerWidth <= 1000 ) {
-    return '27vw'
-  } else {
-    return 200
-  }
+// const iconsize = computed( () => { 
+//   if(window.innerWidth <= 1000 ) {
+//     return '25vw'
+//   } else {
+//     return 200
+//   }
   
-})
+// })
 
 function changeTheme() {
   toggleDark()
@@ -113,7 +113,7 @@ onMounted(() => {
           <el-col :span="iconWidth" class="topItem">
             <el-link :underline="false" @click="showVue = !showVue">Vue</el-link>
           </el-col>
-          <el-col :span="iconWidth + 1" class="topItem">
+          <el-col :span="iconWidth + 2" class="topItem">
             <el-link :underline="false" @click="showEle = !showEle">Element +</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
@@ -128,32 +128,24 @@ onMounted(() => {
     </div>
     
     <div class="main">
-      
-      <div class="showArea">
+       
         <div class="centerItem" @click="navigateTo('image')">
-          <el-icon :size="iconsize"  ><PictureFilled /></el-icon>
+          <PictureFilled class="centerIcon"/>
           <div class="text">
-            <el-text :size="iconTextSize">
-              <h1>从图片输入</h1>
-            </el-text>
+            <div>从图片输入</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('video')">
-          <el-icon :size="iconsize"  ><VideoPlay /></el-icon>
+          <VideoPlay class="centerIcon"/>
           <div class="text">
-            <el-text :size="iconTextSize">
-              <h1>从视频输入</h1>
-            </el-text>
+            <div>从视频输入</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('camera')">
-          <el-icon :size="iconsize"  ><CameraFilled /></el-icon>
+          <CameraFilled class="centerIcon"/>
           <div class="text">
-            <el-text :size="iconTextSize">
-              <h1>从摄像头输入</h1>
-            </el-text>
-          </div>
-        </div>
+            <div>从摄像头输入</div> 
+          </div> 
       </div>
     </div>
   </div> 
@@ -192,15 +184,7 @@ p{
   justify-content: center;
   align-items: center;
 } 
-.centerItem {
-  @include center();
-  width: 33%;
-  font-size: 40px;
-  flex-direction: column;
-  @media (max-width: 1000px) {
-    width: 500px;
-  }
-}
+
 .appContainer{
   display: flex;
   flex-direction: column;
@@ -220,8 +204,7 @@ p{
     height: 100vh;
   }
   .topBar{
-    width: 95%;
-    min-height: 10%;
+    width: 95%; 
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -244,10 +227,10 @@ p{
         font-size: 50px;
       }
       @media (max-width: 1000px) {
-        font-size: 26px;
+        font-size: 20px;
         width: 95vw;
         h1 {
-          font-size: 56px;
+          font-size: 30px;
         }
       }
       
@@ -255,8 +238,7 @@ p{
     .topbarIcons{
        min-width: 40%;
        //padding-right: 2%;
-      @include center();
-      max-height: 100px; 
+      @include center(); 
       .topItem {
         @include center();
         a {
@@ -272,38 +254,43 @@ p{
   }
   .main{
     display: flex;
-    width: 99vw;
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    @media (max-width: 1000px) {
+    width: 100vw;
+    flex-grow: 1;
+    padding: 2%;
+    justify-content: center;
+    align-items: flex-start;
+    @media(max-width: 1000px) {
+      flex-direction: column;  
+      align-items: center;
+    }
+    .centerItem {
+      @include center();
+      width: 33%;
+      font-size: 20px;
       flex-direction: column;
-      justify-content: flex-start;
-      padding-top: 10%;
-    }
-    .showArea{
-      width: 85%;
-      height: 70%;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      // padding-top: 2%;
       @media (max-width: 1000px) {
-        padding-top: 0%; 
-      } 
-      
-        .text{
-          @include center();
-          width: 100%;
-          font-size: 40px;
-          @media (max-width: 1000px) {
-              font-size: 20px;
-          }
+        width: 500px;
+      }
+      .centerIcon {
+        width: 50%;
+        @media (max-width: 1000px) {
+          width: 26%;
         }
-      
+      }
+      .text{
+        @include center();
+        width: 100%;
+        height: 50px;
+        font-size: 40px;
+        @media (max-width: 1000px) {
+            font-size: 20px;
+            align-items: center;
+        }
+      }
     }
+      
+      
+    
   }
 
 }

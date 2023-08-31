@@ -74,6 +74,7 @@ async function control(option) {
     }
     store.dispatch('set_currentOption', option)
     ctx.value = null
+    endRecord()
     await nextTick()
 }
 
@@ -177,7 +178,7 @@ function endRecord() {
     // timeString.value = '00:00:00'
     recorder.value.stop() 
     controllerWrapper.value.animate([
-    { transform: 'rotate(0)'},
+        { transform: 'rotate(0)'},
         { transform: 'rotate(360deg)'}
     ],
     400 )
@@ -296,14 +297,16 @@ div{
     position: absolute;
     left: 50%;
     top: 2%; 
-    padding: 0 5%;
+    padding: 0 5%; 
+    backdrop-filter: blur(5px);
     height: 30px; 
     display: inline-block;
     justify-content: center;
-    background-color: #000000bd;
+    background-color: rgba( 0, 0, 0, 1);
     transform: translateX(-50%); 
     transition: all 0.2s ease-in; 
     text-align: justify;
+    z-index: 999;
     .point {
         width: 10px;
         aspect-ratio: 1 / 1;

@@ -167,7 +167,7 @@ onMounted(() => {
         margin-left: 4vw;
         border-radius: 12px;
         justify-content: space-around;
-        box-shadow: 0px 0px 10px 5px gray;
+        box-shadow: 0px 0px 5px 2px gray;
         @media(max-width: 1000px) {
             width: 80vw;
             height: 40vh;
