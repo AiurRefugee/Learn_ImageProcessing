@@ -322,7 +322,7 @@ div{
 .controlBar {
     width: 10vw;
     height: 100vh;
-    z-index: 999;
+    z-index: 99;
     display: flex; 
     // background-color: green; 
     flex-direction: column; 

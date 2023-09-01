@@ -13,7 +13,7 @@ const imageOption = ref()
 const imageSrc = ref(null) // <img>
 const fileInput = ref(null) // <input>
 const imageOutput = ref(null) // <canvas></canvas>
-const imgName = ref("Lena.png")
+const imgName = ref("gang.webp")
 const srcList = ref(["Lena.png", "line.png", "girl.jpeg", "milkyWay.jpg", "gang.webp", "gundam.jpeg", "trans.webp", "car.webp"])
 let src
 let dst = new cv.Mat()
@@ -69,7 +69,7 @@ function selectChange() {
     loading.value = true
 }
 
-function input() { 
+function upload() { 
     fileInput.value.click()
 }
 function inputChange(e) {
@@ -77,7 +77,7 @@ function inputChange(e) {
 }
 
 onMounted(() => {
-       
+    // alert(window.innerWidth)
     imageSrc.value.onload = function() { 
         // await nextTick()
         
@@ -97,32 +97,35 @@ onDeactivated( () => {
 
 </script>
 <template>
-    <div class="imageWrapper">
+    <div class="imageModuleWrapper">
 
         <div class="inoutput">
-            <div class="imageArea">
-                <div class="imgInoutput"> 
-                    <!-- <el-skeleton :rows="4" animated v-if="loading">
-                    </el-skeleton> -->
-                    <img id="imageSrc" ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${imgName}`" :style="{display: loading ? 'flex' : 'none'}"/>
-                    <el-image :src="imageUrl" 
-                        fit="cover"
-                        :preview-src-list="imageUrlList" 
-                        v-if="!loading"
-                        >
-                    </el-image>
-                </div>
+            <div class="imageArea"> 
+                <img id="imageSrc" ref="imageSrc" :src="`/src/assets/imgs/${imgName}`"
+                    @click="upload" :style="{display: loading ? 'flex' : 'none'}"/>
+                <el-image :src="imageUrl" 
+                    hide-on-click-modal 
+                    :preview-src-list="imageUrlList" 
+                    v-if="!loading"
+                    >
+                </el-image> 
 
-                <!-- <canvas id="imageOutput" class="imgInoutput"></canvas> -->
+                <!-- <canvas id="imageOutput" class="imageWrapper"></canvas> -->
 
                 <canvas ref="imageOutput" id="imageOutput" style="display: none;"></canvas>
             </div>
             <div class="labelArea" justify="center">
-                <el-row justify="center" :gutter="40" style="width: 80%;">
+                <el-row justify="center" :gutter="40" style="width: 90%;">
                     <el-col :span="12" class="labelItem">
                         <el-select v-model="imgName" placeholder="选择图片" size="large" @change="selectChange">
+                            
                             <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
+                            <el-option :label="''" :value="''" @click="upload"> 
+                                <el-icon><UploadFilled/></el-icon>
+                                <span style="margin-left: 5px;">上传图片</span>
+                            </el-option>
                         </el-select>
+                        <input type="file" id="fileInput" name="file" style="display: none;" @change="inputChange">
                     </el-col>
                     <el-col :span="12" class="labelItem">
                         <el-button size="large" @click="outputImage"> Image Output</el-button>
@@ -135,71 +138,66 @@ onDeactivated( () => {
 <style lang="scss">
 .el-input--large .el-input__wrapper {
     @media(max-width: 1000px) {
-        height: 30px;
+        height: 40px;
     }
 } 
-.el-image {
-    max-height: 100%;
-}
 .el-button--large {
     @media(max-width: 1000px) {
-        height: 30px;
+        height: 40px;
     }
 }
-.imageWrapper {
+.imageModuleWrapper {
     display: flex;
     width: 90vw;
     height: 100vh;
     margin-right: 10vw;
-    background-color: blue;
+    // background-color: blue;
     justify-content: flex-start;
     align-items: center; 
     @media(max-width: 1000px) {
+        // padding-top: 15%;
         width: 100vw;
         height: 90vh;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: center;
         align-items: center;
         margin: 0;
     }
+    // @media(max-width: 490px) {
+    //     height: 78vh;
+    // }
     .inoutput { 
         display: flex;
         flex-direction: column;
         width: 85vw;
-        height: 95vh; 
+        max-height: 95vh; 
         margin-left: 4vw;
         border-radius: 12px;
         justify-content: flex-start; 
         position: relative;
         box-shadow: 0px 0px 5px 2px gray;
         @media(max-width: 1000px) {
-            width: 80vw; 
-            height: 70vh;
-            margin: 5% 0 2% 0;
+            width: 90vw; 
+            height: 90%; 
+            margin: 0;
         }
-        // background-color: rgba($color: white, $alpha: 0.8);
+        @media(max-width: 490px) {
+            width: 90vw;
+        }
         .imageArea {
-            max-width: 100%;
-            height: 85%;
-            display: flex;  
-            padding: 2%;
+            widows: 95%;
+            height: 80%;
+            display: flex;   
+            margin: 5%;
             justify-content: center;
-            align-items: center; 
+            align-items: center;   
+            // border: 1px solid white;
+            border-radius: 10px;
             overflow: hidden;
-            @media(max-width: 1000px) {
-                padding: 0 5% 0 5%;;
+
+            img { 
+                border-radius: 10px; 
             }
-            //padding-top: 10%;
-            .imgInoutput {  
-                display: flex;
-                justify-content: center;
-                overflow: hidden;  
-                img {
-                    display: flex;
-                    border-radius: 10px; 
-                }
-            }
-            
         }
         
         .labelArea {
@@ -207,9 +205,9 @@ onDeactivated( () => {
             // color: black;
             display: flex; 
             justify-content: center;
-            height: 12%;  
+            height: 10%;
             position: absolute;
-            bottom: 0;
+            bottom: 2%;
             @media(max-width: 1000px) {
                 font-size: 12px;
             } 

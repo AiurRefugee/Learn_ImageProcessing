@@ -189,7 +189,7 @@ onDeactivated( () => {
     playing.value = false 
     if(interval) {
         clearInterval(interval)
-    } 
+    }
     if(videoInput.value) {
         canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
     }
@@ -297,7 +297,7 @@ onDeactivated( () => {
             align-items: center;
             border-radius: 10px;
             @media(max-width: 1000px) {
-                width: calc(100vw - 50px);
+                width: calc(90vw - 50px);
                 height: 95%;
             }
             .playerWrapper { 

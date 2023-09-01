@@ -315,6 +315,9 @@ div::-webkit-scrollbar-track {
       @media(max-width: 1000px) {
         height: calc(100% - 10vh - 10%);
       }
+      // @media(max-width: 490px) {
+      //   height: 70vh;
+      // }
     }
     .switchGrid {
       width: 100%;
