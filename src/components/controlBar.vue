@@ -2,17 +2,12 @@
 import { onMounted, ref, computed, nextTick, watch} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';  
-import { useDark, useToggle } from '@vueuse/core' 
+import { ElMessage } from 'element-plus';
 import moment from 'moment'; 
-import cv from 'opencv.js';
-const isDark = useDark()
-const toggleDark = useToggle(isDark) 
 
 let timeInterval
 
-const recording = ref(false)
-
+const recording = ref(false) 
 const videoCaped = ref([])
 const timeCount = ref(0) 
 const timeString = ref('00:00:00')
@@ -109,13 +104,22 @@ function downloadVideo(data) {
 }
 
 function takePhoto() {
+    controller.value.animate([
+        { transform: 'scale(1)'},
+        { transform: 'scale(0.7)'},
+        { transform: 'scale(1)'}
+    ], {
+        duration: 200,
+        easing: 'ease-in',
+        fill: 'forwards'
+    }) 
     try{
         // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height) 
         if(curOpt.value == 'image') {
             emit('outputImage')
         }
         // cv.imshow(ctx.value.id)
-        console.log(ctx.value)
+        
         const url = ctx.value.toDataURL() 
         const link = document.createElement('a');
         link.href = url;
@@ -129,49 +133,53 @@ function takePhoto() {
     }
 }
 
-function beginRecord() {  
+function beginRecord() {   
     timeCount.value = 0
     timeString.value = '00:00:00'
     console.log('record', ctx.value)
+    recording.value = true
+    if(curOpt.value == 'image') {
+        emit('outputImage')
+    }
+    
+    setTimeout( () => {
+        countOn()
+    }, 1000)
     
     recorder.value = new MediaRecorder(ctx.value.captureStream(60), {videoBitsPerSecond: 8000000})
     recorder.value.ondataavailable = (e) => {
         downloadVideo(e.data)
     }
     // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
-    if(curOpt.value == 'image') {
-        emit('outputImage')
-    }
-    timeInterval = setInterval( () => {
-        timeCount.value += 1
-        let time = moment.duration(timeCount.value, 'seconds')  //得到一个对象，里面有对应的时分秒等时间对象值
-        let hours = time.hours() 
-        let minutes = time.minutes()
-        let seconds = time.seconds()
-        timeString.value = moment({h:hours, m:minutes, s:seconds}).format('HH:mm:ss') 
-        
-    }, 1000)
+    
     
     recorder.value.start()
     console.log('start record')
-    recording.value = true
-    controllerWrapper.value.animate([
-        { transform: 'rotate(0)'},
-        { transform: 'rotate(360deg)'}
-    ],
-    400 )
-    controller.value.animate([
-        { transform: 'scale(1)'},
-        { transform: 'scale(1.2)'}
-    ], {
-        duration: 500,
-        fill: 'forwards'
-    }
     
-    )
+    // controllerWrapper.value.animate([
+    //     { transform: 'rotate(0)'},
+    //     { transform: 'rotate(360deg)'}
+    // ],
+    // 400 )
+   
+}
+
+function countOn() {
+    timeCount.value += 1
+    let time = moment.duration(timeCount.value, 'seconds')  //得到一个对象，里面有对应的时分秒等时间对象值
+    let hours = time.hours() 
+    let minutes = time.minutes()
+    let seconds = time.seconds()
+    timeString.value = moment({h:hours, m:minutes, s:seconds}).format('HH:mm:ss') 
+    if(recording.value) {
+        setTimeout( () => {
+            countOn()
+        }, 1000)
+    }
 }
 
 function endRecord() { 
+    recording.value = false 
     clearInterval(timeInterval)
     timeCount.value = 0
     timeString.value = '00:00:00'
@@ -181,19 +189,19 @@ function endRecord() {
     if(recorder.value) {
         recorder.value.stop() 
     }
-    controllerWrapper.value.animate([
-        { transform: 'rotate(0)'},
-        { transform: 'rotate(360deg)'}
-    ],
-    400 )
-    controller.value.animate([
-        { transform: 'scale(1.2)'},
-        { transform: 'scale(1)'}
-    ],{
-        duration: 500,
-        fill: 'forwards'
-    })
-    recording.value = false 
+    // controllerWrapper.value.animate([
+    //     { transform: 'rotate(0)'},
+    //     { transform: 'rotate(360deg)'}
+    // ],
+    // 400 )
+    // controller.value.animate([
+    //     { transform: 'scale(1.2)'},
+    //     { transform: 'scale(1)'}
+    // ],{
+    //     duration: 500,
+    //     fill: 'forwards'
+    // })
+    
     videoCaped.value = []
     
 }
@@ -226,11 +234,12 @@ onMounted( async () => {
             </div>
         </div>
         <div class="controllerWrapper" ref="controllerWrapper" @click="outputImage">
-            <div class="outSide" :style="{border: cameraMode? '5px solid gray': '2px dashed #ffb444'}">
+            <div class="outSide" :style="{border: cameraMode? '5px solid #e2e2e2' : '5px solid #e2e2e2'}">
                 <div class="controller" ref="controller"
                     :style="{
-                        'background-color': cameraMode? '#636363': 'red',
-                        'width': cameraMode? '85%': '70%'
+                        'background-color': cameraMode? 'white' : 'red', 
+                        'border-radius': recording ? '5px' : '50%',
+                        'width': recording ? '50%' : '90%'
                         }">
                     </div>
             </div>
@@ -240,8 +249,8 @@ onMounted( async () => {
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
                 <div class="device" ref="refresh">
                     <el-icon class="refresh" 
-                        v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'"
-                        
+                        v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"
+                        color="white"
                         @click="toggleMode" :size="30" >
                         <Refresh />
                     </el-icon>
@@ -254,6 +263,7 @@ onMounted( async () => {
                 <div class="device">
                     <el-Switch style="--el-switch-on-color: gray"
                         active-text="Photos"
+                        size="large"
                         inactive-text="Videos"
                         :width="70"
                         :active-action-icon="View"
@@ -282,19 +292,7 @@ div{
     color: white;
     // border: 1px solid white;
 }
-.drawer-enter-active,
-.drawer-leave-active {
-  transition: all 0.5s ease;
-}
 
-.drawer-enter-from,
-.drawer-leave-to {
-  opacity: 1;
-}
-.drawer-enter-from,
-.drawer-leave-to {
-    opacity: 0;
-}
 
 .timeCount {
     // display: none;
@@ -303,10 +301,11 @@ div{
     top: 2%; 
     padding: 0 5%; 
     backdrop-filter: blur(5px);
-    height: 30px; 
+    height: 40px; 
     display: inline-block;
     justify-content: center;
-    background-color: rgba( 0, 0, 0, 1);
+    border-radius: 5px;
+    background-color: rgb(45 44 44 / 64%);
     transform: translateX(-50%); 
     transition: all 0.2s ease-in; 
     text-align: justify;
@@ -321,9 +320,11 @@ div{
 }
 .controlBar {
     width: 10vw;
-    height: 100vh;
-    z-index: 99;
+    height: 100vh; 
     display: flex; 
+    position: absolute; 
+    right: 0;
+    z-index: 1;
     // background-color: green; 
     flex-direction: column; 
     @media (max-width: 1000px) {
@@ -332,6 +333,7 @@ div{
         flex-direction: row;
         align-content: center; 
         padding-bottom: 15px;
+        top: null;
         bottom: 0;
     }
     .spacer {
@@ -364,13 +366,13 @@ div{
                 .swipeItem{
                     width: 100%;
                     height: 80px;
-                    font-size: 2.5vw;
+                    font-size: 2vh;
                     font-weight: 900;
                     text-shadow: 2px 0px 2px black;
                     cursor: pointer;
                     @media (max-width: 1000px) {
                         width: 30%;
-
+                        font-size: 2.5vw;
                     }
                 }
                 .active {
@@ -383,7 +385,7 @@ div{
     }
     
     .controllerWrapper { 
-        width: 50%;
+        width: 60%;
         aspect-ratio: 1/1; 
         cursor: pointer;
         
@@ -393,17 +395,17 @@ div{
             aspect-ratio: 1/1;
         }
         .outSide {
-            width: 70%;
+            width: 60%;
             border-radius: 50%; 
             border-radius: 50%; 
             aspect-ratio: 1/1;
             transition: all 0.5s ease; 
             .controller {
-                width: 70%;
+                width: 90%;
                 aspect-ratio: 1/1;
                 transition: all 0.6s ease; 
                 filter: brightness(1.1);
-                border-radius: 50%;
+                
             }
         }
     }
@@ -428,13 +430,10 @@ div{
             cursor: pointer;
             .refresh {
                 width: 40px;
-                aspect-ratio: 1/1;
-            }
-            .drawerCorontroller {
-                // border: 1px solid white;
-                width: 100px;
-                height: 50px;
-            }
+                height: 40px;
+                border-radius: 50%; 
+                background-color: rgb(255 255 255 / 10%);
+            } 
         }
         .device:last-child { 
             @media(max-width: 1000px) { 
@@ -449,15 +448,7 @@ div{
                 transform: scaleX(0.8)
             }
         }
-    }
-    .drawer {
-        width: 30vw;
-        height: 100vh;
-        flex-direction: column;
-        background-color:  white;
-        position: absolute;
-        left: 0;
-    }
+    } 
     
 }
 </style>

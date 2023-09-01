@@ -50,17 +50,17 @@ function toggleMode() {
      
     <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
       
-    <transition>  
+    <transition mode="out-in">  
       <keep-alive>
         <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule>   
       </keep-alive>
     </transition> 
-    <transition > 
+    <transition mode="out-in"> 
       <keep-alive>
         <VideoModule ref="video" v-if="curOpt == 'video'"></VideoModule> 
       </keep-alive>
     </transition>
-    <transition >
+    <transition mode="out-in">
       <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
     </transition> 
       <keep-alive>
@@ -73,17 +73,17 @@ function toggleMode() {
 <style lang="scss" scoped>
 .v-enter-active,
 .v-leave-active {
-  transition: all 0.5s ease-in-out;
+  transition: all 0.6s ease-in-out;
 }
 
-.v-enter-from,
-.v-leave-to {
-  opacity: 1;
+.v-enter-to,
+.v-leave-from {
+  opacity: 0.5;
   transform: translateY(0); 
 }
 .v-enter-from,
 .v-leave-to {
     opacity: 0;
-    transform: translateY(-100%); 
+    transform: translateY(-100vh); 
 } 
 </style>

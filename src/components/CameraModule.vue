@@ -168,7 +168,7 @@ onUnmounted(() => {
 }
 .cameraWrapper {
     width: 100vw;
-    height: 90vh; 
+    height: 100vh; 
      #cameraInput {
         display: none;
         width: 90vw;

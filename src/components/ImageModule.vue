@@ -73,7 +73,10 @@ function upload() {
     fileInput.value.click()
 }
 function inputChange(e) {
-    imageSrc.value.src = URL.createObjectURL(e.target.files[0]);
+    const file = e.target.files[0]
+    imageSrc.value.src = URL.createObjectURL(file);
+    console.log(e.target.files[0])
+    imageUrlList.value.push(file.name)
 }
 
 onMounted(() => {
@@ -92,7 +95,7 @@ onMounted(() => {
 })
 
 onDeactivated( () => {
-    console.log('onDeactivated')
+    console.log('image Deactivated')
 })
 
 </script>
@@ -100,15 +103,18 @@ onDeactivated( () => {
     <div class="imageModuleWrapper">
 
         <div class="inoutput">
-            <div class="imageArea"> 
-                <img id="imageSrc" ref="imageSrc" :src="`/src/assets/imgs/${imgName}`"
-                    @click="upload" :style="{display: loading ? 'flex' : 'none'}"/>
-                <el-image :src="imageUrl" 
-                    hide-on-click-modal 
-                    :preview-src-list="imageUrlList" 
-                    v-if="!loading"
-                    >
-                </el-image> 
+            <div class="imageArea">  
+                <div class="imgWrapper">
+                    <img id="imageSrc" ref="imageSrc" :src="`/src/assets/imgs/${imgName}`"
+                    :style="{display: loading ? 'flex' : 'none'}" />
+                    <el-image :src="imageUrl"  
+                        :preview-src-list="imageUrlList" 
+                        v-if="!loading"
+                        hide-on-click-modal
+                        >
+                    </el-image>  
+                </div>
+                
 
                 <!-- <canvas id="imageOutput" class="imageWrapper"></canvas> -->
 
@@ -118,14 +124,14 @@ onDeactivated( () => {
                 <el-row justify="center" :gutter="40" style="width: 90%;">
                     <el-col :span="12" class="labelItem">
                         <el-select v-model="imgName" placeholder="选择图片" size="large" @change="selectChange">
-                            
-                            <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
                             <el-option :label="''" :value="''" @click="upload"> 
                                 <el-icon><UploadFilled/></el-icon>
                                 <span style="margin-left: 5px;">上传图片</span>
                             </el-option>
+                            <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
+                            
                         </el-select>
-                        <input type="file" id="fileInput" name="file" style="display: none;" @change="inputChange">
+                        <input type="file" ref="fileInput" name="file" style="display: none;" @change="inputChange">
                     </el-col>
                     <el-col :span="12" class="labelItem">
                         <el-button size="large" @click="outputImage"> Image Output</el-button>
@@ -146,14 +152,25 @@ onDeactivated( () => {
         height: 40px;
     }
 }
+.el-image {
+    // max-width: 90%;
+    // max-height: 100%;
+}
+.el-image-viewer__next, .el-image-viewer__prev, .el-image-viewer__close {
+    background-color: transparent;
+}
+.el-image-viewer__canvas {
+    max-width: 90%;
+}
 .imageModuleWrapper {
     display: flex;
     width: 90vw;
-    height: 100vh;
-    margin-right: 10vw;
+    height: 100vh; 
     // background-color: blue;
     justify-content: flex-start;
     align-items: center; 
+    position: absolute;
+    left: 0;
     @media(max-width: 1000px) {
         // padding-top: 15%;
         width: 100vw;
@@ -170,10 +187,11 @@ onDeactivated( () => {
         display: flex;
         flex-direction: column;
         width: 85vw;
-        max-height: 95vh; 
+        height: 95vh; 
         margin-left: 4vw;
         border-radius: 12px;
         justify-content: flex-start; 
+        align-items: center;
         position: relative;
         box-shadow: 0px 0px 5px 2px gray;
         @media(max-width: 1000px) {
@@ -184,20 +202,29 @@ onDeactivated( () => {
         @media(max-width: 490px) {
             width: 90vw;
         }
-        .imageArea {
-            widows: 95%;
-            height: 80%;
-            display: flex;   
-            margin: 5%;
+        .imageArea { 
+            height: 85%; 
+            margin: 2%;
+            display: flex;  
             justify-content: center;
             align-items: center;   
-            // border: 1px solid white;
-            border-radius: 10px;
             overflow: hidden;
-
-            img { 
-                border-radius: 10px; 
+            // border: 2px solid white; 
+            border-radius: 10px; 
+            z-index: 2; 
+            .imgWrapper {  
+                border-radius: 10px;
+                overflow: hidden; 
+                display: flex; 
+                // border: 2px solid white; 
+                justify-content: center;
+                img { 
+                    border-radius: 10px; 
+                    z-index: 99; 
+                } 
             }
+            
+            
         }
         
         .labelArea {
@@ -205,8 +232,8 @@ onDeactivated( () => {
             // color: black;
             display: flex; 
             justify-content: center;
-            height: 10%;
-            position: absolute;
+            height: 12%;
+            position: absolute; 
             bottom: 2%;
             @media(max-width: 1000px) {
                 font-size: 12px;

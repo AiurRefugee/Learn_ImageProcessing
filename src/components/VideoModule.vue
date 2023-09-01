@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, onUnmounted, onDeactivated} from 'vue' 
+import { onMounted, ref, computed, nextTick, onActivated, onDeactivated} from 'vue' 
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex';  
@@ -35,7 +35,7 @@ const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
 let width, height, src, dst, cap, fgmask, interval, duration
 
-async function play() { 
+async function play() {  
     if(!playing.value && videoInput.value.src != ''){
         try {
             await videoInput.value.play()
@@ -87,28 +87,27 @@ async function play() {
 }
 
 function processVideo() {   
-    src.copyTo(dst)
-    filtredConfigs.value.map( (process, index) => {  
-        try { 
-            if(process.selected && process.videoAvaliable != false) {
+    console.log('processing')
+    
+    if(playing.value) {
+        src.copyTo(dst)
+        filtredConfigs.value.map( (process, index) => {  
+            try { 
+                if(process.selected && process.videoAvaliable !== false) { 
+                    let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
+                    
+                }
+                if(process.videoAvaliable === false) { 
+                    process.selected = false
+                }
+            } catch (error) {  
+                // clearInterval(interval)
                 
-                console.log('aaa', process.params.map( item => item.paramValue))
-                let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-                // if(!res) {
-                //     process.selected = !process.selected 
-                // }
-            }
-            if(process.videoAvaliable == false) {
-                console.log('false')
-                process.selected = false
-            }
-        } catch (error) {  
-            // clearInterval(interval)
-            
-            console.log(error)
-            
-        }   
-    })
+                console.log(error)
+                
+            }   
+        })
+    }
     
 };
 
@@ -138,7 +137,7 @@ function upload() {
     videoInput.value.src = null
 }
 
-onMounted( async () => { 
+async function init() { 
     videoWitdth.value = contentWrapper.value.clientWidth * 0.8
     videoHeight.value = contentWrapper.value.clientHeight * 0.8 
     await nextTick()
@@ -149,39 +148,36 @@ onMounted( async () => {
     videoInput.value.addEventListener('loadedmetadata', () => {
         duration = videoInput.value.duration
     })
-    console.log(videoInput.value)
+    console.log('videoInput', videoInput.value)
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     // srcTemp = new cv.Mat()
     cap = new cv.VideoCapture(videoInput.value); 
     await nextTick() 
     videoUpload.value.addEventListener( "change", () => {
-    play()
-    const file = videoUpload.value.files[0]
-    const fileName = file.name 
-    const url = URL.createObjectURL(file)
-    videoInput.value.src = url
-    videoList.value.push({
-        label: fileName,
-        value: url
-    })
-    videoUrl.value = url
-    videoInput.value.load() 
+        play()
+        const file = videoUpload.value.files[0]
+        const fileName = file.name 
+        const url = URL.createObjectURL(file)
+        videoInput.value.src = url
+        videoList.value.push({
+            label: fileName,
+            value: url
+        })
+        videoUrl.value = url
+        videoInput.value.load() 
 
     })
-})
+}
 
+// onMounted( async () => {
+//     console.log('video Mounted')
+//     await init()
+// })
 
-
-onUnmounted(() => { 
-    console.log('video unmount')
-    playing.value = false 
-    if(interval) {
-        clearInterval(interval)
-    } 
-    if(videoInput.value) {
-        canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-    }
+onActivated(  async () => {
+    console.log('video Activated')
+    await init()
 })
 
 onDeactivated( () => { 
@@ -189,6 +185,7 @@ onDeactivated( () => {
     playing.value = false 
     if(interval) {
         clearInterval(interval)
+        interval = null
     }
     if(videoInput.value) {
         canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
@@ -269,21 +266,22 @@ onDeactivated( () => {
     //border: 5px solid gray; 
     @media (max-width: 1000px) {
         width: 100vw;
-        height: 90vh;
-        top: 0;
+        height: 90vh; 
         flex-direction: column;
         // background-color: white;
-        justify-content: center;
-        padding: 0;
+        justify-content: center; 
     }
     .videoArea {
         width: 85vw;
-        height: 90vh;
+        height: 95vh;
         display: flex;
         flex-direction: column;
         // background-color: black;
         align-items: center;
         justify-content: center;
+        @media(max-width: 1000px) {
+            height: 85vh;
+        }
         .contentWrapper {
             width: calc(85vw - 15px * 2);
             // height: 100%;
@@ -293,12 +291,13 @@ onDeactivated( () => {
             background-color: black;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            overflow: hidden;
             border-radius: 10px;
             @media(max-width: 1000px) {
                 width: calc(90vw - 50px);
-                height: 95%;
+                height: 85vh;
             }
             .playerWrapper { 
                 justify-content: flex-start;

@@ -48,7 +48,11 @@ export const classification = [
        
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: `+ error)
       return false
     }
@@ -113,7 +117,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       cv.cvtColor(src, dst, code, dstCn);
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: `+ error)
     }
     return false
@@ -180,7 +188,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       cv.erode(src, dst, M, anchor, iterations, borderType, cv.morphologyDefaultBorderValue());
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: `+ error)
       return false
     }
@@ -248,7 +260,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       cv.dilate(src, dst, M, anchor, iterations, borderType, cv.morphologyDefaultBorderValue());
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: `+ error)
       return false
     }
@@ -320,7 +336,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       cv.filter2D(src, dst, depth, M, anchor, delta, borderType);
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       // console.log(`${title}: `+ error)
     }
     return false
@@ -387,7 +407,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       }
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       // console.log(`${title}: `+ error)
     }
     return false
@@ -454,7 +478,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
         cv.threshold(src, dst, thresh, maxval, type)
         return true
       } catch(error) {
-        ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+        ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
         // console.log(`${title}: `+ error)
       }
       return false
@@ -536,7 +564,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       cv.adaptiveThreshold(dst, dst, ...params);
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
      //  console.log(`${title}: `+ error)
     }
     return false
@@ -615,7 +647,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       cv.Canny(dst, dst, ...params); 
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       // console.log(`${title}: ` + error)
     } 
     return false
@@ -679,7 +715,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       cv.warpAffine(src, dst, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       // console.log(`${title}: ` + error)
     }
     return false
@@ -801,7 +841,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       mag.copyTo(dst)
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: ` + error)
     }
     return false
@@ -855,7 +899,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       }
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: `+ error)
       return false
     }
@@ -901,7 +949,11 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
         cv.Laplacian(src, dst, cv.CV_8U, ksize, 1, delta, cv.BORDER_DEFAULT); 
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: `+ error)
       return false
     }
@@ -1012,7 +1064,11 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
       cv.rectangle(dst, point1, point2, color);
       return true
     } catch(error) {
-      ElMessage.error(`${title}: 之前的操作换个参数试试。`+ error)
+      ElMessage({
+    message: `${title}: 之前的操作换个参数试试。`+ error,
+    grouping: true,
+    type: 'error',
+  })
       console.log(`${title}: `+ error)
       return false
     }

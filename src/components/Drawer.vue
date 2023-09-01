@@ -79,29 +79,6 @@ function toggle() {
   store.dispatch('toggle_currentOption')
 }
 
-function processVideo() {
-  try {
-    begin = Date.now(); 
-    cap.read(src); 
-    //cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
-    canvasOutput.getContext('2d').clearRect(0, 0, videoWitdth, videoHeight)
-    for (const process of filtredConfigs.value) { 
-      if(process.imageAvaliable && process.selected) {
-        process.f(process.title, src, src, process.params.map( item => item.paramValue ))
-         
-      }
-    }
-    delay = 1000/FPS - (Date.now() - begin);
-    setTimeout(processVideo, delay);
-  } catch(error) {
-    console.log(error)
-    ElMessage(`${error}`)
-  }
-}
-
-function changeHandle(val) {
-  console.log(val)
-}
 onMounted( async () => { 
   // console.log('test'. filtredConfigs.value)
   store.dispatch('set_filteredProcesses', filtredConfigs.value)
@@ -157,8 +134,8 @@ onUnmounted( () => {
                         
                         <el-row align="middle" justify="space-between">
                            
-                            <div> 
-                              {{ process.selected ? 'On' : 'Off' }}
+                            <div style="width: 80px; display: flex; justify-content: space-between; align-items: center;"> 
+                              <text>{{ process.selected ? 'On' : 'Off' }}</text>
                               <el-switch v-model="process.selected" @change="output"></el-switch>
                              
                             </div>
@@ -230,7 +207,9 @@ div::-webkit-scrollbar-track {
 .drawer-leave-active {
   transition: all 0.5s ease;
 }
-
+.el-slider {
+  padding-left: 20px;
+}
 .drawer-enter-from,
 .drawer-leave-to {
   opacity: 1; 
@@ -281,7 +260,7 @@ div::-webkit-scrollbar-track {
     height: 95vh;
     //display: flex;
     border-radius: 12px;
-    box-shadow: 2px 2px 10px rgba(205, 204, 204, 0.6);
+    box-shadow: 2px 0px 10px 2px rgba(205, 204, 204, 0.6);
     // background-color: rgba($color: #8d8d8d, $alpha: 0.5); 
     // border: 1px solid white;
     -webkit-backdrop-filter: blur(10px); 
@@ -293,7 +272,7 @@ div::-webkit-scrollbar-track {
     align-items: center;
     left: 0;
     z-index: 99;
-    background-color: transparent;
+    background-color: #a7a7a773 !important;
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
