@@ -259,17 +259,20 @@ onDeactivated( () => {
     width: 100vw;
     height: 100vh;
     display: flex;
-    justify-content: flex-start;
-    padding-left: 5vw;
+    justify-content: flex-start; 
     align-items: center; 
     overflow: hidden;
+    align-items: center;
+    padding-left: 5%;
     //border: 5px solid gray; 
     @media (max-width: 1000px) {
         width: 100vw;
         height: 90vh; 
+        padding: 0;
         flex-direction: column;
         // background-color: white;
         justify-content: center; 
+        
     }
     .videoArea {
         width: 85vw;
@@ -286,7 +289,7 @@ onDeactivated( () => {
             width: calc(85vw - 15px * 2);
             // height: 100%;
             aspect-ratio: 16/9; 
-            max-height: 90vh;
+            flex-grow: 1;
             border: 15px solid gray;
             background-color: black;
             display: flex;

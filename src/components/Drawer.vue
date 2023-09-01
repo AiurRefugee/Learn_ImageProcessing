@@ -242,7 +242,7 @@ div::-webkit-scrollbar-track {
   background-color: transparent;
   left: 0;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   @media(max-width) {
     width: 100vw;
     height: 100vh;
@@ -271,8 +271,8 @@ div::-webkit-scrollbar-track {
     justify-content: flex-start;
     align-items: center;
     left: 0;
-    z-index: 99;
-    background-color: #a7a7a773 !important;
+    z-index: 109;
+    // background-color: transparent !important;
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
@@ -281,7 +281,7 @@ div::-webkit-scrollbar-track {
       width: 100%;
       border-radius: 0;
       margin-left: 0;
-      height: 100vh;
+      height: 90vh;
     }
     .filterBar {
       width: 90%;

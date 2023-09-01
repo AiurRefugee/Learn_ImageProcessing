@@ -145,7 +145,7 @@ function beginRecord() {
     setTimeout( () => {
         countOn()
     }, 1000)
-    
+
     recorder.value = new MediaRecorder(ctx.value.captureStream(60), {videoBitsPerSecond: 8000000})
     recorder.value.ondataavailable = (e) => {
         downloadVideo(e.data)
@@ -324,7 +324,7 @@ div{
     display: flex; 
     position: absolute; 
     right: 0;
-    z-index: 1;
+    z-index: 10;
     // background-color: green; 
     flex-direction: column; 
     @media (max-width: 1000px) {
@@ -368,7 +368,7 @@ div{
                     height: 80px;
                     font-size: 2vh;
                     font-weight: 900;
-                    text-shadow: 2px 0px 2px black;
+                    text-shadow: 2px 0px 2px rgb(70, 70, 70);
                     cursor: pointer;
                     @media (max-width: 1000px) {
                         width: 30%;

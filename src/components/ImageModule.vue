@@ -143,6 +143,7 @@ onDeactivated( () => {
 </template>
 <style lang="scss">
 .el-input--large .el-input__wrapper {
+    z-index: 111;
     @media(max-width: 1000px) {
         height: 40px;
     }
@@ -193,6 +194,8 @@ onDeactivated( () => {
         justify-content: flex-start; 
         align-items: center;
         position: relative;
+        z-index: 21;
+        overflow: hidden;
         box-shadow: 0px 0px 5px 2px gray;
         @media(max-width: 1000px) {
             width: 90vw; 
@@ -203,24 +206,28 @@ onDeactivated( () => {
             width: 90vw;
         }
         .imageArea { 
+            $marSize: 5%;
             height: 85%; 
-            margin: 2%;
+            margin: $marSize;
+            max-width: calc(100% - 2 * $marSize);
+            max-height: 90%;
             display: flex;  
             justify-content: center;
             align-items: center;   
             overflow: hidden;
             // border: 2px solid white; 
             border-radius: 10px; 
-            z-index: 2; 
+            z-index: 11; 
             .imgWrapper {  
                 border-radius: 10px;
-                overflow: hidden; 
-                display: flex; 
+                overflow: hidden;  
                 // border: 2px solid white; 
+                z-index: 10;
+                display: flex; 
                 justify-content: center;
                 img { 
                     border-radius: 10px; 
-                    z-index: 99; 
+                    z-index: 1; 
                 } 
             }
             
@@ -232,9 +239,9 @@ onDeactivated( () => {
             // color: black;
             display: flex; 
             justify-content: center;
-            height: 12%;
+            height: 10%;
             position: absolute; 
-            bottom: 2%;
+            bottom: 0;
             @media(max-width: 1000px) {
                 font-size: 12px;
             } 
