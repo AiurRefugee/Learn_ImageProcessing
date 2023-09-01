@@ -65,6 +65,10 @@ const processImage = () =>  {
     }
 }
 
+function selectChange() {
+    loading.value = true
+}
+
 function input() { 
     fileInput.value.click()
 }
@@ -94,38 +98,16 @@ onDeactivated( () => {
 </script>
 <template>
     <div class="imageWrapper">
-        <div class="inoutput" :elevation="12" :radius="12">
-            
-            <div class="imageArea" @click="input"> 
-                <img id="imageSrc" ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${imgName}`"/>
-                <!-- <img id="imageSrc" > -->
-            </div>
-            <div class="labelArea">
-                 <el-row justify="center" align="middle" style="width: 100%;">
-                    <el-col :span="8">
-                        <div>Image Input</div>
-                    </el-col>
-                    <el-col :span="8" :offset="1" >
-                        <el-select v-model="imgName" placeholder="选择图片" size="large">
-                            <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
-                        </el-select>
-                    </el-col>
-                 </el-row>
-                 
-                <label>
-                    <input ref="fileInput" type="file" id="fileInput" name="file" style="display: none;" @change="inputChange"/>
-                </label>
-            </div>
-        </div> 
-        <div class="inoutput" :elevation="12" :radius="12">
+
+        <div class="inoutput">
             <div class="imageArea">
                 <div class="imgInoutput"> 
-                    <el-skeleton :rows="4" animated v-if="loading">
-                    </el-skeleton>
-
+                    <!-- <el-skeleton :rows="4" animated v-if="loading">
+                    </el-skeleton> -->
+                    <img id="imageSrc" ref="imageSrc" class="imgInoutput" :src="`/src/assets/imgs/${imgName}`" :style="{display: loading ? 'flex' : 'none'}"/>
                     <el-image :src="imageUrl" 
-                        :preview-src-list="imageUrlList"
-                        fit="cover" 
+                        fit="cover"
+                        :preview-src-list="imageUrlList" 
                         v-if="!loading"
                         >
                     </el-image>
@@ -133,11 +115,16 @@ onDeactivated( () => {
 
                 <!-- <canvas id="imageOutput" class="imgInoutput"></canvas> -->
 
-                <canvas ref="imageOutput" id="imageOutput" class="imgInoutput" :style="{display: loading? 'none' : 'none'}"></canvas>
+                <canvas ref="imageOutput" id="imageOutput" style="display: none;"></canvas>
             </div>
             <div class="labelArea" justify="center">
-                <el-row>
-                    <el-col :span="24">
+                <el-row justify="center" :gutter="40" style="width: 80%;">
+                    <el-col :span="12" class="labelItem">
+                        <el-select v-model="imgName" placeholder="选择图片" size="large" @change="selectChange">
+                            <el-option :label="item" :value="item" v-for="(item, index) in srcList" :key="index"> </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="12" class="labelItem">
                         <el-button size="large" @click="outputImage"> Image Output</el-button>
                     </el-col>
                 </el-row>
@@ -150,9 +137,9 @@ onDeactivated( () => {
     @media(max-width: 1000px) {
         height: 30px;
     }
-}
+} 
 .el-image {
-    max-height: 60vh;
+    max-height: 100%;
 }
 .el-button--large {
     @media(max-width: 1000px) {
@@ -164,49 +151,53 @@ onDeactivated( () => {
     width: 90vw;
     height: 100vh;
     margin-right: 10vw;
+    background-color: blue;
     justify-content: flex-start;
-    align-items: center;
-    left: 0;
-    top: 0;
-    position: absolute;
+    align-items: center; 
     @media(max-width: 1000px) {
         width: 100vw;
         height: 90vh;
         flex-direction: column;
         justify-content: space-around;
+        align-items: center;
+        margin: 0;
     }
     .inoutput { 
         display: flex;
         flex-direction: column;
-        width: 40vw;
+        width: 85vw;
         height: 95vh; 
         margin-left: 4vw;
         border-radius: 12px;
-        justify-content: space-around;
+        justify-content: flex-start; 
+        position: relative;
         box-shadow: 0px 0px 5px 2px gray;
         @media(max-width: 1000px) {
-            width: 80vw;
-            height: 40vh;
+            width: 80vw; 
+            height: 70vh;
+            margin: 5% 0 2% 0;
         }
         // background-color: rgba($color: white, $alpha: 0.8);
         .imageArea {
-            width: 100%;
-            height: 80%;
-            display: flex;
-            padding-top: 5%;
-            flex-direction: column;
+            max-width: 100%;
+            height: 85%;
+            display: flex;  
+            padding: 2%;
             justify-content: center;
-            align-items: center;
+            align-items: center; 
+            overflow: hidden;
             @media(max-width: 1000px) {
-                padding: 0;;
+                padding: 0 5% 0 5%;;
             }
             //padding-top: 10%;
-            .imgInoutput { 
-                //display: flex;
-                max-height: 80%;
-                max-width: 90%;
-                min-width: 55%;
-                // padding-top: 5%;
+            .imgInoutput {  
+                display: flex;
+                justify-content: center;
+                overflow: hidden;  
+                img {
+                    display: flex;
+                    border-radius: 10px; 
+                }
             }
             
         }
@@ -214,15 +205,18 @@ onDeactivated( () => {
         .labelArea {
             width: 100%;
             // color: black;
-            display: flex;
+            display: flex; 
             justify-content: center;
-            align-items: center;
-            height: 15%; 
-            padding-bottom: 20px;
-            letter-spacing: 3px; 
+            height: 12%;  
+            position: absolute;
+            bottom: 0;
             @media(max-width: 1000px) {
                 font-size: 12px;
             } 
+            .labelItem {
+                display: flex;
+                justify-content: center;
+            }
         }
     }  
     

@@ -74,7 +74,9 @@ async function control(option) {
     }
     store.dispatch('set_currentOption', option)
     ctx.value = null
-    endRecord()
+    if(timeCount.value > 0) {
+        endRecord()
+    }
     await nextTick()
 }
 
@@ -322,18 +324,15 @@ div{
     height: 100vh;
     z-index: 999;
     display: flex; 
-    // background-color: transparent;
-    flex-direction: column;
-    position: absolute;
-    right: 0;
+    // background-color: green; 
+    flex-direction: column; 
     @media (max-width: 1000px) {
         width: 100vw;
         height: 10vh;
         flex-direction: row;
-        align-content: center;
-        bottom: 0;
+        align-content: center; 
         padding-bottom: 15px;
-
+        bottom: 0;
     }
     .spacer {
         width: 100%;
@@ -365,8 +364,9 @@ div{
                 .swipeItem{
                     width: 100%;
                     height: 80px;
-                    font-size: 10px;
-                    text-shadow: 0 2px 2px black;
+                    font-size: 2.5vw;
+                    font-weight: 900;
+                    text-shadow: 2px 0px 2px black;
                     cursor: pointer;
                     @media (max-width: 1000px) {
                         width: 30%;
@@ -375,7 +375,7 @@ div{
                 }
                 .active {
                     color: $button_Color;
-                    font-size: 15px;
+                    transform: scale(1.5);
                     transition: all 0.2s ease-in-out;
                 }
             }

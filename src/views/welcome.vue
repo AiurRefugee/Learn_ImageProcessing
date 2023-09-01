@@ -229,7 +229,7 @@ p{
         font-size: 20px;
         width: 95vw;
         h1 {
-          font-size: 30px;
+          font-size: 7.5vw;
         }
       }
       
@@ -253,27 +253,31 @@ p{
   }
   .main{
     display: flex;
+    // background-color: blue;
     width: 100vw;
     flex-grow: 1;
-    padding: 2%;
+    padding: 5%;
     justify-content: center;
     align-items: flex-start;
     @media(max-width: 1000px) {
       flex-direction: column;  
+      justify-content: flex-start;
       align-items: center;
     }
     .centerItem {
       @include center();
-      width: 33%;
+      width: 33%; 
+      height: 28%;
       font-size: 20px;
       flex-direction: column;
+      
       @media (max-width: 1000px) {
-        width: 500px;
+        width: 90%;
       }
       .centerIcon {
         width: 50%;
         @media (max-width: 1000px) {
-          width: 26%;
+          width: 30%;
         }
       }
       .text{
@@ -282,7 +286,7 @@ p{
         height: 50px;
         font-size: 40px;
         @media (max-width: 1000px) {
-            font-size: 20px;
+            font-size: 2vh;
             align-items: center;
         }
       }

@@ -1,7 +1,6 @@
-
-.el-scrollbar{
+ .el-select, .el-button--large {
     width: 100%;
-}
+ }
 .el-select-dropdown__wrap{
     width: 100%;
 }
@@ -11,10 +10,7 @@
 }
 .el-carousel__container {
     width: 100%;
-}
-.el-select {
-    width: 100%;
-}
+} 
 .el-select-dropdown__list {
     width: 100%; 
 }

@@ -178,9 +178,7 @@ onUnmounted(() => {
     playing.value = false 
     if(interval) {
         clearInterval(interval)
-    }
-    src.delete()
-    dst.delete()
+    } 
     if(videoInput.value) {
         canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
     }
@@ -191,9 +189,7 @@ onDeactivated( () => {
     playing.value = false 
     if(interval) {
         clearInterval(interval)
-    }
-    src.delete()
-    dst.delete()
+    } 
     if(videoInput.value) {
         canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
     }
