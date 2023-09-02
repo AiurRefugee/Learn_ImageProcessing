@@ -2,7 +2,8 @@
 .el-select-dropdown__wrap{
     display: flex;
     align-items: center;
-    max-width: min(50vw, 250px);
+    max-width: min(50vw, 100%);
+    max-height: 500px;
 }
 
 .el-carousel__container {
@@ -61,11 +62,7 @@
     // z-index: 120;
     opacity: 1;
     
-}
-.el-image__preview {
-    width: 100vw;
-    height: 100vh;
-}
+} 
 .el-image-viewer__actions {
     // z-index: 150;
 }

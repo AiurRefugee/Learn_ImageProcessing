@@ -21,8 +21,8 @@ const size = ref(Object)
 const canvasOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
-const videoWrapper = ref(null)
-const contentWrapper = ref(null)
+const videoModuleWrapper = ref(null)
+const tvHead = ref(null)
 const videoWitdth = ref(0)
 const videoHeight = ref(0)
 const displayPointer = ref(50)
@@ -138,8 +138,8 @@ function upload() {
 }
 
 async function init() { 
-    videoWitdth.value = contentWrapper.value.clientWidth * 0.8
-    videoHeight.value = contentWrapper.value.clientHeight * 0.8 
+    videoWitdth.value = tvHead.value.clientWidth * 0.8
+    videoHeight.value = tvHead.value.clientHeight * 0.8 
     await nextTick()
     width = videoInput.value.width
     height = videoInput.value.height 
@@ -196,7 +196,7 @@ onDeactivated( () => {
 
 </script>
 <template> 
-    <div ref="videoWrapper" class="videoWrapper"> 
+    <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <!-- <video ref="videoInput" id="videoInput" >
 
         </video>  -->
@@ -204,9 +204,9 @@ onDeactivated( () => {
 
         </canvas> -->
         <div class="videoArea" >
-            <div class="contentWrapper" ref="contentWrapper">
+            <div class="tvHead" ref="tvHead">
                 <div class="playerWrapper" @click="play">
-                    <div class="videoContent" :style="{
+                    <div class="videoWrapper" :style="{
                         'width': `${displayPointer}%`, 'height': videoHeight + 'px',
                         'border-right': displayPointer != 0 ? '2px solid white' : ''
                         }">
@@ -257,7 +257,7 @@ onDeactivated( () => {
 </template>
 <style lang="scss"> 
 
-.videoWrapper {
+.videoModuleWrapper {
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -287,7 +287,7 @@ onDeactivated( () => {
         @media(max-width: 1000px) {
             height: 88vh;
         }
-        .contentWrapper {
+        .tvHead {
             $boderSize: 15px;
             width: calc(85vw - $boderSize * 2);
             height: 90%;  
@@ -314,7 +314,7 @@ onDeactivated( () => {
                 height: 100%;
                 overflow: hidden;
                 
-                .videoContent {
+                .videoWrapper {
                     position: absolute; 
                     overflow: hidden;
                     border: 10px solid whie;

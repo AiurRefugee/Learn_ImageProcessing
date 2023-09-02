@@ -142,7 +142,7 @@ onDeactivated( () => {
                     <el-image :src="imageUrl"  
                         :preview-src-list="imageUrlList" 
                         v-if="!loading"
-                        fit="contain"
+                        fit="none"
                         hide-on-click-modal
                         >
                     </el-image>   
@@ -159,10 +159,10 @@ onDeactivated( () => {
                     <el-col :span="12" class="labelItem">
                         <el-text>图片：</el-text>
                         <el-select v-model="imageUrl" placeholder="选择图片" size="large" @change="selectChange">
-                            <div class="el-select-dropdown__item" @click="upload">
+                            <li class="el-select-dropdown__item" @click="upload">
                                 <el-icon><UploadFilled/></el-icon>
                                 <span style="margin-left: 5px;">上传图片</span>
-                            </div>
+                            </li>
                             <el-option :label="item.name" :value="item.value" v-for="(item, index) in srcList" :key="index"> </el-option>
                             
                         </el-select>
