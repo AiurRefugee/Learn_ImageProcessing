@@ -234,10 +234,10 @@ onMounted( async () => {
             </div>
         </div>
         <div class="controllerWrapper" ref="controllerWrapper" @click="outputImage">
-            <div class="outSide" :style="{border: cameraMode? '5px solid #e2e2e2' : '5px solid #e2e2e2'}">
+            <div class="outSide" :style="{border: cameraMode? '5px solid rgb(208 208 208)' : '5px solid rgb(208 208 208)'}">
                 <div class="controller" ref="controller"
                     :style="{
-                        'background-color': cameraMode? 'white' : 'red', 
+                        'background-color': cameraMode? 'rgb(208 208 208)' : 'red', 
                         'border-radius': recording ? '5px' : '50%',
                         'width': recording ? '50%' : '90%'
                         }">
@@ -275,7 +275,7 @@ onMounted( async () => {
                 </div>
                 <div class="space"></div>
                 <div class="device"> 
-                    <el-icon :color="gray" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
+                    <el-icon :color="'#5a5a5a'" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
                 </div>
             </div>
         </div>
@@ -291,9 +291,8 @@ div{
     align-items: center;
     color: white;
     // border: 1px solid white;
-}
-
-
+} 
+$controlZ: 50;
 .timeCount {
     // display: none;
     position: absolute;
@@ -323,8 +322,8 @@ div{
     height: 100vh; 
     display: flex; 
     position: absolute; 
-    right: 0;
-    z-index: 10;
+    right: 0; 
+    z-index: $controlZ;
     // background-color: green; 
     flex-direction: column; 
     @media (max-width: 1000px) {
@@ -388,7 +387,7 @@ div{
         width: 60%;
         aspect-ratio: 1/1; 
         cursor: pointer;
-        
+        // background-color: #ffb444;
         @media (max-width: 1000px) {
             height: 80%;
             width: auto;
@@ -429,8 +428,8 @@ div{
             color: gray;
             cursor: pointer;
             .refresh {
-                width: 40px;
-                height: 40px;
+                width: 35px;
+                height: 35px;
                 border-radius: 50%; 
                 background-color: rgb(255 255 255 / 10%);
             } 

@@ -267,7 +267,7 @@ p{
     .centerItem {
       @include center();
       width: 33%; 
-      height: 28%;
+      height: 50%;
       font-size: 20px;
       flex-direction: column;
       

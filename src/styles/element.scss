@@ -1,14 +1,10 @@
- .el-select, .el-button--large {
-    width: 100%;
-    z-index: 0;
- }
+
 .el-select-dropdown__wrap{
-    width: 100%;
+    display: flex;
+    align-items: center;
+    max-width: min(50vw, 250px);
 }
-.el-input--large .el-input__wrapper {
-    // background-color: rgb(255 255 255 / 60%);
-    padding: 1px 15px;
-}
+
 .el-carousel__container {
     width: 100%;
 } 
@@ -58,15 +54,26 @@
 //可设置滚动条颜色
     background: transparent;//这里我设置成了透明色,可以根据需求添加自己想要的颜色
 }
+.el-image {
+    // z-index: 121;
+}
 .el-image-viewer__mask { 
-    
+    // z-index: 120;
     opacity: 1;
     
+}
+.el-image__preview {
+    width: 100vw;
+    height: 100vh;
+}
+.el-image-viewer__actions {
+    // z-index: 150;
 }
 .el-image-viewer__wrapper {
     backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
+    // z-index: 120;
 }
 .el-overlay-dialog {
     overflow: hidden;
@@ -78,4 +85,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.el-input__wrapper {
+    box-shadow: 0 0 0 1px rgba(205, 204, 204, 0.6); 
+}
+.el-scrollbar__bar.is-vertical>div {
+    width: 0;
+    height: 0;
+}
+.el-image {
+    border-radius: 10px;
+    cursor: pointer;
 }

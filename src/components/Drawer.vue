@@ -97,7 +97,7 @@ onUnmounted( () => {
     <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close"></InfoDialog>
      <transition name="drawer" >
         <div class="drawer" v-show="drawerSwitch" ref="el"
-          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'}">
+          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(200 200 200 / 60%)'}">
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel">
@@ -181,7 +181,9 @@ onUnmounted( () => {
                   </el-space>
                 </el-collapse>
               </el-scrollbar>
+              
             </div>
+            <div class="space" @click="toggle"></div>
         </div>
      </transition>
      <div class="mask" v-if="drawerSwitch"  @click="toggle"></div>
@@ -196,12 +198,14 @@ div::-webkit-scrollbar {
 
 /* 隐藏滚动条的滑块 */
 div::-webkit-scrollbar-thumb {
-  background-color: transparent;
+  width: 0;
+  height: 0;
 }
 
 /* 隐藏滚动条的滑轨 */
 div::-webkit-scrollbar-track {
-  background-color: transparent;
+  width: 0;
+  height: 0;
 }
 .drawer-enter-active,
 .drawer-leave-active {
@@ -235,14 +239,16 @@ div::-webkit-scrollbar-track {
 .primaryClass {
   max-height: 200px;
 }
+
+$controlZ: 50;
 .mask {
   width: 90vw;
   height: 100vh;
   position: absolute;
   background-color: transparent;
   left: 0;
-  top: 0;
-  z-index: 100;
+  top: 0; 
+  z-index: $controlZ - 2;
   @media(max-width) {
     width: 100vw;
     height: 100vh;
@@ -260,8 +266,7 @@ div::-webkit-scrollbar-track {
     height: 95vh;
     //display: flex;
     border-radius: 12px;
-    box-shadow: 2px 0px 10px 2px rgba(205, 204, 204, 0.6);
-    // background-color: rgba($color: #8d8d8d, $alpha: 0.5); 
+    box-shadow: 2px 0px 10px 2px rgba(205, 204, 204, 0.6); 
     // border: 1px solid white;
     -webkit-backdrop-filter: blur(10px); 
     backdrop-filter: blur(10px);
@@ -271,7 +276,7 @@ div::-webkit-scrollbar-track {
     justify-content: flex-start;
     align-items: center;
     left: 0;
-    z-index: 109;
+    z-index: $controlZ - 1;
     // background-color: transparent !important;
     margin-left: 4vw;
     // padding-left: 1%;
@@ -281,7 +286,7 @@ div::-webkit-scrollbar-track {
       width: 100%;
       border-radius: 0;
       margin-left: 0;
-      height: 90vh;
+      height: 100vh;
     }
     .filterBar {
       width: 90%;
@@ -290,14 +295,22 @@ div::-webkit-scrollbar-track {
     } 
     .scrollerWrapper {
       width: 90%;
-      height: 90%; 
+      max-height: 90%; 
+      z-index: 95;
       @media(max-width: 1000px) {
-        height: calc(100% - 10vh - 10%);
+        max-height: calc(100% - 10vh - 60px);
       }
       // @media(max-width: 490px) {
       //   height: 70vh;
       // }
+        
     }
+    .space {
+          // background-color: #ffb444;
+          width: 100%;
+          display: flex;
+          flex-grow: 1;
+        }
     .switchGrid {
       width: 100%;
       display: grid;

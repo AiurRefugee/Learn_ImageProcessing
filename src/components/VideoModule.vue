@@ -87,9 +87,10 @@ async function play() {
 }
 
 function processVideo() {   
-    console.log('processing')
+    
     
     if(playing.value) {
+        console.log('processing')
         src.copyTo(dst)
         filtredConfigs.value.map( (process, index) => {  
             try { 
@@ -133,8 +134,7 @@ function antiZoom() {
 }
 
 function upload() {
-    videoUpload.value.click()
-    videoInput.value.src = null
+    videoUpload.value.click() 
 }
 
 async function init() { 
@@ -155,18 +155,20 @@ async function init() {
     cap = new cv.VideoCapture(videoInput.value); 
     await nextTick() 
     videoUpload.value.addEventListener( "change", () => {
-        play()
+        
         const file = videoUpload.value.files[0]
-        const fileName = file.name 
-        const url = URL.createObjectURL(file)
-        videoInput.value.src = url
-        videoList.value.push({
-            label: fileName,
-            value: url
-        })
-        videoUrl.value = url
-        videoInput.value.load() 
-
+        if(file) {
+            const fileName = file.name 
+            const url = URL.createObjectURL(file)
+            videoInput.value.src = url
+            videoList.value.push({
+                label: fileName,
+                value: url
+            })
+            videoUrl.value = url
+            videoInput.value.load() 
+        }
+        play()
     })
 }
 
@@ -224,10 +226,10 @@ onDeactivated( () => {
                         </el-col>
                         <el-col :span="3">
                             <el-select v-model="videoUrl" placeholder="请选择输入源" @change="play">
-                                <el-option :label="''" :value="''" @click="upload"> 
+                                <div class="el-select-dropdown__item" @click="upload">
                                     <el-icon><UploadFilled/></el-icon>
                                     <span style="margin-left: 5px;">上传视频</span>
-                                </el-option>
+                                </div>
                                 <el-option :label="item.label" :value="item.value" v-for="(item, index) in videoList" :key="index"></el-option>
                             </el-select>
                         </el-col>
@@ -281,16 +283,16 @@ onDeactivated( () => {
         flex-direction: column;
         // background-color: black;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
         @media(max-width: 1000px) {
-            height: 85vh;
+            height: 88vh;
         }
         .contentWrapper {
-            width: calc(85vw - 15px * 2);
-            // height: 100%;
-            aspect-ratio: 16/9; 
-            flex-grow: 1;
-            border: 15px solid gray;
+            $boderSize: 15px;
+            width: calc(85vw - $boderSize * 2);
+            height: 90%;  
+            margin-top: $boderSize;
+            outline: $boderSize solid gray; 
             background-color: black;
             display: flex;
             flex-direction: column;
@@ -299,7 +301,7 @@ onDeactivated( () => {
             overflow: hidden;
             border-radius: 10px;
             @media(max-width: 1000px) {
-                width: calc(90vw - 50px);
+                width: calc(100vw - 50px);
                 height: 85vh;
             }
             .playerWrapper { 
@@ -322,7 +324,7 @@ onDeactivated( () => {
                         left: 0;
                         top: 0;   
                         z-index: 1; 
-                        object-fit: fill;
+                        object-fit: cover;
                     } 
                     
                 }
@@ -383,8 +385,7 @@ onDeactivated( () => {
         }
         .saucer {
             width: 50vw; 
-            height: 10px;
-            margin-top: 1%;
+            height: 10px; 
             border: 5px solid gray;
             background-color: gray;
             border-radius: 10px;

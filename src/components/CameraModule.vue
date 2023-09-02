@@ -149,7 +149,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div ref="cameraWrapper" class="cameraWrapper"> 
-        <video ref="cameraInput" id="cameraInput" :width="1920" :height="1080">
+        <video ref="cameraInput" id="cameraInput" width="2560" height="1440">
 
         </video> 
         <canvas ref="cameraOutput" id="cameraOutput">
@@ -171,7 +171,7 @@ onUnmounted(() => {
     height: 100vh; 
      #cameraInput {
         display: none;
-        width: 90vw;
+        width: 100vw;
         height: 100vh;
      }
      #cameraOutput {
