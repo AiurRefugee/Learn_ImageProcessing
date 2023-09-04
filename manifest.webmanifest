@@ -1,0 +1,24 @@
+{
+  "name": "Learn ImageProcessing",
+  "short_name": "Learn IP",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "start_url": "/",
+  "theme_color": "white",
+  "background_color": "white",
+  "icons": [
+    {
+      "src": "/Lena.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "dawn",
+      "url": "/dawn.png",
+      "type": "image/png"
+    }
+  ]
+
+}

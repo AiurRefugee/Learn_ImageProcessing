@@ -39,8 +39,12 @@ async function init() {
         cameraInput.value.srcObject = stream;
         cameraInput.value.play();
     })
-    .catch(function(error) {
-        ElMessage.error(`${error}.`)
+    .catch(function(error) { 
+        ElMessage({
+            message: error,
+            grouping: true,
+            type: 'error',
+        })
         console.log("An error occurred! " + error);
     });
     await nextTick()
@@ -149,7 +153,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div ref="cameraWrapper" class="cameraWrapper"> 
-        <video ref="cameraInput" id="cameraInput" width="2560" height="1440">
+        <video ref="cameraInput" id="cameraInput" width="3840" height="2560">
 
         </video> 
         <canvas ref="cameraOutput" id="cameraOutput">

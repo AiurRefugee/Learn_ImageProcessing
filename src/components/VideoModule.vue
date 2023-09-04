@@ -257,25 +257,33 @@ onDeactivated( () => {
 </template>
 <style lang="scss"> 
 
+.videoController .el-scrollbar {
+    max-width: 30vw;
+}
+
 .videoModuleWrapper {
-    width: 100vw;
+    width: 86vw;
     height: 100vh;
     display: flex;
     justify-content: flex-start; 
     align-items: center; 
     overflow: hidden;
     align-items: center;
-    padding-left: 5%;
+    position: absolute;
+    margin-left: 4vw;
+    left: 0;
     //border: 5px solid gray; 
     @media (max-width: 1000px) {
         width: 100vw;
         height: 90vh; 
         padding: 0;
+        margin: 0;
         flex-direction: column;
         // background-color: white;
         justify-content: center; 
         
     }
+    
     .videoArea {
         width: 85vw;
         height: 95vh;

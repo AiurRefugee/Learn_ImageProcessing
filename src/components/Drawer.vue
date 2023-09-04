@@ -97,7 +97,7 @@ onUnmounted( () => {
     <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close"></InfoDialog>
      <transition name="drawer" >
         <div class="drawer" v-show="drawerSwitch" ref="el"
-          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(200 200 200 / 60%)'}">
+          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(158 158 158 / 60%)'}">
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel">
@@ -212,7 +212,8 @@ div::-webkit-scrollbar-track {
   transition: all 0.5s ease;
 }
 .el-slider {
-  padding-left: 20px;
+  width: calc(100% - 20px);
+  padding-left: 10px;
 }
 .drawer-enter-from,
 .drawer-leave-to {
@@ -238,6 +239,10 @@ div::-webkit-scrollbar-track {
 }
 .primaryClass {
   max-height: 200px;
+}
+
+.el-select {
+  width: 100%;
 }
 
 $controlZ: 50;

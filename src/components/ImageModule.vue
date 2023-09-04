@@ -10,6 +10,7 @@ const imageUrl = ref('/src/assets/imgs/Lena.png')
 const imageUrlList = ref([])
 const loading = ref(true)
 const imageOption = ref()
+const imageOutSrc = ref(null)
 const imageSrc = ref(null) // <img>
 const fileInput = ref(null) // <input>
 const imageOutput = ref(null) // <canvas></canvas>
@@ -64,8 +65,7 @@ function outputImage() {
     try {  
         src = cv.imread(imageSrc.value)  
 
-        cv.imshow('imageOutput', src); 
-        imageUrlList.value.push(imageUrl.value)
+        
 
         processImage()   
         loading.value = false
@@ -74,11 +74,18 @@ function outputImage() {
         // imageUrlList.value.push(imageOutput.value.toDataURL())
     } catch(error) {
         console.log(error)
-        ElMessage.error(`${error}.`)
+        ElMessage({
+            message: error,
+            grouping: true,
+            type: 'error',
+        })
     }
 }
 
 const processImage = () =>  {
+    cv.imshow('imageOutput', src);
+    imageOutSrc.value = imageOutput.value.toDataURL()
+    imageUrlList.value.push(imageOutSrc.value)
     for (const process of filtredConfigs.value) { 
         if(process.imageAvaliable && process.selected) {
             let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
@@ -88,13 +95,14 @@ const processImage = () =>  {
             src = dst
 
             cv.imshow('imageOutput', src);
-            imageUrl.value = imageOutput.value.toDataURL()
-            imageUrlList.value.push(imageUrl.value)
+            imageOutSrc.value = imageOutput.value.toDataURL()
+            imageUrlList.value.push(imageOutSrc.value)
             // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
             // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
             // imageUrlList.value.push(imageOutput.value.toDataURL())
         }
     }
+    
 }
 
 function selectChange() {
@@ -116,6 +124,7 @@ function inputChange(e) {
             value: url
         })
         imageUrl.value = url 
+        loading.value = true
     }
     console.log('input', imageUrl.value)
 }
@@ -139,7 +148,7 @@ onDeactivated( () => {
                 <div class="imgWrapper"> 
                     <img id="imageSrc" ref="imageSrc" :src="imageUrl"
                         :style="{display: loading ? 'flex' : 'none'}" />
-                    <el-image :src="imageUrl"  
+                    <el-image :src="imageOutSrc"  
                         :preview-src-list="imageUrlList" 
                         v-if="!loading"
                         fit="none"
@@ -157,7 +166,7 @@ onDeactivated( () => {
             <div class="labelArea" justify="center">
                 <el-row justify="center" :gutter="20" style="width: 100%;"> 
                     <el-col :span="12" class="labelItem">
-                        <el-text>图片：</el-text>
+                        <el-text size="large">Image: &nbsp;</el-text>
                         <el-select v-model="imageUrl" placeholder="选择图片" size="large" @change="selectChange">
                             <li class="el-select-dropdown__item" @click="upload">
                                 <el-icon><UploadFilled/></el-icon>
@@ -190,7 +199,9 @@ onDeactivated( () => {
     overflow: hidden;
     justify-content: center;
  }
-
+ .labelArea .el-scrollbar {
+    max-width: 30vw;
+ }
 .el-button--large {
     @media(max-width: 1000px) {
         height: 40px;
@@ -248,7 +259,7 @@ onDeactivated( () => {
             height: 85%; 
             margin: $marSize;
             max-width: calc(100% - 2 * $marSize);
-            max-height: 90%;
+            max-height: 85%;
             display: flex;  
             justify-content: center;
             align-items: center;   
@@ -259,7 +270,7 @@ onDeactivated( () => {
             .imgWrapper {  
                 border-radius: 10px;
                 overflow: hidden;  
-                max-height: 100%;
+                // max-height: 100%;
                 display: flex;
                 justify-content: center;
                 align-items: center;

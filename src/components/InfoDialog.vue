@@ -36,7 +36,7 @@ function parse(mark) {
     <el-dialog
         v-model="props.infoVisible"
         title="Details"  
-        width="65%" 
+        width="80vw" 
         align-center
         @close="close"
         @close-auto-focus="close" 
@@ -120,6 +120,7 @@ hr {
     max-height: 150px;
     overflow-y: auto;
 }
+
 .dialog {
     max-height: 80vh;
     overflow: auto;

@@ -49,7 +49,11 @@ const system = {
                   })
                   .catch(error => {
                     console.error('获取设备信息失败：', error);
-                    ElMessage.error(`${error}.`)
+                    ElMessage({
+                        message: error,
+                        grouping: true,
+                        type: 'error',
+                    })
                     commit('UPDATE_DEVICESTATUS', 'Failed to access device information')
                     ElMessage.error('Failed to access device information')
                   });

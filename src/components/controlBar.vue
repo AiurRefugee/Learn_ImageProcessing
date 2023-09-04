@@ -129,7 +129,7 @@ function takePhoto() {
         link.click();
     } catch(error) {
         console.log(error)
-        ElMessage.error(`${error}`)
+        ElMessage
     }
 }
 
