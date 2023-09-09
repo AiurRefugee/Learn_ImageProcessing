@@ -97,14 +97,11 @@ onUnmounted( () => {
 <template> 
     <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close"></InfoDialog>
      <transition name="drawer" >
-        <el-row class="drawer" v-show="drawerSwitch" ref="el"
-          >
+        <el-row class="drawer" v-show="drawerSwitch" ref="el">
             <div class="filterBar">
-              <el-row justify="space-between" align="middle">
-                <el-col :span="filterBarLabel">
-                  <el-text @click="toggleDark">
-                    <h4>筛选：</h4>
-                  </el-text>
+              <el-row justify="space-between" align="middle" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
+                <el-col :span="filterBarLabel"> 
+                    <h4>筛选：</h4> 
                 </el-col> 
                 <el-col :span="24 - filterBarLabel" style="filter: brightness(1.2);">
                   <el-select v-model="selectedProcessions" filterable @change="show"
@@ -129,25 +126,25 @@ onUnmounted( () => {
               <el-scrollbar> 
                 <el-collapse v-model="activeNames" @change="handleChange">
                   <el-space direction="vertical" :size="15" fill="fill">
-                    <el-collapse-item :name="process.title" :title="process.title" 
+                    <el-collapse-item :name="process.title" :title="process.title" :style="{color: curOpt == 'video' ? '#aeadad': ''}"
                       v-for="(process, index) in filtredConfigs" :key="index">
-                      <el-space size="10" direction="vertical" fill>
+                      <el-space :size="10" direction="vertical" fill>
                         
-                        <el-row align="middle" justify="space-between">
-                           
-                            <div style="width: 80px; display: flex; justify-content: space-between; align-items: center;"> 
-                              <text>{{ process.selected ? 'On' : 'Off' }}</text>
+                        <el-row align="middle" justify="start" :style="{color: curOpt == 'video' ? '#aeadad': ''}"> 
+                            <el-col :span="5">
+                              <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
                               <el-switch v-model="process.selected" @change="output"></el-switch>
-                             
-                            </div>
+                            </el-col>
                             
-                            <el-link :underline="false" @click="openDialog(process)">
-                              <el-icon><View /></el-icon>Learn More
-                            </el-link> 
+                            <el-col :span="19" style="display: flex;justify-content: flex-end;">
+                              <el-link :underline="false" @click="openDialog(process)">
+                                <el-icon><View /></el-icon>Learn More
+                              </el-link> 
+                            </el-col>
                         </el-row>
                         <el-row>
                           <el-col :span="24">
-                            <div class="switchGrid">
+                            <div class="switchGrid" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
                               <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
                                 justify="start" align="middle" :key="index">
                                 <el-col :span="8">{{ Switch.paramName }}</el-col>
@@ -159,7 +156,7 @@ onUnmounted( () => {
                           </el-col>
                         </el-row>
                         <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
-                          justify="center" :key="index">
+                          justify="center" :key="index" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
                           <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
                           <el-col :span="contentWidth">
                             <el-slider v-model="slider.paramValue" show-input @change="output"
@@ -169,7 +166,7 @@ onUnmounted( () => {
                           </el-col>
                         </el-row>
                         <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
-                          justify="center" :key="index">
+                          justify="center" :key="index" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
                           <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
                           <el-col :span="contentWidth">
                             <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output">
@@ -281,7 +278,7 @@ $controlZ: 50;
     align-items: center;
     left: 0;
     z-index: $controlZ - 1;
-    background-color: gray !important;
+    // background-color: darkgrey;
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
@@ -295,11 +292,12 @@ $controlZ: 50;
     .filterBar {
       width: 90%;
       height: 60px;
+      filter: contrast(1.2);
       // color: gray;
     } 
     .scrollerWrapper {
       width: 90%;
-      max-height: 90%; 
+      max-height: calc(100% - 70px); 
       z-index: 95;
       @media(max-width: 1000px) {
         max-height: calc(100% - 10vh - 60px);

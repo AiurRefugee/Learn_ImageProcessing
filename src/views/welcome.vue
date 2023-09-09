@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, nextTick, computed} from 'vue'
+import { onMounted, onActivated, ref, watch, nextTick, computed} from 'vue'
 import { useRouter } from 'vue-router'; 
 import { useStore } from 'vuex'; 
 import { Sunny, Moon } from '@element-plus/icons-vue'
@@ -10,7 +10,7 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
 const store = useStore()
-const theme = ref(false)  
+const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
 const pos = ref('left') 
 const showDialog = ref(false) 
 const iconWidth = ref(5)
@@ -84,6 +84,13 @@ onMounted(() => {
   //   }
   // }; 
 })
+
+onActivated( () => {
+    console.log('onActivated')
+    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
+    console.log(dark.value)
+})
+
 </script>
 
 <template>
@@ -117,7 +124,7 @@ onMounted(() => {
             <el-link :underline="false" @click="openDialog('Element +')">Element +</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
-            <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny"  style="--el-switch-on-color: gray" @change="changeTheme">
+            <el-switch v-model="dark" :active-action-icon="Moon" :inactive-action-icon="Sunny"  style="--el-switch-on-color: gray" @change="changeTheme">
             </el-switch>
             <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>

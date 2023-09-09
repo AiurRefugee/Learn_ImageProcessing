@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, watch} from 'vue' 
+import { onMounted, onActivated, ref, computed, nextTick, watch} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useDark, useToggle } from '@vueuse/core' 
 import moment from 'moment'; 
+import { Sunny, Moon, VideoCamera, Picture} from '@element-plus/icons-vue'
 
 let timeInterval
 
@@ -12,7 +13,7 @@ let timeInterval
 const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
-const theme = ref(false)
+const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
 const recording = ref(false) 
 const videoCaped = ref([])
 const timeCount = ref(0) 
@@ -51,11 +52,9 @@ const ctx = computed( () => {
     console.log('ctx', res)
     return res
 })
- 
+  
 
-const dark = computed( () => useDark())
-
-function changeTheme() {
+function changedark() {
   toggleDark()  
   window.localStorage.setItem("vueuse-color-scheme", 'dark');
 }
@@ -222,6 +221,12 @@ onMounted( async () => {
     
 })
 
+onActivated( () => {
+    console.log('onActivated')
+    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
+    console.log(dark.value)
+})
+
 
 </script>
 <template> 
@@ -258,9 +263,9 @@ onMounted( async () => {
         <div class="spacer">
             <div class="deviceWrapper">
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
-                <div class="device" ref="refresh">
+                <div class="device" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
                     <el-icon class="refresh" 
-                        v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'"
+                        
                         color="white"
                         @click="toggleMode" :size="30" >
                         <Refresh />
@@ -272,17 +277,26 @@ onMounted( async () => {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
+                    
+            
                     <el-Switch style="--el-switch-on-color: gray"
                         active-text="Photos"
                         size="large"
                         inactive-text="Videos"
                         :width="70"
-                        :active-action-icon="View"
-                        :inactive-action-icon="Hide"
+                        :active-action-icon="Picture"
+                        :inactive-action-icon="VideoCamera"
                         inline-prompt
                         :disabled="recording"
                         v-model="cameraMode"
                     />  
+                   
+                </div>
+                <div class="device">
+                    <el-switch v-model="dark" size="large" :width="50" 
+                    :active-action-icon="Moon" :inactive-action-icon="Sunny"
+                    
+                    style="--el-switch-on-color: gray" @change="changedark"/>
                 </div>
                 <div class="space"></div>
                 <div class="device"> 
@@ -364,7 +378,7 @@ $controlZ: 50;
             
             .contentWrapper {
                 width: 50%;
-                height: 200px;
+                height: 300px;
                 flex-direction: column; 
                  
                 @media (max-width: 1000px) {
@@ -375,7 +389,7 @@ $controlZ: 50;
                 // color: white;
                 .swipeItem{
                     width: 100%;
-                    height: 80px;
+                    flex-grow: 1;
                     font-size: 2vh;
                     font-weight: 900;
                     text-shadow: 2px 0px 2px rgb(70, 70, 70);
@@ -440,11 +454,12 @@ $controlZ: 50;
         .device { 
             // color: white; 
             flex-direction: column;
-            justify-content: flex-start; 
+            justify-content: center; 
             // background-color: #ffb444;
-            margin: 2%;
+            height: 80px;
+            margin: 3%;
             color: gray;
-            cursor: pointer;
+            cursor: pointer; 
             .refresh {
                 width: 35px;
                 height: 35px;

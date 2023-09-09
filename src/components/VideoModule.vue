@@ -260,10 +260,6 @@ onDeactivated( () => {
 .videoController .el-scrollbar {
     max-width: 30vw;
 }
-video, canvas {
-    border-radius: 12px;
-}
-
 .videoModuleWrapper {
     width: 86vw;
     height: 100vh;
@@ -309,6 +305,9 @@ video, canvas {
             align-items: center;
             overflow: hidden;
             border-radius: 12px;
+            video, canvas {
+                border-radius: 12px;
+            }
             @media(max-width: 1000px) {
                 width: calc(100vw - 50px);
                 height: 95%;

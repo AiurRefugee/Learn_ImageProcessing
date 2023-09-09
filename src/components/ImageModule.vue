@@ -213,6 +213,8 @@ onDeactivated( () => {
 .el-image-viewer__canvas {
     max-width: 90%;
 } 
+.el-collapse-item__header { 
+}
 .imageModuleWrapper {
     display: flex;
     width: 90vw;

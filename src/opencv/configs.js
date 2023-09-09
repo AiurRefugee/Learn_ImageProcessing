@@ -279,7 +279,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   selected: false,
   imageAvaliable: true,
   params: [{
-    paramName: "ddepth",
+    paramName: "depth",
     paramDesc: "desired depth of the destination image.",
     paramValue: cv.CV_8U ,
     widget: {
