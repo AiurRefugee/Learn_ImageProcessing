@@ -272,8 +272,6 @@ onMounted( async () => {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
-                    <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny"  style="--el-switch-on-color: gray" @change="changeTheme"/>
-            
                     <el-Switch style="--el-switch-on-color: gray"
                         active-text="Photos"
                         size="large"
