@@ -3,10 +3,16 @@ import { onMounted, ref, computed, nextTick, watch} from 'vue'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { useDark, useToggle } from '@vueuse/core' 
 import moment from 'moment'; 
 
 let timeInterval
 
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark) 
+
+const theme = ref(false)
 const recording = ref(false) 
 const videoCaped = ref([])
 const timeCount = ref(0) 
@@ -48,6 +54,11 @@ const ctx = computed( () => {
  
 
 const dark = computed( () => useDark())
+
+function changeTheme() {
+  toggleDark()  
+  window.localStorage.setItem("vueuse-color-scheme", 'dark');
+}
 
 function outputImage() {
     if(cameraMode.value) {
@@ -261,6 +272,8 @@ onMounted( async () => {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
                 <div class="device">
+                    <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny"  style="--el-switch-on-color: gray" @change="changeTheme"/>
+            
                     <el-Switch style="--el-switch-on-color: gray"
                         active-text="Photos"
                         size="large"
@@ -385,7 +398,11 @@ $controlZ: 50;
     
     .controllerWrapper { 
         width: 60%;
+        min-width: 80px;
         aspect-ratio: 1/1; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
         cursor: pointer;
         // background-color: #ffb444;
         @media (max-width: 1000px) {
@@ -395,6 +412,9 @@ $controlZ: 50;
         }
         .outSide {
             width: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             border-radius: 50%; 
             border-radius: 50%; 
             aspect-ratio: 1/1;

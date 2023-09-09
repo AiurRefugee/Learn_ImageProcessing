@@ -260,6 +260,9 @@ onDeactivated( () => {
 .videoController .el-scrollbar {
     max-width: 30vw;
 }
+video, canvas {
+    border-radius: 12px;
+}
 
 .videoModuleWrapper {
     width: 86vw;
@@ -286,15 +289,12 @@ onDeactivated( () => {
     
     .videoArea {
         width: 85vw;
-        height: 95vh;
+        height: 95%;
         display: flex;
         flex-direction: column;
         // background-color: black;
         align-items: center;
-        justify-content: space-between;
-        @media(max-width: 1000px) {
-            height: 88vh;
-        }
+        justify-content: space-between; 
         .tvHead {
             $boderSize: 15px;
             width: calc(85vw - $boderSize * 2);
@@ -302,15 +302,16 @@ onDeactivated( () => {
             margin-top: $boderSize;
             outline: $boderSize solid gray; 
             background-color: black;
+            // background: linear-gradient(to top, gray 1px, black);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            border-radius: 10px;
+            border-radius: 12px;
             @media(max-width: 1000px) {
                 width: calc(100vw - 50px);
-                height: 85vh;
+                height: 95%;
             }
             .playerWrapper { 
                 justify-content: flex-start;

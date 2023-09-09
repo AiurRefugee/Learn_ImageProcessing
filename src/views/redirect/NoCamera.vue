@@ -9,21 +9,27 @@ function goBack() {
 </script>
 <template>
     <div class="appContainer">
-        <el-result
-            icon="error"
-            title="No Camera Avaliable"
-            sub-title="Please go back home"
-        >
-            <template #extra>
-            <el-button type="primary" @click="goBack">Back</el-button>
-            </template>
-        </el-result>
+        <div class="wrapper">
+            <el-result
+                icon="error"
+                title="No Camera Avaliable"
+                sub-title="Please go back home"
+            >
+                <template #extra>
+                <el-button type="primary" @click="goBack">Back</el-button>
+                </template>
+            </el-result>
+        </div>
     </div>
 </template>
 <style lang="scss" scoped>
-.appContainer { 
+.wrapper { 
+    width: 100%;
+    height: 100%;
     padding-top: 100px; 
-    background-color: white;
+    display: flex;
+    justify-content: center;
     align-items: flex-start;
+    background-color: white; 
 }
 </style>

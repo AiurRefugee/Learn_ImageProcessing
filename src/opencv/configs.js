@@ -479,10 +479,10 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
         return true
       } catch(error) {
         ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
-    grouping: true,
-    type: 'error',
-  })
+          message: `${title}: 之前的操作换个参数试试。`+ error,
+          grouping: true,
+          type: 'error',
+        })
         // console.log(`${title}: `+ error)
       }
       return false

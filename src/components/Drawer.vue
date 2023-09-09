@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, onUnmounted, nextTick, watch} from 'vue' 
+import { onMounted, ref, computed, onActivated, onUnmounted, nextTick, watch} from 'vue' 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { classification, configs } from '@/opencv/configs.js'
@@ -25,6 +25,7 @@ const contentWidth = ref(24 - labelWidth.value)
 const maxCollapseNum = ref(2)
 let imgInput, videoInput, canvasOutput, src, cap, videoWitdth, videoHeight, begin, delay
 const FPS = 30
+let interval
 let dst = new cv.Mat()
 const selectedProcessions = ref([])
 const primaryClassnameList = classification.map( item => item.primaryClass)
@@ -41,10 +42,7 @@ const filtredConfigs = computed( () => {
   } 
 }) 
 
-const dark = computed( () => {
-  console.log(isDark.value)
-  return isDark.value
-})
+const dark = ref(localStorage['vueuse-color-scheme'] == 'dark')
 
 watch(filtredConfigs.value, (val) => { 
   store.dispatch('set_filteredProcesses', val)
@@ -66,28 +64,31 @@ function close() {
   infoVisible.value = false
 }
 
-function processImage() {
-  for (const process of filtredConfigs.value) { 
-    if(process.imageAvaliable && process.selected) {
-      process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
-      src = dst
-    }
-  }
-}
-
 function toggle() {
   store.dispatch('toggle_currentOption')
 }
 
 onMounted( async () => { 
   // console.log('test'. filtredConfigs.value)
+  console.log('onMounted')
   store.dispatch('set_filteredProcesses', filtredConfigs.value)
   window.addEventListener('resize', () => {
+    console.log('resiae')
     output()
-  })
+  }) 
+  window.addEventListener('storage', (e) => {
+    console.log("storage值发生变化后触发:", e)
+  }); 
    
 })
+
+onActivated( () => {
+  console.log(activated)
+  dark.value = localStorage['vueuse-color-scheme'] == 'dark'
+})
+
 onUnmounted( () => {
+  clearInterval()
   // src.delete()
   // dst.delete()
 })
@@ -96,8 +97,8 @@ onUnmounted( () => {
 <template> 
     <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close"></InfoDialog>
      <transition name="drawer" >
-        <div class="drawer" v-show="drawerSwitch" ref="el"
-          :style="{'background-color': isDark? 'rgb(0 0 0 / 40%)' : 'rgb(158 158 158 / 60%)'}">
+        <el-row class="drawer" v-show="drawerSwitch" ref="el"
+          >
             <div class="filterBar">
               <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel">
@@ -105,7 +106,7 @@ onUnmounted( () => {
                     <h4>筛选：</h4>
                   </el-text>
                 </el-col> 
-                <el-col :span="24 - filterBarLabel" >
+                <el-col :span="24 - filterBarLabel" style="filter: brightness(1.2);">
                   <el-select v-model="selectedProcessions" filterable @change="show"
                     placeholder="请选择条件" multiple collapse-tags :max-collapse-tags="maxCollapseNum">
                     <el-option-group
@@ -184,7 +185,7 @@ onUnmounted( () => {
               
             </div>
             <div class="space" @click="toggle"></div>
-        </div>
+          </el-row>
      </transition>
      <div class="mask" v-if="drawerSwitch"  @click="toggle"></div>
 </template>
@@ -233,10 +234,7 @@ div::-webkit-scrollbar-track {
     @media(max-width: 1000px) {
       transform: translateY(-100%);
     }
-} 
-:root {
-  --el-color-primary: green;
-}
+}  
 .primaryClass {
   max-height: 200px;
 }
@@ -278,11 +276,12 @@ $controlZ: 50;
     position: absolute;
     display: flex;
     flex-direction: column;
+    transition: all 1s ease;
     justify-content: flex-start;
     align-items: center;
     left: 0;
     z-index: $controlZ - 1;
-    // background-color: transparent !important;
+    background-color: gray !important;
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;

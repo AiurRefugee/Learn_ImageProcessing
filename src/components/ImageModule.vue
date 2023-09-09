@@ -151,7 +151,7 @@ onDeactivated( () => {
                     <el-image :src="imageOutSrc"  
                         :preview-src-list="imageUrlList" 
                         v-if="!loading"
-                        fit="none"
+                        fit="fill"
                         hide-on-click-modal
                         >
                     </el-image>   
@@ -163,8 +163,8 @@ onDeactivated( () => {
                 <canvas ref="imageOutput" id="imageOutput" style="display: none;"></canvas>
             </div>
             
-            <div class="labelArea" justify="center">
-                <el-row justify="center" :gutter="20" style="width: 100%;"> 
+            <div class="labelArea">
+                <el-row justify="center" align="middle" :gutter="20" style="width: 100%;"> 
                     <el-col :span="12" class="labelItem">
                         <el-text size="large">Image: &nbsp;</el-text>
                         <el-select v-model="imageUrl" placeholder="选择图片" size="large" @change="selectChange">
@@ -255,11 +255,12 @@ onDeactivated( () => {
             width: 90vw;
         }
         .imageArea { 
-            $marSize: 2%;
-            height: 85%; 
+            $marSize: 10px;
+            $height : calc(90% - 2* $marSize);
+            height: $height; 
             margin: $marSize;
-            max-width: calc(100% - 2 * $marSize);
-            max-height: 85%;
+            max-width: calc(100% - 2* $marSize);
+            max-height: $height;
             display: flex;  
             justify-content: center;
             align-items: center;   
@@ -280,6 +281,7 @@ onDeactivated( () => {
                 justify-content: center;
                 img { 
                     border-radius: 10px; 
+                    object-fit: fill;
                     // z-index: 121; 
                 } 
                 // .imageWrapperIn {
@@ -316,6 +318,7 @@ onDeactivated( () => {
             .labelItem {
                 display: flex;
                 justify-content: center;
+                align-items: center;
                 align-items: center;
                 color: gray;
                 font-size: 15px;
