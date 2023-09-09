@@ -126,7 +126,7 @@ onUnmounted( () => {
               <el-scrollbar> 
                 <el-collapse v-model="activeNames" @change="handleChange">
                   <el-space direction="vertical" :size="15" fill="fill">
-                    <el-collapse-item :name="process.title" :title="process.title" :style="{color: curOpt == 'video' ? '#aeadad': ''}"
+                    <el-collapse-item :name="process.title" :title="process.title" 
                       v-for="(process, index) in filtredConfigs" :key="index">
                       <el-space :size="10" direction="vertical" fill>
                         

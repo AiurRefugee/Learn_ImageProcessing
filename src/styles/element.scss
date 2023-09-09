@@ -98,6 +98,7 @@
 }
 .el-overlay {
     background-color: rgb(0 0 0/80%);
+    -webkit-backdrop-filter: blur(15px); 
     backdrop-filter: blur(15px);
 }
 .el-image-viewer__btn {

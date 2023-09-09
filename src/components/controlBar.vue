@@ -263,19 +263,7 @@ onActivated( () => {
         <div class="spacer">
             <div class="deviceWrapper">
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
-                <div class="device" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
-                    <el-icon class="refresh" 
-                        
-                        color="white"
-                        @click="toggleMode" :size="30" >
-                        <Refresh />
-                    </el-icon>
-                     
-                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
-                    <!-- {{ 'curOpt:' + curOpt }} -->
-                    <!-- {{ 'cameraNum:' + cameraCount }}   -->
-                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
-                </div>
+                
                 <div class="device">
                     
             
@@ -299,6 +287,19 @@ onActivated( () => {
                     style="--el-switch-on-color: gray" @change="changedark"/>
                 </div>
                 <div class="space"></div>
+                <div class="device" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
+                    <el-icon class="refresh" 
+                        
+                        color="white"
+                        @click="toggleMode" :size="30" >
+                        <Refresh />
+                    </el-icon>
+                     
+                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
+                    <!-- {{ 'curOpt:' + curOpt }} -->
+                    <!-- {{ 'cameraNum:' + cameraCount }}   -->
+                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
+                </div>
                 <div class="device"> 
                     <el-icon :color="'#5a5a5a'" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
                 </div>
