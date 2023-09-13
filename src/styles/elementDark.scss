@@ -1,9 +1,3 @@
-// styles/element/index.scss
-/* 覆盖你需要的变量 */
-@forward 'element-plus/theme-chalk/src/dark/var.scss' with (
-  $bg-color: (
-    'page': white,
-    '': #626aef,
-    'overlay': white,
-  )
-);
+:root {
+  --el-bg-color: #626aef; 
+}

@@ -103,7 +103,7 @@ onUnmounted( () => {
                 <el-col :span="filterBarLabel"> 
                     <h4>筛选：</h4> 
                 </el-col> 
-                <el-col :span="24 - filterBarLabel" style="filter: brightness(1.2);">
+                <el-col :span="24 - filterBarLabel" s>
                   <el-select v-model="selectedProcessions" filterable @change="show"
                     placeholder="请选择条件" multiple collapse-tags :max-collapse-tags="maxCollapseNum">
                     <el-option-group
@@ -126,7 +126,7 @@ onUnmounted( () => {
               <el-scrollbar> 
                 <el-collapse v-model="activeNames" @change="handleChange">
                   <el-space direction="vertical" :size="15" fill="fill">
-                    <el-collapse-item :name="process.title" :title="process.title" 
+                    <el-collapse-item :name="process.title" :title="process.title"  
                       v-for="(process, index) in filtredConfigs" :key="index">
                       <el-space :size="10" direction="vertical" fill>
                         
@@ -238,6 +238,9 @@ div::-webkit-scrollbar-track {
 
 .el-select {
   width: 100%;
+}
+.el-collapse-item__header {
+  color: white;
 }
 
 $controlZ: 50;

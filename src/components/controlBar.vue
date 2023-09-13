@@ -1,22 +1,22 @@
 <script setup>
-import { onMounted, onActivated, ref, computed, nextTick, watch} from 'vue' 
+import { onMounted, onActivated, ref, computed, nextTick, watch} from 'vue'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { useDark, useToggle } from '@vueuse/core' 
-import moment from 'moment'; 
+import { useDark, useToggle } from '@vueuse/core'
+import moment from 'moment';
 import { Sunny, Moon, VideoCamera, Picture} from '@element-plus/icons-vue'
 
 let timeInterval
 
 
 const isDark = useDark()
-const toggleDark = useToggle(isDark) 
+const toggleDark = useToggle(isDark)
 
 const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
-const recording = ref(false) 
+const recording = ref(false)
 const videoCaped = ref([])
-const timeCount = ref(0) 
+const timeCount = ref(0)
 const timeString = ref('00:00:00')
 const controllerWrapper = ref(null)
 const controller = ref(null)
@@ -26,7 +26,7 @@ const recorder = ref(null)
 
 const store = useStore()
 const router = useRouter()
-const refresh = ref(null) 
+const refresh = ref(null)
 const cameraMode = ref(false) // true 拍照 false 摄像
 const direction = ref("ltr")
 
@@ -36,7 +36,7 @@ const cameraCount = computed(() => store.getters.cameraNum)
 const cameraStatus = computed( () => store.getters.cameraStatus )
 const drawerSwitch = computed( () => store.getters.drawerSwitch)
 
-const emit = defineEmits(['outputImage', 'toggleMode']) 
+const emit = defineEmits(['outputImage', 'toggleMode'])
 
 const options = computed(() => {
    return ['image', 'video', 'camera']
@@ -52,10 +52,10 @@ const ctx = computed( () => {
     console.log('ctx', res)
     return res
 })
-  
+
 
 function changedark() {
-  toggleDark()  
+  toggleDark()
   window.localStorage.setItem("vueuse-color-scheme", 'dark');
 }
 
@@ -72,10 +72,10 @@ function outputImage() {
 }
 
 async function control(option) {
-     
+
     if(option == 'camera' && cameraStatus.value != 'Normal') {
         console.log('cameraStatus', cameraStatus)
-        router.push(`/noCamera/${cameraStatus}`) 
+        router.push(`/noCamera/${cameraStatus}`)
     }
     store.dispatch('set_currentOption', option)
     ctx.value = null
@@ -96,21 +96,21 @@ function toggleMode() {
     emit('toggleMode')
 }
 
-function toggleDrawer() { 
+function toggleDrawer() {
     store.dispatch('toggle_currentOption')
-    
+
 }
 
 function downloadVideo(data) {
     videoCaped.value.push(data)
-    const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/webm' }));  
+    const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/webm' }));
     var element = document.createElement('a');
     element.setAttribute('href', url);
     element.setAttribute('download', "output");
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click();
-    document.body.removeChild(element); 
+    document.body.removeChild(element);
 }
 
 function takePhoto() {
@@ -122,15 +122,15 @@ function takePhoto() {
         duration: 200,
         easing: 'ease-in',
         fill: 'forwards'
-    }) 
+    })
     try{
-        // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height) 
+        // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
         if(curOpt.value == 'image') {
             emit('outputImage')
         }
         // cv.imshow(ctx.value.id)
-        
-        const url = ctx.value.toDataURL() 
+
+        const url = ctx.value.toDataURL()
         const link = document.createElement('a');
         link.href = url;
         link.download = 'output.png';
@@ -143,7 +143,7 @@ function takePhoto() {
     }
 }
 
-function beginRecord() {   
+function beginRecord() {
     timeCount.value = 0
     timeString.value = '00:00:00'
     console.log('record', ctx.value)
@@ -151,7 +151,7 @@ function beginRecord() {
     if(curOpt.value == 'image') {
         emit('outputImage')
     }
-    
+
     setTimeout( () => {
         countOn()
     }, 1000)
@@ -161,26 +161,26 @@ function beginRecord() {
         downloadVideo(e.data)
     }
     // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
-    
-    
+
+
     recorder.value.start()
     console.log('start record')
-    
+
     // controllerWrapper.value.animate([
     //     { transform: 'rotate(0)'},
     //     { transform: 'rotate(360deg)'}
     // ],
     // 400 )
-   
+
 }
 
 function countOn() {
     timeCount.value += 1
     let time = moment.duration(timeCount.value, 'seconds')  //得到一个对象，里面有对应的时分秒等时间对象值
-    let hours = time.hours() 
+    let hours = time.hours()
     let minutes = time.minutes()
     let seconds = time.seconds()
-    timeString.value = moment({h:hours, m:minutes, s:seconds}).format('HH:mm:ss') 
+    timeString.value = moment({h:hours, m:minutes, s:seconds}).format('HH:mm:ss')
     if(recording.value) {
         setTimeout( () => {
             countOn()
@@ -188,8 +188,8 @@ function countOn() {
     }
 }
 
-function endRecord() { 
-    recording.value = false 
+function endRecord() {
+    recording.value = false
     clearInterval(timeInterval)
     timeCount.value = 0
     timeString.value = '00:00:00'
@@ -197,7 +197,7 @@ function endRecord() {
     console.log('stop record')
     // timeString.value = '00:00:00'
     if(recorder.value) {
-        recorder.value.stop() 
+        recorder.value.stop()
     }
     // controllerWrapper.value.animate([
     //     { transform: 'rotate(0)'},
@@ -211,14 +211,14 @@ function endRecord() {
     //     duration: 500,
     //     fill: 'forwards'
     // })
-    
+
     videoCaped.value = []
-    
+
 }
 
 onMounted( async () => {
     console.log('control mount')
-    
+
 })
 
 onActivated( () => {
@@ -229,9 +229,9 @@ onActivated( () => {
 
 
 </script>
-<template> 
+<template>
     <div class="timeCount" :style="{
-        'display': recording? 'flex': 'none', 
+        'display': recording? 'flex': 'none',
         }">
         <div class="point"></div>
         <div>{{ timeString }}</div>
@@ -242,7 +242,7 @@ onActivated( () => {
         </div> -->
         <div class="spacer" >
             <div class="swipeWrapper">
-                <div class="contentWrapper"> 
+                <div class="contentWrapper">
                     <div class="swipeItem" v-for="(item, index) in options" :key="index" @click="control(item)">
                         <div :class="{active: curOpt == item}">{{ item }}</div>
                     </div>
@@ -253,9 +253,9 @@ onActivated( () => {
             <div class="outSide" :style="{border: cameraMode? '5px solid rgb(208 208 208)' : '5px solid rgb(208 208 208)'}">
                 <div class="controller" ref="controller"
                     :style="{
-                        'background-color': cameraMode? 'rgb(208 208 208)' : 'red', 
+                        'background-color': cameraMode? 'rgb(208 208 208)' : 'red',
                         'border-radius': recording ? '5px' : '50%',
-                        'width': recording ? '50%' : '90%'
+                        'width': recording ? '50%' : '85%'
                         }">
                     </div>
             </div>
@@ -263,10 +263,10 @@ onActivated( () => {
         <div class="spacer">
             <div class="deviceWrapper">
                 <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
-                
+
                 <div class="device">
-                    
-            
+
+
                     <el-Switch style="--el-switch-on-color: gray"
                         active-text="Photos"
                         size="large"
@@ -277,37 +277,38 @@ onActivated( () => {
                         inline-prompt
                         :disabled="recording"
                         v-model="cameraMode"
-                    />  
-                   
+                    />
+
                 </div>
                 <div class="device">
-                    <el-switch v-model="dark" size="large" :width="50" 
+                    <el-switch v-model="dark" size="large" :width="50"
                     :active-action-icon="Moon" :inactive-action-icon="Sunny"
-                    
+
                     style="--el-switch-on-color: gray" @change="changedark"/>
                 </div>
-                <div class="space"></div>
+
                 <div class="device" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
-                    <el-icon class="refresh" 
-                        
+                    <el-icon class="refresh"
+
                         color="white"
                         @click="toggleMode" :size="30" >
                         <Refresh />
                     </el-icon>
-                     
+
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                     <!-- {{ 'curOpt:' + curOpt }} -->
                     <!-- {{ 'cameraNum:' + cameraCount }}   -->
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div>
-                <div class="device"> 
+                <div class="space"></div>
+                <div class="device">
                     <el-icon :color="'#5a5a5a'" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
                 </div>
             </div>
         </div>
-    </el-row> 
-    
-    
+    </el-row>
+
+
 </template>
 <style lang="scss" scoped>
 $button_Color: #ffb444;
@@ -317,22 +318,22 @@ div{
     align-items: center;
     color: white;
     // border: 1px solid white;
-} 
+}
 $controlZ: 50;
 .timeCount {
     // display: none;
     position: absolute;
     left: 50%;
-    top: 2%; 
-    padding: 0 5%; 
+    top: 2%;
+    padding: 0 5%;
     backdrop-filter: blur(5px);
-    height: 40px; 
+    height: 40px;
     display: inline-block;
     justify-content: center;
     border-radius: 5px;
     background-color: rgb(45 44 44 / 64%);
-    transform: translateX(-50%); 
-    transition: all 0.2s ease-in; 
+    transform: translateX(-50%);
+    transition: all 0.2s ease-in;
     text-align: justify;
     z-index: 999;
     .point {
@@ -345,18 +346,18 @@ $controlZ: 50;
 }
 .controlBar {
     width: 10vw;
-    height: 100vh; 
-    display: flex; 
-    position: absolute; 
-    right: 0; 
+    height: 100vh;
+    display: flex;
+    position: absolute;
+    right: 0;
     z-index: $controlZ;
-    // background-color: green; 
-    flex-direction: column; 
+    // background-color: green;
+    flex-direction: column;
     @media (max-width: 1000px) {
         width: 100vw;
         height: 10vh;
         flex-direction: row;
-        align-content: center; 
+        align-content: center;
         padding-bottom: 15px;
         top: null;
         bottom: 0;
@@ -364,8 +365,9 @@ $controlZ: 50;
     .spacer {
         width: 100%;
         padding-bottom: 5%;
+        flex-wrap: wrap;
         flex: 1;
-        
+
         // background-color: #ffb444;
         @media (max-width: 1000px) {
             flex-direction: row;
@@ -374,14 +376,14 @@ $controlZ: 50;
         .swipeWrapper {
             width: 100%;
             height: 100%;
-            flex-direction: column; 
+            flex-direction: column;
             justify-content: flex-end;
-            
+
             .contentWrapper {
                 width: 50%;
                 height: 300px;
-                flex-direction: column; 
-                 
+                flex-direction: column;
+                flex-wrap: wrap;
                 @media (max-width: 1000px) {
                     flex-direction: row;
                     width: 100%;
@@ -399,6 +401,10 @@ $controlZ: 50;
                         width: 30%;
                         font-size: 2.5vw;
                     }
+                    @media (max-width: 600px) {
+                        width: 50%;
+                        font-size: 3.5vw;
+                    }
                 }
                 .active {
                     color: $button_Color;
@@ -408,11 +414,11 @@ $controlZ: 50;
             }
         }
     }
-    
-    .controllerWrapper { 
+
+    .controllerWrapper {
         width: 60%;
-        min-width: 80px;
-        aspect-ratio: 1/1; 
+        min-width: 100px;
+        aspect-ratio: 1/1;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -423,65 +429,84 @@ $controlZ: 50;
             width: auto;
             aspect-ratio: 1/1;
         }
+        @media (max-width: 1000px) {
+            min-width: 80px;
+        }
         .outSide {
             width: 60%;
+            min-width: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 50%; 
-            border-radius: 50%; 
+            border-radius: 50%;
+            border-radius: 50%;
             aspect-ratio: 1/1;
-            transition: all 0.5s ease; 
+            transition: all 0.5s ease;
+            @media (max-width: 1000px) {
+                min-width: 60px;
+            }
             .controller {
-                width: 90%;
+                width: 85%;
                 aspect-ratio: 1/1;
-                transition: all 0.6s ease; 
+                transition: all 0.6s ease;
                 filter: brightness(1.1);
-                
+
             }
         }
     }
-    .deviceWrapper { 
+    .deviceWrapper {
         width: 100%;
         height: 100%;
         justify-content: flex-start;
-        padding-top: 10%; 
+        padding-top: 10%;
         flex-direction: column;
         @media(max-width: 1000px) {
             padding: 0;
             flex-direction: row;
             align-items: center;
         }
-        .device { 
-            // color: white; 
-            flex-direction: column;
-            justify-content: center; 
+        @media(max-width: 600px) {
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+        .device {
+            // color: white;
+            display: flex;
+            justify-content: center;
             // background-color: #ffb444;
             height: 80px;
             margin: 3%;
             color: gray;
-            cursor: pointer; 
+            cursor: pointer;
+            @media(max-width: 1000px) {
+                width: 80px;
+                height: 30px;
+            }
+
             .refresh {
                 width: 35px;
                 height: 35px;
-                border-radius: 50%; 
+                border-radius: 50%;
                 background-color: rgb(255 255 255 / 10%);
-            } 
+            }
         }
-        .device:last-child { 
-            @media(max-width: 1000px) { 
+        .device:last-child {
+            @media(max-width: 1000px) {
                 margin-right: 10%;
             }
         }
         .space {
             width: 0px;
-            @media (max-width: 1000px) { 
+            @media (max-width: 1000px) {
                 display: flex;
-                flex: 1; 
+                flex: 1;
                 transform: scaleX(0.8)
             }
         }
-    } 
-    
+    }
+
 }
 </style>

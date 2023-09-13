@@ -7,9 +7,9 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 // import '@/styles/index.scss' 
 
 import '@/styles/element.scss'
-import '@/styles/elementDark.scss'
-import '@/styles/common.scss'  
 
+import '@/styles/common.scss'  
+import '@/styles/elementDark.scss'
 import App from './App.vue'
 import router from './router'
 

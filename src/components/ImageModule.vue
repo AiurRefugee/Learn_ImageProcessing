@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, ref, computed, onDeactivated} from 'vue' 
-import cv from 'opencv.js';  
-import { ElMessage } from 'element-plus';  
+import { onMounted, ref, computed, onDeactivated} from 'vue'
+import cv from 'opencv.js';
+import { ElMessage } from 'element-plus';
 import { useStore } from 'vuex';
 
 const store = useStore()
@@ -14,7 +14,7 @@ const imageOutSrc = ref(null)
 const imageSrc = ref(null) // <img>
 const fileInput = ref(null) // <input>
 const imageOutput = ref(null) // <canvas></canvas>
-const imgName = ref("gang.webp") 
+const imgName = ref("gang.webp")
 const srcList = ref(
     [
         {
@@ -59,15 +59,15 @@ defineExpose( {
     outputImage
 })
 
-function outputImage() { 
+function outputImage() {
     imageUrlList.value.length = 0
-    
-    try {  
-        src = cv.imread(imageSrc.value)  
 
-        
+    try {
+        src = cv.imread(imageSrc.value)
 
-        processImage()   
+
+
+        processImage()
         loading.value = false
         // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
         // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
@@ -86,7 +86,7 @@ const processImage = () =>  {
     cv.imshow('imageOutput', src);
     imageOutSrc.value = imageOutput.value.toDataURL()
     imageUrlList.value.push(imageOutSrc.value)
-    for (const process of filtredConfigs.value) { 
+    for (const process of filtredConfigs.value) {
         if(process.imageAvaliable && process.selected) {
             let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
             if(!res) {
@@ -102,28 +102,28 @@ const processImage = () =>  {
             // imageUrlList.value.push(imageOutput.value.toDataURL())
         }
     }
-    
+
 }
 
 function selectChange() {
     loading.value = true
 }
 
-function upload() { 
+function upload() {
     fileInput.value.click()
     console.log('a', imageUrl.value)
 }
 function inputChange(e) {
-    
+
     const file = e.target.files[0]
     console.log(file)
     if(file) {
-        let url = URL.createObjectURL(file) 
+        let url = URL.createObjectURL(file)
         srcList.value.push({
             name: file.name,
             value: url
         })
-        imageUrl.value = url 
+        imageUrl.value = url
         loading.value = true
     }
     console.log('input', imageUrl.value)
@@ -144,36 +144,36 @@ onDeactivated( () => {
     <div class="imageModuleWrapper">
 
         <div class="inoutput">
-            <div class="imageArea">  
-                <div class="imgWrapper"> 
+            <div class="imageArea">
+                <div class="imgWrapper">
                     <img id="imageSrc" ref="imageSrc" :src="imageUrl"
                         :style="{display: loading ? 'flex' : 'none'}" />
-                    <el-image :src="imageOutSrc"  
-                        :preview-src-list="imageUrlList" 
+                    <el-image :src="imageOutSrc"
+                        :preview-src-list="imageUrlList"
                         v-if="!loading"
                         fit="fill"
                         hide-on-click-modal
                         >
-                    </el-image>   
+                    </el-image>
                 </div>
-                
+
 
                 <!-- <canvas id="imageOutput" class="imageWrapper"></canvas> -->
 
                 <canvas ref="imageOutput" id="imageOutput" style="display: none;"></canvas>
             </div>
-            
+
             <div class="labelArea">
-                <el-row justify="center" align="middle" :gutter="20" style="width: 100%;"> 
+                <el-row justify="center" align="middle" :gutter="20" style="width: 100%;">
                     <el-col :span="12" class="labelItem">
-                        <el-text size="large">Image: &nbsp;</el-text>
+                        <text style="display: flex; justify-content: center; width: 80px;">Image:</text>
                         <el-select v-model="imageUrl" placeholder="选择图片" size="large" @change="selectChange">
                             <li class="el-select-dropdown__item" @click="upload">
                                 <el-icon><UploadFilled/></el-icon>
                                 <span style="margin-left: 5px;">上传图片</span>
                             </li>
                             <el-option :label="item.name" :value="item.value" v-for="(item, index) in srcList" :key="index"> </el-option>
-                            
+
                         </el-select>
                         <input type="file" ref="fileInput" style="display: none;" @change="inputChange">
                     </el-col>
@@ -182,17 +182,17 @@ onDeactivated( () => {
                     </el-col>
                 </el-row>
             </div>
-        </div>  
+        </div>
     </div>
 </template>
 <style lang="scss">
-.el-input--large .el-input__wrapper { 
+.el-input--large .el-input__wrapper {
     @media(max-width: 1000px) {
         height: 40px;
     }
-} 
+}
 .el-select, .el-button--large {
-    width: 70%; 
+    width: 70%;
  }
  .el-image {
     display: flex;
@@ -206,22 +206,20 @@ onDeactivated( () => {
     @media(max-width: 1000px) {
         height: 40px;
     }
-} 
+}
 .el-image-viewer__next, .el-image-viewer__prev, .el-image-viewer__close {
     background-color: transparent;
 }
 .el-image-viewer__canvas {
     max-width: 90%;
 } 
-.el-collapse-item__header { 
-}
 .imageModuleWrapper {
     display: flex;
     width: 90vw;
-    height: 100vh; 
+    height: 100vh;
     // background-color: blue;
     justify-content: flex-start;
-    align-items: center; 
+    align-items: center;
     position: absolute;
     left: 0;
     @media(max-width: 1000px) {
@@ -236,69 +234,69 @@ onDeactivated( () => {
     // @media(max-width: 490px) {
     //     height: 78vh;
     // }
-    .inoutput { 
+    .inoutput {
         display: flex;
         flex-direction: column;
         width: 85vw;
-        height: 95vh; 
+        height: 95vh;
         margin-left: 4vw;
         border-radius: 12px;
-        justify-content: flex-start; 
+        justify-content: flex-start;
         align-items: center;
-        position: relative; 
+        position: relative;
         overflow: hidden;
         box-shadow: 0px 0px 5px 2px gray;
         @media(max-width: 1000px) {
-            width: 90vw; 
-            height: 90%; 
+            width: 90vw;
+            height: 90%;
             margin: 0;
         }
         @media(max-width: 490px) {
             width: 90vw;
         }
-        .imageArea { 
+        .imageArea {
             $marSize: 10px;
             $height : calc(90% - 2* $marSize);
-            height: $height; 
+            height: $height;
             margin: $marSize;
             max-width: calc(100% - 2* $marSize);
             max-height: $height;
-            display: flex;  
+            display: flex;
             justify-content: center;
-            align-items: center;   
+            align-items: center;
             overflow: hidden;
-            // border: 2px solid white; 
-            border-radius: 10px; 
-            // z-index: 11; 
-            .imgWrapper {  
+            // border: 2px solid white;
+            border-radius: 10px;
+            // z-index: 11;
+            .imgWrapper {
                 border-radius: 10px;
-                overflow: hidden;  
+                overflow: hidden;
                 // max-height: 100%;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                // border: 2px solid white; 
+                // border: 2px solid white;
                 // z-index: 10;
-                display: flex; 
+                display: flex;
                 justify-content: center;
-                img { 
-                    border-radius: 10px; 
+                img {
+                    border-radius: 10px;
                     object-fit: fill;
-                    // z-index: 121; 
-                } 
+                    // z-index: 121;
+                }
                 // .imageWrapperIn {
                 //     display: flex;
                 //     justify-content: center;
                 //     align-items: center;
                 //     overflow: hidden;
-                    
+
                 //     border-radius: 10px;
-                    
+
                 // }
-                
+
             }
-            
-            
+
+
         }
         .divider {
             width: 98%;
@@ -308,15 +306,15 @@ onDeactivated( () => {
         .labelArea {
             width: 100%;
             // color: black;
-            display: flex; 
+            display: flex;
             justify-content: center;
             height: 10%;
-            position: absolute; 
+            position: absolute;
             font-size: 20px;
             bottom: 0;
             @media(max-width: 1000px) {
                 font-size: 12px;
-            } 
+            }
             .labelItem {
                 display: flex;
                 justify-content: center;
@@ -326,8 +324,8 @@ onDeactivated( () => {
                 font-size: 15px;
             }
         }
-    }  
-    
-   
+    }
+
+
 }
 </style>

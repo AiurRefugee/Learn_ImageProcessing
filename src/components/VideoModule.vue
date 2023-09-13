@@ -1,22 +1,23 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, onActivated, onDeactivated} from 'vue' 
+import { onMounted, ref, computed, nextTick, onActivated, onDeactivated} from 'vue'
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex';  
+import { useStore } from 'vuex';
 
 const store = useStore()
 
 const videoList = ref([
     {
-        label: 'ocean',
-        value: '//vjs.zencdn.net/v/oceans.mp4'
+        label: 'test',
+        // value: '/src/assets/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
+        value: '/src/assets/videos/video.m4s'
     }
-])  
-const videoUrl = ref('//vjs.zencdn.net/v/oceans.mp4')
+])
+const videoUrl = ref('/src/assets/videos/video.m4s')
 const videoUpload = ref(null)
-const playerIconSize = ref(30)
+const playerIconSize = ref('40px')
 const playing = ref(false)
-const videoInput = ref(null) 
+const videoInput = ref(null)
 const size = ref(Object)
 const canvasOutput = ref(null)
 const FPS = 60;
@@ -25,23 +26,44 @@ const videoModuleWrapper = ref(null)
 const tvHead = ref(null)
 const videoWitdth = ref(0)
 const videoHeight = ref(0)
-const displayPointer = ref(50)
+const canvasWrapper = ref(null)
+const displayPointer = ref(100)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
- 
 
 
+const curOpt = computed( () => store.getters.currentOption )
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
 let width, height, src, dst, cap, fgmask, interval, duration
 
-async function play() {  
+async function play() {
     if(!playing.value && videoInput.value.src != ''){
         try {
             await videoInput.value.play()
-            playing.value = !playing.value 
+            playing.value = !playing.value
+            if(!interval) {
+                interval = setInterval( () => {
+                    try {
+                        if(canvasOutput.value) {
+                            canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+                        }
+
+                        cap.read(src);
+                        // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
+                        processVideo()
+                        // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
+                        //     dst = src.clone()
+                        // }
+                        cv.imshow('canvasOutput', dst);
+                    } catch(error) {
+                        console.log(error)
+                    }
+                }, 1000 / FPS)
+            }
         } catch(error) {
             playing.value = false
+
             console.log(error)
             ElMessage({
                 message: `${error}.`,
@@ -49,11 +71,13 @@ async function play() {
                 type: 'error',
             })
         }
-        
+
     } else {
         try {
             await videoInput.value.pause()
-            playing.value = !playing.value 
+            playing.value = !playing.value
+            clearInterval(interval)
+            interval = null
         } catch(error) {
             playing.value = true
             console.log(error)
@@ -64,52 +88,34 @@ async function play() {
             })
         }
     }
-    
-    if(!interval) { 
-        interval = setInterval( () => {
-            try {
-                if(canvasOutput.value) {
-                    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-                }
-                
-                cap.read(src);  
-                // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
-                processVideo() 
-                // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
-                //     dst = src.clone()
-                // }
-                cv.imshow('canvasOutput', dst);
-            } catch(error) {
-                // console.log(error)
-            }
-        }, 1000 / FPS)  
-    }
+
+
 }
 
-function processVideo() {   
-    
-    
+function processVideo() {
+
+
     if(playing.value) {
         console.log('processing')
         src.copyTo(dst)
-        filtredConfigs.value.map( (process, index) => {  
-            try { 
-                if(process.selected && process.videoAvaliable !== false) { 
+        filtredConfigs.value.map( (process, index) => {
+            try {
+                if(process.selected && process.videoAvaliable !== false) {
                     let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-                    
+
                 }
-                if(process.videoAvaliable === false) { 
+                if(process.videoAvaliable === false) {
                     process.selected = false
                 }
-            } catch (error) {  
+            } catch (error) {
                 // clearInterval(interval)
-                
+
                 console.log(error)
-                
-            }   
+
+            }
         })
     }
-    
+
 };
 
 // function pause() {
@@ -134,42 +140,49 @@ function antiZoom() {
 }
 
 function upload() {
-    videoUpload.value.click() 
+    videoUpload.value.click()
 }
 
-async function init() { 
-    videoWitdth.value = tvHead.value.clientWidth * 0.8
-    videoHeight.value = tvHead.value.clientHeight * 0.8 
+function fileChange() {
+    const file = videoUpload.value.files[0]
+    if(file) {
+        const fileName = file.name
+        const url = URL.createObjectURL(file)
+        videoInput.value.src = url
+        videoList.value.push({
+            label: fileName,
+            value: url
+        })
+        videoUrl.value = url
+        videoInput.value.load()
+    }
+    play()
+}
+
+async function init() {
+    // videoWitdth.value = tvHead.value.clientWidth * 0.8
+    // videoHeight.value = tvHead.value.clientHeight * 0.8
     await nextTick()
-    width = videoInput.value.width
-    height = videoInput.value.height 
+    duration = videoInput.value.duration
+    videoInput.value.width = videoInput.value.clientWidth;
+    videoInput.value.height = videoInput.value.clientHeight;
+    
+    width = videoInput.value.clientWidth
+    height = videoInput.value.clientHeight
+    canvasWrapper.value.style.setProperty('max-width', width + 'px')
+    canvasWrapper.value.style.setProperty('max-height', height + 'px')
+    console.log(width)
     canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 
-    videoInput.value.addEventListener('loadedmetadata', () => {
-        duration = videoInput.value.duration
-    })
+    videoInput.value.addEventListener('loadedmetadata', init)
     console.log('videoInput', videoInput.value)
     src = new cv.Mat(height, width, cv.CV_8UC4);
     dst = new cv.Mat(height, width, cv.CV_8UC1);
     // srcTemp = new cv.Mat()
-    cap = new cv.VideoCapture(videoInput.value); 
-    await nextTick() 
-    videoUpload.value.addEventListener( "change", () => {
-        
-        const file = videoUpload.value.files[0]
-        if(file) {
-            const fileName = file.name 
-            const url = URL.createObjectURL(file)
-            videoInput.value.src = url
-            videoList.value.push({
-                label: fileName,
-                value: url
-            })
-            videoUrl.value = url
-            videoInput.value.load() 
-        }
-        play()
-    })
+    cap = new cv.VideoCapture(videoInput.value);
+    console.log(cap)
+    await nextTick()
+    videoUpload.value.addEventListener( "change", fileChange)
 }
 
 // onMounted( async () => {
@@ -177,14 +190,25 @@ async function init() {
 //     await init()
 // })
 
+function reSize() {
+    console.log('resize')
+    if(curOpt.value == 'video') {
+        init()
+    }
+}
+
 onActivated(  async () => {
     console.log('video Activated')
+    document.body.style.setProperty('--el-text-color-primary', 'white')
     await init()
+    window.addEventListener('resize', reSize)
 })
 
-onDeactivated( () => { 
+onDeactivated( () => {
     console.log('video deactive')
-    playing.value = false 
+    document.body.style.setProperty('--el-text-color-primary', null)
+
+    playing.value = false
     if(interval) {
         clearInterval(interval)
         interval = null
@@ -195,8 +219,8 @@ onDeactivated( () => {
 })
 
 </script>
-<template> 
-    <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
+<template>
+    <div ref="videoModuleWrapper" class="videoModuleWrapper">
         <!-- <video ref="videoInput" id="videoInput" >
 
         </video>  -->
@@ -206,18 +230,21 @@ onDeactivated( () => {
         <div class="videoArea" >
             <div class="tvHead" ref="tvHead">
                 <div class="playerWrapper" @click="play">
-                    <div class="videoWrapper" :style="{
-                        'width': `${displayPointer}%`, 'height': videoHeight + 'px',
-                        'border-right': displayPointer != 0 ? '2px solid white' : ''
-                        }">
-                        <video ref="videoInput" :src="videoUrl" id="videoInput"  :width="videoWitdth" :height="videoHeight"
-                            loop crossorigin="true" muted> 
-                        </video>
-                        
+                    <div class="videoCanvasWrapper">
+                        <div class="videoWrapper" :style="{
+                            'width': `${displayPointer}%`,
+                            'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
+                            }">
+                            <video ref="videoInput" :src="videoUrl" id="videoInput"
+                                loop crossorigin="true" muted>
+                            </video>
+
+                        </div>
+                        <div class="canvasWrapper" ref="canvasWrapper">
+                            <canvas id="canvasOutput" ref="canvasOutput"  ></canvas>
+                        </div>
                     </div>
-                    <div class="canvasWrapper">
-                        <canvas id="canvasOutput" ref="canvasOutput" :width="videoWitdth" :height="videoHeight"></canvas>
-                    </div>                    
+
                 </div>
                 <div class="videoController" :style="{'max-height': videoHeight,'overflow': 'hidden'}">
                     <el-row justify="center" align="middle" style="width: 80%;">
@@ -237,7 +264,7 @@ onDeactivated( () => {
                             <el-icon :size="playerIconSize" @click="antiZoom"><DArrowLeft /></el-icon>
                             <el-icon :size="playerIconSize" v-if="!playing" @click="play"><VideoPlay /></el-icon>
                             <el-icon :size="playerIconSize" v-else @click="play"><VideoPause /></el-icon>
-                            
+
                             <el-icon :size="playerIconSize" @click="zoom"><DArrowRight /></el-icon>
                         </el-col>
                         <el-col :span="3">
@@ -247,15 +274,15 @@ onDeactivated( () => {
                             <el-slider v-model="displayPointer" :step="0.1"></el-slider>
                         </el-col>
                     </el-row>
-                </div>  
+                </div>
                 </div>
             <div class="saucer"></div>
             <input type="file" style="display: none;" id="videoUpload" ref="videoUpload">
         </div>
-        
+
     </div>
 </template>
-<style lang="scss"> 
+<style lang="scss">
 
 .videoController .el-scrollbar {
     max-width: 30vw;
@@ -264,25 +291,25 @@ onDeactivated( () => {
     width: 86vw;
     height: 100vh;
     display: flex;
-    justify-content: flex-start; 
-    align-items: center; 
+    justify-content: flex-start;
+    align-items: center;
     overflow: hidden;
     align-items: center;
     position: absolute;
     margin-left: 4vw;
     left: 0;
-    //border: 5px solid gray; 
+    //border: 5px solid gray;
     @media (max-width: 1000px) {
         width: 100vw;
-        height: 90vh; 
+        height: 90vh;
         padding: 0;
         margin: 0;
         flex-direction: column;
         // background-color: white;
-        justify-content: center; 
-        
+        justify-content: center;
+
     }
-    
+
     .videoArea {
         width: 85vw;
         height: 95%;
@@ -290,13 +317,13 @@ onDeactivated( () => {
         flex-direction: column;
         // background-color: black;
         align-items: center;
-        justify-content: space-between; 
+        justify-content: space-between;
         .tvHead {
             $boderSize: 15px;
             width: calc(85vw - $boderSize * 2);
-            height: 90%;  
+            height: 90%;
             margin-top: $boderSize;
-            outline: $boderSize solid gray; 
+            outline: $boderSize solid gray;
             background-color: black;
             // background: linear-gradient(to top, gray 1px, black);
             display: flex;
@@ -305,55 +332,57 @@ onDeactivated( () => {
             align-items: center;
             overflow: hidden;
             border-radius: 12px;
-            video, canvas {
-                border-radius: 12px;
-            }
             @media(max-width: 1000px) {
                 width: calc(100vw - 50px);
                 height: 95%;
             }
-            .playerWrapper { 
-                justify-content: flex-start;
+            .playerWrapper {
+                $videoMinW: 60vw;
+                $videoMinH: 30vh;
+                justify-content: center;
                 align-items: center;
                 position: relative;
                 // background-color: white;
-                display: flex; 
+                display: flex;
                 // min-width: 80%;
                 height: 100%;
+                width: 100%;
                 overflow: hidden;
-                
-                .videoWrapper {
-                    position: absolute; 
+                .videoCanvasWrapper {
+                    display: flex;
                     overflow: hidden;
-                    border: 10px solid whie;
-                    // border-right: 2px solid white;
-                    video {
+                    height: 100%;
+                    position: relative;
+                    justify-content: flex-start;
+                    align-items: center;
+                    .videoWrapper {
+                        overflow: hidden;
+                        display: flex;
+                        align-items: center;
+                        z-index: 1;
+                        // border-right: 2px solid white;
+                        video {
+                            min-width: $videoMinW;
+                            min-height: $videoMinH;
+                            object-fit: fill;
+                        }
+                    }
+                    .canvasWrapper {
                         position: absolute;
                         left: 0;
-                        top: 0;   
-                        z-index: 1; 
-                        object-fit: cover;
-                    } 
-                    
-                }
-                .canvasWrapper {
-                    overflow: hidden;
-                    max-height: 80vh;
-                    #canvasOutput { 
-                        display: flex;
-                        
-                    //     position: absolute;
-                    //     left: 0;
-                    //     top: 0;
-                        // aspect-ratio: 16/9; 
-                        // left: 0; 
-                        // z-index:  1;
-                        // // max-width: 100%; 
-                        // // height: 95%;
+                        overflow: hidden; 
+                        #canvasOutput {
+                            display: flex;
+                            
+                            min-width: $videoMinW;
+                            min-height: $videoMinH;
+                            z-index: 0;
+                        }
                     }
                 }
-                
-                
+
+
+
             }
             .videoController {
                 width: 100%;
@@ -389,11 +418,11 @@ onDeactivated( () => {
                     color: white;
                 }
             }
-            
+
         }
         .saucer {
-            width: 50vw; 
-            height: 10px; 
+            width: 50vw;
+            height: 10px;
             border: 5px solid gray;
             background-color: gray;
             border-radius: 10px;
