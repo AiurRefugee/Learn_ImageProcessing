@@ -27,7 +27,7 @@ const tvHead = ref(null)
 const videoWitdth = ref(0)
 const videoHeight = ref(0)
 const canvasWrapper = ref(null)
-const displayPointer = ref(100)
+const displayPointer = ref(50)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 
@@ -163,14 +163,13 @@ async function init() {
     // videoWitdth.value = tvHead.value.clientWidth * 0.8
     // videoHeight.value = tvHead.value.clientHeight * 0.8
     await nextTick()
-    duration = videoInput.value.duration
-    videoInput.value.width = videoInput.value.clientWidth;
-    videoInput.value.height = videoInput.value.clientHeight;
-    
-    width = videoInput.value.clientWidth
-    height = videoInput.value.clientHeight
-    canvasWrapper.value.style.setProperty('max-width', width + 'px')
-    canvasWrapper.value.style.setProperty('max-height', height + 'px')
+    duration = videoInput.value.duration 
+    let video = document.getElementsByTagName('video')[0]
+    console.log(video.videoWidth)
+    width = video.videoWidth
+    height = video.videoHeight
+    videoInput.value.width = width
+    videoInput.value.height = height 
     console.log(width)
     canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 
@@ -202,6 +201,7 @@ onActivated(  async () => {
     document.body.style.setProperty('--el-text-color-primary', 'white')
     await init()
     window.addEventListener('resize', reSize)
+    videoInput.value.addEventListener('loadedmetadata', init)
 })
 
 onDeactivated( () => {
@@ -351,32 +351,33 @@ onDeactivated( () => {
                 .videoCanvasWrapper {
                     display: flex;
                     overflow: hidden;
-                    height: 100%;
+                    max-height: 100%;
+                    max-width: 100%;
                     position: relative;
                     justify-content: flex-start;
-                    align-items: center;
+                    align-items: center; 
+                    left: 0;
                     .videoWrapper {
                         overflow: hidden;
                         display: flex;
                         align-items: center;
+                        position: absolute;
+                        left: 0;
                         z-index: 1;
                         // border-right: 2px solid white;
-                        video {
-                            min-width: $videoMinW;
-                            min-height: $videoMinH;
-                            object-fit: fill;
+                        video {  
                         }
                     }
                     .canvasWrapper {
-                        position: absolute;
-                        left: 0;
+                        display: flex;  
+                        justify-content: center;
+                        align-items: center;
                         overflow: hidden; 
-                        #canvasOutput {
+                        #canvasOutput { 
                             display: flex;
-                            
-                            min-width: $videoMinW;
-                            min-height: $videoMinH;
-                            z-index: 0;
+                            object-fit: fill;
+                            max-width: 100%;
+                            max-height: 100%;
                         }
                     }
                 }
