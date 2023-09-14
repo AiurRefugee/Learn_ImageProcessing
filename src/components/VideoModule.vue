@@ -91,43 +91,32 @@ async function play() {
 
 }
 
-// function processVideo() {
-
-
-//     if(playing.value) {
-//         console.log('processing')
-//         src.copyTo(dst)
-//         filtredConfigs.value.map( (process, index) => {
-//             try {
-//                 if(process.selected && process.videoAvaliable !== false) {
-//                     let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-
-//                 }
-//                 if(process.videoAvaliable === false) {
-//                     process.selected = false
-//                 }
-//             } catch (error) {
-//                 // clearInterval(interval)
-
-//                 console.log(error)
-
-//             }
-//         })
-//     }
-
-// };
-
 function processVideo() {
-    const context = canvasOutput.value.getContext('2d');  
-    canvasOutput.value.width = videoInput.value.width
-    canvasOutput.value.height = videoInput.value.height  
-    // 将图像绘制到 canvas 上
-    context.drawImage(videoInput.value, 0, 0); 
-    // 获取图像数据
-    let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
-    console.log(imageData)
-    worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
-}
+
+
+    if(playing.value) {
+        console.log('processing')
+        src.copyTo(dst)
+        filtredConfigs.value.map( (process, index) => {
+            try {
+                if(process.selected && process.videoAvaliable !== false) {
+                    let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
+
+                }
+                if(process.videoAvaliable === false) {
+                    process.selected = false
+                }
+            } catch (error) {
+                // clearInterval(interval)
+
+                console.log(error)
+
+            }
+        })
+    }
+
+};
+
 
 function zoom() {
     console.log('zoom', duration)
