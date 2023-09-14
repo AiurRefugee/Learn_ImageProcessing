@@ -24,10 +24,13 @@
     "opencv.js": "^1.2.1",
     "opencv4js": "^3.4.3",
     "sass": "^1.64.2",
+    "simple-web-worker": "^1.2.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
+    "vue-worker": "^1.2.1",
     "vuedraggable": "^4.1.0",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

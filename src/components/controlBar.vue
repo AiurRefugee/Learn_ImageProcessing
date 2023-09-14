@@ -267,7 +267,7 @@ onActivated( () => {
                 <div class="device">
 
 
-                    <el-Switch style="--el-switch-on-color: gray"
+                    <el-Switch  
                         active-text="Photos"
                         size="large"
                         inactive-text="Videos"
@@ -283,8 +283,7 @@ onActivated( () => {
                 <div class="device">
                     <el-switch v-model="dark" size="large" :width="50"
                     :active-action-icon="Moon" :inactive-action-icon="Sunny"
-
-                    style="--el-switch-on-color: gray" @change="changedark"/>
+                    @change="changedark"/>
                 </div>
 
                 <div class="device" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">

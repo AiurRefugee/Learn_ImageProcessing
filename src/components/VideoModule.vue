@@ -26,14 +26,13 @@ const videoModuleWrapper = ref(null)
 const tvHead = ref(null)
 const videoWitdth = ref(0)
 const videoHeight = ref(0)
-const canvasWrapper = ref(null)
 const displayPointer = ref(50)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 
 
 const curOpt = computed( () => store.getters.currentOption )
-const filtredConfigs = computed( () => store.getters.filteredProcesses )
+const filtredConfigs = computed( () => store.getters.filteredProcesses ) 
 
 let width, height, src, dst, cap, fgmask, interval, duration
 
@@ -92,35 +91,43 @@ async function play() {
 
 }
 
+// function processVideo() {
+
+
+//     if(playing.value) {
+//         console.log('processing')
+//         src.copyTo(dst)
+//         filtredConfigs.value.map( (process, index) => {
+//             try {
+//                 if(process.selected && process.videoAvaliable !== false) {
+//                     let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
+
+//                 }
+//                 if(process.videoAvaliable === false) {
+//                     process.selected = false
+//                 }
+//             } catch (error) {
+//                 // clearInterval(interval)
+
+//                 console.log(error)
+
+//             }
+//         })
+//     }
+
+// };
+
 function processVideo() {
-
-
-    if(playing.value) {
-        console.log('processing')
-        src.copyTo(dst)
-        filtredConfigs.value.map( (process, index) => {
-            try {
-                if(process.selected && process.videoAvaliable !== false) {
-                    let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-
-                }
-                if(process.videoAvaliable === false) {
-                    process.selected = false
-                }
-            } catch (error) {
-                // clearInterval(interval)
-
-                console.log(error)
-
-            }
-        })
-    }
-
-};
-
-// function pause() {
-//     videoInput.value.pause()
-// }
+    const context = canvasOutput.value.getContext('2d');  
+    canvasOutput.value.width = videoInput.value.width
+    canvasOutput.value.height = videoInput.value.height  
+    // 将图像绘制到 canvas 上
+    context.drawImage(videoInput.value, 0, 0); 
+    // 获取图像数据
+    let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
+    console.log(imageData)
+    worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
+}
 
 function zoom() {
     console.log('zoom', duration)
@@ -143,7 +150,7 @@ function upload() {
     videoUpload.value.click()
 }
 
-function fileChange() {
+async function fileChange() {
     const file = videoUpload.value.files[0]
     if(file) {
         const fileName = file.name
@@ -156,6 +163,7 @@ function fileChange() {
         videoUrl.value = url
         videoInput.value.load()
     }
+    await init()
     play()
 }
 
@@ -163,13 +171,14 @@ async function init() {
     // videoWitdth.value = tvHead.value.clientWidth * 0.8
     // videoHeight.value = tvHead.value.clientHeight * 0.8
     await nextTick()
-    duration = videoInput.value.duration 
+    await nextTick()
     let video = document.getElementsByTagName('video')[0]
-    console.log(video.videoWidth)
+    duration = video.duration
     width = video.videoWidth
     height = video.videoHeight
     videoInput.value.width = width
-    videoInput.value.height = height 
+    videoInput.value.height = height
+    
     console.log(width)
     canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 
@@ -182,6 +191,9 @@ async function init() {
     console.log(cap)
     await nextTick()
     videoUpload.value.addEventListener( "change", fileChange)
+    // worker.value.onmessage = function(event) { 
+    //     canvasOutput.value.getContext('2d').putImageData(event.data)
+    // };
 }
 
 // onMounted( async () => {
@@ -189,25 +201,25 @@ async function init() {
 //     await init()
 // })
 
-function reSize() {
+async function reSize() {
     console.log('resize')
-    if(curOpt.value == 'video') {
-        init()
-    }
+    // if(curOpt.value == 'video') {
+    //     playing.value = false
+    //    await init()
+       
+    // }
 }
 
 onActivated(  async () => {
-    console.log('video Activated')
-    document.body.style.setProperty('--el-text-color-primary', 'white')
+    console.log('video Activated') 
     await init()
+    document.body.style.setProperty('--el-text-color-primary', 'white')
     window.addEventListener('resize', reSize)
-    videoInput.value.addEventListener('loadedmetadata', init)
 })
 
 onDeactivated( () => {
     console.log('video deactive')
-    document.body.style.setProperty('--el-text-color-primary', null)
-
+    document.body.style.setProperty('--el-text-color-primary', 'black')
     playing.value = false
     if(interval) {
         clearInterval(interval)
@@ -231,7 +243,7 @@ onDeactivated( () => {
             <div class="tvHead" ref="tvHead">
                 <div class="playerWrapper" @click="play">
                     <div class="videoCanvasWrapper">
-                        <div class="videoWrapper" :style="{
+                        <div class="videoWrapper" :style="{'display': 'none',
                             'width': `${displayPointer}%`,
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
                             }">
@@ -240,9 +252,7 @@ onDeactivated( () => {
                             </video>
 
                         </div>
-                        <div class="canvasWrapper" ref="canvasWrapper">
-                            <canvas id="canvasOutput" ref="canvasOutput"  ></canvas>
-                        </div>
+                        <canvas id="canvasOutput" ref="canvasOutput"  ></canvas>
                     </div>
 
                 </div>
@@ -351,34 +361,30 @@ onDeactivated( () => {
                 .videoCanvasWrapper {
                     display: flex;
                     overflow: hidden;
-                    max-height: 100%;
-                    max-width: 100%;
+                    width: 100%;
+                    height: 100%;
                     position: relative;
-                    justify-content: flex-start;
+                    justify-content: center;
                     align-items: center; 
-                    left: 0;
                     .videoWrapper {
                         overflow: hidden;
                         display: flex;
-                        align-items: center;
-                        position: absolute;
-                        left: 0;
+                        align-items: center; 
+                        height: 100%; 
                         z-index: 1;
                         // border-right: 2px solid white;
-                        video {  
-                        }
-                    }
-                    .canvasWrapper {
-                        display: flex;  
-                        justify-content: center;
-                        align-items: center;
-                        overflow: hidden; 
-                        #canvasOutput { 
-                            display: flex;
-                            object-fit: fill;
-                            max-width: 100%;
+                        video { 
+                            position: absolute;
+                            left: 0;
                             max-height: 100%;
                         }
+                    }
+                    #canvasOutput {
+                        display: flex;  
+                        max-width: 100%;
+                        max-height: 100%;
+                        object-fit: contain; 
+                        z-index: 0;
                     }
                 }
 

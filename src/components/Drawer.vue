@@ -99,7 +99,7 @@ onUnmounted( () => {
      <transition name="drawer" >
         <el-row class="drawer" v-show="drawerSwitch" ref="el">
             <div class="filterBar">
-              <el-row justify="space-between" align="middle" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
+              <el-row justify="space-between" align="middle" :style="{color: curOpt == 'video' ? 'white': ''}">
                 <el-col :span="filterBarLabel"> 
                     <h4>筛选：</h4> 
                 </el-col> 
@@ -130,7 +130,7 @@ onUnmounted( () => {
                       v-for="(process, index) in filtredConfigs" :key="index">
                       <el-space :size="10" direction="vertical" fill>
                         
-                        <el-row align="middle" justify="start" :style="{color: curOpt == 'video' ? '#aeadad': ''}"> 
+                        <el-row align="middle" justify="start" :style="{color: curOpt == 'video' ? 'white': ''}"> 
                             <el-col :span="5">
                               <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
                               <el-switch v-model="process.selected" @change="output"></el-switch>
@@ -144,7 +144,7 @@ onUnmounted( () => {
                         </el-row>
                         <el-row>
                           <el-col :span="24">
-                            <div class="switchGrid" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
+                            <div class="switchGrid" :style="{color: curOpt == 'video' ? 'white': ''}">
                               <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
                                 justify="start" align="middle" :key="index">
                                 <el-col :span="8">{{ Switch.paramName }}</el-col>
@@ -156,7 +156,7 @@ onUnmounted( () => {
                           </el-col>
                         </el-row>
                         <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
-                          justify="center" :key="index" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
+                          justify="center" :key="index" :style="{color: curOpt == 'video' ? 'white': ''}">
                           <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
                           <el-col :span="contentWidth">
                             <el-slider v-model="slider.paramValue" show-input @change="output"
@@ -166,7 +166,7 @@ onUnmounted( () => {
                           </el-col>
                         </el-row>
                         <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
-                          justify="center" :key="index" :style="{color: curOpt == 'video' ? '#aeadad': ''}">
+                          justify="center" :key="index" :style="{color: curOpt == 'video' ? 'white': ''}">
                           <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
                           <el-col :span="contentWidth">
                             <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output">

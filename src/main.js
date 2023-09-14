@@ -2,6 +2,8 @@
 import { createApp } from 'vue'
 
 import ElementPlus from 'element-plus'
+// import VueWorker from "vue-worker";
+
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 // import '@/styles/index.scss' 
@@ -27,5 +29,7 @@ app.use(store)
 app.use(router)
 
 app.use(ElementPlus)
+
+// app.use(VueWorker)
 
 app.mount('#app')

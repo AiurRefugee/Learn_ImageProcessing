@@ -70,7 +70,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   steps: [],
   primaryClass: '图像变换',
   secondrayClass: '颜色空间变换',
-  selected: false,
+  selected: true,
   imageAvaliable: true,
   params: [
     {

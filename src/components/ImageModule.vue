@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, onDeactivated} from 'vue'
+import { onMounted, ref, computed, onDeactivated, onActivated} from 'vue'
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus';
 import { useStore } from 'vuex';
@@ -55,11 +55,17 @@ let dst = new cv.Mat()
 
 const filtredConfigs = computed( () => store.getters.filteredProcesses )
 
+// const worker = computed( () => store.getters.worker)
+
 defineExpose( {
     outputImage
 })
 
 function outputImage() {
+    // worker.value.onmessage = function(event) {
+    //     console.log(typeof event.data)
+    //     imageOutput.value.getContext()
+    // };
     imageUrlList.value.length = 0
 
     try {
@@ -68,10 +74,8 @@ function outputImage() {
 
 
         processImage()
-        loading.value = false
-        // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
-        // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
-        // imageUrlList.value.push(imageOutput.value.toDataURL())
+        loading.value = false 
+        
     } catch(error) {
         console.log(error)
         ElMessage({
@@ -96,14 +100,26 @@ const processImage = () =>  {
 
             cv.imshow('imageOutput', src);
             imageOutSrc.value = imageOutput.value.toDataURL()
-            imageUrlList.value.push(imageOutSrc.value)
-            // let imgData = new ImageData(new Uint8ClampedArray(src.data, src.cols, src.rows))
-            // imageOutput.value.getContext('2d').putImageData(imgData, 0, 0);
-            // imageUrlList.value.push(imageOutput.value.toDataURL())
+            imageUrlList.value.push(imageOutSrc.value) 
         }
     }
 
 }
+
+// function processImage() { 
+    
+//     const context = imageOutput.value.getContext('2d');  
+//     imageOutput.value.width = imageSrc.value.width
+//     imageOutput.value.height = imageSrc.value.height 
+//     console.log(imageSrc.value.width)
+//     // 将图像绘制到 canvas 上
+//     context.drawImage(imageSrc.value, 0, 0); 
+//     // 获取图像数据
+//     let imageData = context.getImageData(0, 0, imageSrc.value.width, imageSrc.value.height);  
+//     console.log(imageData)
+//     worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
+
+// }
 
 function selectChange() {
     loading.value = true
@@ -135,6 +151,10 @@ onMounted(() => {
     // })
 })
 
+onActivated( () => {
+    console.log('image Activated')
+    
+})
 onDeactivated( () => {
     console.log('image Deactivated')
 })
@@ -152,7 +172,7 @@ onDeactivated( () => {
                         :preview-src-list="imageUrlList"
                         v-if="!loading"
                         fit="fill"
-                        hide-on-click-modal
+                        hide-on-click-modal 
                         >
                     </el-image>
                 </div>
@@ -185,7 +205,7 @@ onDeactivated( () => {
         </div>
     </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .el-input--large .el-input__wrapper {
     @media(max-width: 1000px) {
         height: 40px;
