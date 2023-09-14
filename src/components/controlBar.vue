@@ -240,14 +240,10 @@ onActivated( () => {
         <!-- <div style="color: gray;">
             {{ dark }}
         </div> -->
-        <div class="spacer" >
-            <div class="swipeWrapper">
-                <div class="contentWrapper">
-                    <div class="swipeItem" v-for="(item, index) in options" :key="index" @click="control(item)">
-                        <div :class="{active: curOpt == item}">{{ item }}</div>
-                    </div>
-                </div>
-            </div>
+        <div class="spacer" > 
+            <div class="spaceItem" v-for="(item, index) in options" :key="index" @click="control(item)">
+                <div :class="{active: curOpt == item}">{{ item }}</div>
+            </div>  
         </div>
         <div class="controllerWrapper" ref="controllerWrapper" @click="outputImage">
             <div class="outSide" :style="{border: cameraMode? '5px solid rgb(208 208 208)' : '5px solid rgb(208 208 208)'}">
@@ -260,13 +256,10 @@ onActivated( () => {
                     </div>
             </div>
         </div>
-        <div class="spacer">
-            <div class="deviceWrapper">
-                <!-- <div class="device" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
+        <div class="spacer"> 
+                <!-- <div class="spaceItem" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
 
-                <div class="device">
-
-
+                <div class="spaceItem">  
                     <el-Switch  
                         active-text="Photos"
                         size="large"
@@ -280,14 +273,13 @@ onActivated( () => {
                     />
 
                 </div>
-                <div class="device">
+                <div class="spaceItem">
                     <el-switch v-model="dark" size="large" :width="50"
                     :active-action-icon="Moon" :inactive-action-icon="Sunny"
                     @change="changedark"/>
-                </div>
-
-                <div class="device" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
-                    <el-icon class="refresh"
+                </div> 
+                <div class="spaceItem" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
+                    <el-icon class="spaceItem"
 
                         color="white"
                         @click="toggleMode" :size="30" >
@@ -298,13 +290,12 @@ onActivated( () => {
                     <!-- {{ 'curOpt:' + curOpt }} -->
                     <!-- {{ 'cameraNum:' + cameraCount }}   -->
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
-                </div>
-                <div class="space"></div>
-                <div class="device">
+                </div> 
+                <div v-else></div>
+                <div class="spaceItem">
                     <el-icon :color="'#5a5a5a'" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
                 </div>
-            </div>
-        </div>
+            </div> 
     </el-row>
 
 
@@ -362,57 +353,52 @@ $controlZ: 50;
         bottom: 0;
     }
     .spacer {
-        width: 100%;
-        padding-bottom: 5%;
+        width: 100%; 
         flex-wrap: wrap;
         flex: 1;
-
+        max-height: 40vh;
+        flex-direction: column;
         // background-color: #ffb444;
         @media (max-width: 1000px) {
             flex-direction: row;
             padding: 0;
-        }
-        .swipeWrapper {
+        } 
+ 
+        // color: white;
+        .spaceItem{
             width: 100%;
-            height: 100%;
-            flex-direction: column;
-            justify-content: flex-end;
-
-            .contentWrapper {
+            flex-grow: 1;
+            font-size: 2vh;
+            display: flex;
+            justify-content: center;
+            font-weight: 900;
+            text-shadow: 2px 0px 2px rgb(70, 70, 70);
+            cursor: pointer;
+            @media (max-width: 1000px) {
+                width: 30%;
+                font-size: 2.5vw;
+            }
+            @media (max-width: 600px) {
                 width: 50%;
-                height: 300px;
-                flex-direction: column;
-                flex-wrap: wrap;
-                @media (max-width: 1000px) {
-                    flex-direction: row;
-                    width: 100%;
-                    height: 9vh;
-                }
-                // color: white;
-                .swipeItem{
-                    width: 100%;
-                    flex-grow: 1;
-                    font-size: 2vh;
-                    font-weight: 900;
-                    text-shadow: 2px 0px 2px rgb(70, 70, 70);
-                    cursor: pointer;
-                    @media (max-width: 1000px) {
-                        width: 30%;
-                        font-size: 2.5vw;
-                    }
-                    @media (max-width: 600px) {
-                        width: 50%;
-                        font-size: 3.5vw;
-                    }
-                }
-                .active {
-                    color: $button_Color;
-                    transform: scale(1.5);
-                    transition: all 0.2s ease-in-out;
-                }
+                font-size: 3.5vw;
             }
         }
+        .active {
+            color: $button_Color;
+            transform: scale(1.5);
+            transition: all 0.2s ease-in-out;
+        }   
+        
+                
     }
+    .spacer:last-child {
+        @media(max-width: 600px) {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            justify-items: center;
+        }
+
+    }  
 
     .controllerWrapper {
         width: 60%;
@@ -452,60 +438,8 @@ $controlZ: 50;
 
             }
         }
-    }
-    .deviceWrapper {
-        width: 100%;
-        height: 100%;
-        justify-content: flex-start;
-        padding-top: 10%;
-        flex-direction: column;
-        @media(max-width: 1000px) {
-            padding: 0;
-            flex-direction: row;
-            align-items: center;
-        }
-        @media(max-width: 600px) {
-            display: grid;
-            justify-items: center;
-            align-items: center;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-        }
-        .device {
-            // color: white;
-            display: flex;
-            justify-content: center;
-            // background-color: #ffb444;
-            height: 80px;
-            margin: 3%;
-            color: gray;
-            cursor: pointer;
-            @media(max-width: 1000px) {
-                width: 80px;
-                height: 30px;
-            }
-
-            .refresh {
-                width: 35px;
-                height: 35px;
-                border-radius: 50%;
-                background-color: rgb(255 255 255 / 10%);
-            }
-        }
-        .device:last-child {
-            @media(max-width: 1000px) {
-                margin-right: 10%;
-            }
-        }
-        .space {
-            width: 0px;
-            @media (max-width: 1000px) {
-                display: flex;
-                flex: 1;
-                transform: scaleX(0.8)
-            }
-        }
-    }
+    }  
+        
 
 }
 </style>

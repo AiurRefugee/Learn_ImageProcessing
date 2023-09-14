@@ -19,13 +19,12 @@ const camera = ref(null)
 
 // computed
 const curOpt = computed( () => store.getters.currentOption )
-const cameraStatus = computed( () => store.getters.cameraStatus )
-// const worker = computed( () => store.getters.worker)
+const cameraStatus = computed( () => store.getters.cameraStatus ) 
 
 onMounted(() => {
   // store.dispatch('systemInit')
   console.log('aaa', cameraStatus.value)
-  // store.dispatch('initWorker') 
+  store.dispatch('initWorker') 
 
 })
 

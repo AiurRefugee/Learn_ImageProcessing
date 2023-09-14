@@ -2,10 +2,10 @@ import { ElMessage } from "element-plus"
 
 const system = {
     state: {
-      currentOption: 'image',
+      currentOption: 'video',
       cameraNum: 0,
       deviceStatus: 'Normal',
-      // worker: null
+      worker: null
     },
     mutations: {
         UPDATE_CURRENTOPTION: (state, param) => {
@@ -17,14 +17,14 @@ const system = {
         UPDATE_DEVICESTATUS: (state, param) => {
             state.deviceStatus = param
         },
-        // SET_WEBWORKER: (state, param) => {
-        //   if(!state.worker) {
-        //     state.worker = new Worker('/src/opencv/worker.js')
-        //     // state.worker.onmessage = function(event) {
-        //     //   console.log(event.data);
-        //     // };
-        //   }
-        // }
+        SET_WEBWORKER: (state, param) => {
+          if(!state.worker) {
+            state.worker = new Worker('/src/opencv/worker.js')
+            // state.worker.onmessage = function(event) {
+            //   console.log(event.data);
+            // };
+          }
+        }
     },
     actions: {
         set_currentOption({ commit }, param) {
@@ -72,9 +72,9 @@ const system = {
                 ElMessage.error('Browser does not support mediaDevices API')
               }
         },
-        // initWorker({ commit }, param) {
-        //   commit('SET_WEBWORKER', param)
-        // }
+        initWorker({ commit }, param) {
+          commit('SET_WEBWORKER', param)
+        }
 
     }
 }
