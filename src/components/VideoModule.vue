@@ -173,6 +173,7 @@ async function init() {
     await nextTick()
     await nextTick()
     let video = document.getElementsByTagName('video')[0]
+    console.log(video)
     duration = video.duration
     width = video.videoWidth
     height = video.videoHeight
@@ -245,7 +246,7 @@ onDeactivated( () => {
                             'width': `${displayPointer}%`,
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
                             }"> -->
-                            <video ref="videoInput" :src="videoUrl" id="videoInput" poster v-if="displayPointer == 100"
+                            <video ref="videoInput" :src="videoUrl" id="videoInput" :style="{'z-index': '0'}"
                                 loop crossorigin="true" muted>
                             </video>
 
@@ -377,7 +378,7 @@ onDeactivated( () => {
                         max-width: 100%;
                         max-height: 100%;
                         object-fit: contain; 
-                        z-index: 0;
+                        z-index: 1;
                     }
                 }
 
