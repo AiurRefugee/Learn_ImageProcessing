@@ -298,22 +298,20 @@ onDeactivated( () => {
     align-items: center;
     position: absolute;
     margin-left: 4vw;
-    left: 0;
-    //border: 5px solid gray;
+    left: 0; 
     @media (max-width: 1000px) {
         width: 100vw;
         height: 90vh;
         padding: 0;
         margin: 0;
-        flex-direction: column;
-        // background-color: white;
+        flex-direction: column; 
         justify-content: center;
 
     }
 
     .videoArea {
         width: 85vw;
-        height: 100%;
+        height: 95%;
         display: flex;
         flex-direction: column;
         // background-color: black;
@@ -325,8 +323,7 @@ onDeactivated( () => {
             height: 90%;
             margin-top: $boderSize;
             outline: $boderSize solid gray;
-            background-color: black;
-            // background: linear-gradient(to top, gray 1px, black);
+            background-color: black; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -335,17 +332,15 @@ onDeactivated( () => {
             border-radius: 12px;
             @media(max-width: 1000px) {
                 width: calc(100vw - 50px);
-                height: 98%;
+                height: 95%;
             }
             .playerWrapper {
                 $videoMinW: 60vw;
                 $videoMinH: 30vh;
                 justify-content: center;
                 align-items: center;
-                position: relative;
-                // background-color: white;
-                display: flex;
-                // min-width: 80%;
+                position: relative; 
+                display: flex; 
                 height: 100%;
                 width: 100%;
                 overflow: hidden;
@@ -372,10 +367,7 @@ onDeactivated( () => {
                         object-fit: contain; 
                         z-index: 1;
                     }
-                }
-
-
-
+                } 
             }
             .videoController {
                 width: 100%;
@@ -386,12 +378,7 @@ onDeactivated( () => {
                 color: white;
                 background: linear-gradient(to bottom, gray 1px, black);
                 opacity: 0.8;
-                padding-bottom: 5px;
-                // position: absolute;
-                // bottom: 0;
-                // z-index: 2;
-                // transform: translateY(-100%);
-                // background-color: white;
+                padding-bottom: 5px; 
                 .el-col {
                     display: flex;
                     justify-content: space-around;
@@ -419,14 +406,7 @@ onDeactivated( () => {
             border: 5px solid gray;
             background-color: gray;
             border-radius: 10px;
-            @media(max-width: 1000px) {
-                // position: absolute;
-                // bottom: 0;
-                // height: 5px;
-                // border-color: #dddddd;
-                // border: 1px solid #dddddd;
-                // transform: translateY(-30px);
-                // background-color: #dddddd;
+            @media(max-width: 1000px) { 
                 display: none;
             }
         }
