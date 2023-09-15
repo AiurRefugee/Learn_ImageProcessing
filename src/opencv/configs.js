@@ -422,7 +422,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   theory: `Here, the matter is straight forward. If pixel value is greater than a threshold value, it is assigned one value (may be white), else it is assigned another value (may be black).`,
   primaryClass: '图像分割',
   secondrayClass: '阈值分割',
-  selected: false,
+  selected: true,
   imageAvaliable: true,
   params: [{
     paramName: "thresh",
