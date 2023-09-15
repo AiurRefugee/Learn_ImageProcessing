@@ -125,8 +125,9 @@ function processVideo() {
     context.drawImage(videoInput.value, 0, 0); 
     // 获取图像数据
     let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
-    
+    // context.clearRect(0, 0, width, height)
     worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
+    
 }
 
 function zoom() {
@@ -163,8 +164,7 @@ async function fileChange() {
         videoUrl.value = url
         videoInput.value.load()
     }
-    await init()
-    play()
+    await init() 
 }
 
 async function init() {
@@ -192,8 +192,10 @@ async function init() {
     console.log(cap)
     await nextTick()
     videoUpload.value.addEventListener( "change", fileChange)   
-    worker.value.onmessage = function(event) {  
-        canvasOutput.value.getContext('2d').putImageData(event.data, 0, 0)
+    worker.value.onmessage = function(event) { 
+        let context = canvasOutput.value.getContext('2d')
+        context.clearRect(0, 0, width, height) 
+        context.putImageData(event.data, 0, 0)
 
     };
 }

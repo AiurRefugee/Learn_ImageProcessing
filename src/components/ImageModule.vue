@@ -75,7 +75,7 @@ function outputImage() {
 
         processImage()
         loading.value = false 
-        
+
     } catch(error) {
         console.log(error)
         ElMessage({
