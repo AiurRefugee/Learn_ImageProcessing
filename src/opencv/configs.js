@@ -53,7 +53,7 @@ export const classification = [
     grouping: true,
     type: 'error',
   })
-      console.log(`${title}: `+ error)
+      //console.log(`${title}: `+ error)
       return false
     }
     return false
@@ -122,7 +122,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
         grouping: true,
         type: 'error',
       })
-      console.log(`${title}: `+ error)
+      //console.log(`${title}: `+ error)
     }
     return false
   } 
@@ -193,7 +193,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
     grouping: true,
     type: 'error',
   })
-      console.log(`${title}: `+ error)
+      //console.log(`${title}: `+ error)
       return false
     }
     return false
@@ -265,7 +265,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
     grouping: true,
     type: 'error',
   })
-      console.log(`${title}: `+ error)
+      //console.log(`${title}: `+ error)
       return false
     }
     return false
@@ -341,7 +341,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
     grouping: true,
     type: 'error',
   })
-      // console.log(`${title}: `+ error)
+      // //console.log(`${title}: `+ error)
     }
     return false
   }
@@ -412,7 +412,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
     grouping: true,
     type: 'error',
   })
-      // console.log(`${title}: `+ error)
+      // //console.log(`${title}: `+ error)
     }
     return false
   }
@@ -483,7 +483,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
           grouping: true,
           type: 'error',
         })
-        // console.log(`${title}: `+ error)
+        // //console.log(`${title}: `+ error)
       }
       return false
   }
@@ -569,7 +569,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
     grouping: true,
     type: 'error',
   })
-     //  console.log(`${title}: `+ error)
+     //  //console.log(`${title}: `+ error)
     }
     return false
   }
@@ -904,7 +904,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
     grouping: true,
     type: 'error',
   })
-      console.log(`${title}: `+ error)
+      //console.log(`${title}: `+ error)
       return false
     }
     return false
@@ -954,7 +954,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
     grouping: true,
     type: 'error',
   })
-      console.log(`${title}: `+ error)
+      //console.log(`${title}: `+ error)
       return false
     }
     return false
@@ -1069,7 +1069,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
     grouping: true,
     type: 'error',
   })
-      console.log(`${title}: `+ error)
+      //console.log(`${title}: `+ error)
       return false
     }
     return false

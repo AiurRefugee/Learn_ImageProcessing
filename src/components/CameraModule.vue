@@ -57,8 +57,7 @@ async function init() {
     cap = new cv.VideoCapture(cameraInput.value); 
     if(interval) {
         clearInterval(interval)
-    } 
-    console.log('val', cameraOutput.value)
+    }  
     interval = setInterval( () => {
          
         try {

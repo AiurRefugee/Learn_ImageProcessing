@@ -35,10 +35,20 @@ let videoLoading = false
 const curOpt = computed( () => store.getters.currentOption )
 const filtredConfigs = computed( () => store.getters.filteredProcesses ) 
 const worker = computed( () => store.getters.worker)
+const configs = computed( () => {
+    let res = filtredConfigs.value.map( (item, index) => {
+        return {
+            selected: item.selected,
+            params: item.params.map( item => item.paramValue)
+        }
+    }) 
+    return res
+})
 
-let width, height, interval, duration
+let width, height, interval, duration 
 
 async function play() {
+    console.log(configs.value)
     if(!playing.value && videoInput.value.src != ''){
         try {
             await videoInput.value.play()
@@ -122,7 +132,10 @@ function processVideo() {
         // 获取图像数据
         let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
     
-        worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
+        worker.value.postMessage({
+            image: imageData,
+            paramsList: configs.value
+        }); // 发送图像数据给 Web Worker
         videoLoading = true
         }
 }
