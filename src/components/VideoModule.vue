@@ -2,7 +2,7 @@
 import { onMounted, ref, computed, nextTick, onActivated, onDeactivated} from 'vue'
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex'; 
+import { useStore } from 'vuex';  
 
 const store = useStore()
 
@@ -47,8 +47,7 @@ const configs = computed( () => {
 
 let width, height, interval, duration 
 
-async function play() {
-    console.log(configs.value)
+async function play() { 
     if(!playing.value && videoInput.value.src != ''){
         try {
             await videoInput.value.play()
@@ -202,8 +201,17 @@ async function init() {
         context.clearRect(0, 0, width, height)
         context.fillStyle = 'black'; // 或其他背景色
         context.fillRect(0, 0, width, height);    
-        context.putImageData(event.data, 0, 0)
+        context.putImageData(event.data.image, 0, 0)
         videoLoading = false
+        if(event.data.type == 'error') { 
+            let item = filtredConfigs.value[event.data.index]
+            item.selected = false
+            ElMessage({
+                message: `${item.title}参数错误.`,
+                grouping: true,
+                type: 'error',
+            })
+        } 
 
     };
 }

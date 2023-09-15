@@ -120,7 +120,7 @@ onUnmounted( () => {
             </div> 
             <div class="scrollerWrapper">
               <el-scrollbar> 
-                <el-collapse v-model="activeNames" @change="handleChange">
+                <el-collapse>
                   <el-space direction="vertical" :size="15" fill="fill">
                     <el-collapse-item :name="process.title" :title="process.title"  
                       v-for="(process, index) in filtredConfigs" :key="index">
