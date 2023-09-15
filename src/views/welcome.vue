@@ -78,7 +78,7 @@ onMounted(() => {
   console.log('onMounted')
     dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
     console.log(dark.value)
-  store.dispatch('systemInit') 
+  
   // window.onresize =() =>{
   //   if(window.innerWidth < 1000) {
   //     size.value = '70%'

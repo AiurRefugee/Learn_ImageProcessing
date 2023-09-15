@@ -26,6 +26,7 @@ onMounted(() => {
   // store.dispatch('systemInit')
   console.log('aaa', cameraStatus.value)
   store.dispatch('set_currentOption', option)
+  store.dispatch('systemInit') 
   // store.dispatch('initWorker') 
 
 })
