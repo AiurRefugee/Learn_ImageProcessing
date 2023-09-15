@@ -371,6 +371,7 @@ $controlZ: 50;
             font-size: 2vh;
             display: flex;
             justify-content: center;
+            min-height: 3vh;
             font-weight: 900;
             text-shadow: 2px 0px 2px rgb(70, 70, 70);
             cursor: pointer;

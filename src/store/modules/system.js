@@ -2,7 +2,7 @@ import { ElMessage } from "element-plus"
 
 const system = {
     state: {
-      currentOption: 'video',
+      currentOption: '',
       cameraNum: 0,
       deviceStatus: 'Normal',
       worker: null

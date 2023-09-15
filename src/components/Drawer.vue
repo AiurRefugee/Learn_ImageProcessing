@@ -71,11 +71,7 @@ function toggle() {
 onMounted( async () => { 
   // console.log('test'. filtredConfigs.value)
   console.log('onMounted')
-  store.dispatch('set_filteredProcesses', filtredConfigs.value)
-  window.addEventListener('resize', () => {
-    console.log('resiae')
-    output()
-  }) 
+  store.dispatch('set_filteredProcesses', filtredConfigs.value) 
   window.addEventListener('storage', (e) => {
     console.log("storage值发生变化后触发:", e)
   }); 

@@ -2,7 +2,7 @@
 import { onMounted, ref, computed, nextTick, onActivated, onDeactivated} from 'vue'
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex';
+import { useStore } from 'vuex'; 
 
 const store = useStore()
 
@@ -20,6 +20,7 @@ const playing = ref(false)
 const videoInput = ref(null)
 const size = ref(Object)
 const canvasOutput = ref(null)
+const canvasRead = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
 const videoModuleWrapper = ref(null)
@@ -28,14 +29,14 @@ const videoWitdth = ref(0)
 const videoHeight = ref(0)
 const displayPointer = ref(50)
 let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
-
+let videoLoading = false
 
 
 const curOpt = computed( () => store.getters.currentOption )
 const filtredConfigs = computed( () => store.getters.filteredProcesses ) 
 const worker = computed( () => store.getters.worker)
 
-let width, height, src, dst, cap, fgmask, interval, duration
+let width, height, interval, duration
 
 async function play() {
     if(!playing.value && videoInput.value.src != ''){
@@ -44,18 +45,9 @@ async function play() {
             playing.value = !playing.value
             if(!interval) {
                 interval = setInterval( () => {
-                    try {
-                        // if(canvasOutput.value) {
-                        //     canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-                        // }
-
-                        // cap.read(src);
-                        // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
-                        processVideo()
-                        // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
-                        //     dst = src.clone()
-                        // }
-                        // cv.imshow('canvasOutput', dst);
+                    try { 
+ 
+                        processVideo() 
                     } catch(error) {
                         console.log(error)
                     }
@@ -120,14 +112,19 @@ async function play() {
  
 
 function processVideo() {
-    const context = canvasOutput.value.getContext('2d');   
-    // 将图像绘制到 canvas 上
-    context.drawImage(videoInput.value, 0, 0); 
-    // 获取图像数据
-    let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
-    // context.clearRect(0, 0, width, height)
-    worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
+    if(!videoLoading) {
+        const context = canvasRead.value.getContext('2d');   
+        context.clearRect(0, 0, width, height)
+        context.fillStyle = 'black'; // 或其他背景色
+        context.fillRect(0, 0, width, height);    
+        // 将图像绘制到 canvas 上
+        context.drawImage(videoInput.value, 0, 0); 
+        // 获取图像数据
+        let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
     
+        worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
+        videoLoading = true
+        }
 }
 
 function zoom() {
@@ -172,8 +169,7 @@ async function init() {
     // videoHeight.value = tvHead.value.clientHeight * 0.8
     await nextTick()
     await nextTick()
-    let video = document.getElementsByTagName('video')[0]
-    console.log(video)
+    let video = document.getElementsByTagName('video')[0] 
     duration = video.duration
     width = video.videoWidth
     height = video.videoHeight
@@ -181,21 +177,20 @@ async function init() {
     videoInput.value.height = height
     canvasOutput.value.width = width
     canvasOutput.value.height = height
-    console.log(width)
+    canvasRead.value.width = width
+    canvasRead.value.height = height 
     canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 
-    videoInput.value.addEventListener('loadedmetadata', init)
-    console.log('videoInput', videoInput.value)
-    src = new cv.Mat(height, width, cv.CV_8UC4);
-    dst = new cv.Mat(height, width, cv.CV_8UC1); 
-    cap = new cv.VideoCapture(videoInput.value);
-    console.log(cap)
+    videoInput.value.addEventListener('loadedmetadata', init) 
     await nextTick()
     videoUpload.value.addEventListener( "change", fileChange)   
     worker.value.onmessage = function(event) { 
-        let context = canvasOutput.value.getContext('2d')
-        context.clearRect(0, 0, width, height) 
+        let context = canvasOutput.value.getContext('2d') 
+        context.clearRect(0, 0, width, height)
+        context.fillStyle = 'black'; // 或其他背景色
+        context.fillRect(0, 0, width, height);    
         context.putImageData(event.data, 0, 0)
+        videoLoading = false
 
     };
 }
@@ -213,14 +208,14 @@ async function reSize() {
 onActivated(  async () => {
     console.log('video Activated') 
     await init()
-    document.body.style.setProperty('--el-text-color-primary', 'white')
+    // document.body.style.setProperty('--el-text-color-primary', 'white')
     window.addEventListener('resize', reSize)
     
 })
 
 onDeactivated( () => {
     console.log('video deactive')
-    document.body.style.setProperty('--el-text-color-primary', 'black')
+    // document.body.style.setProperty('--el-text-color-primary', 'black')
     playing.value = false
     if(interval) {
         clearInterval(interval)
@@ -233,13 +228,7 @@ onDeactivated( () => {
 
 </script>
 <template>
-    <div ref="videoModuleWrapper" class="videoModuleWrapper">
-        <!-- <video ref="videoInput" id="videoInput" >
-
-        </video>  -->
-        <!-- <canvas ref="canvasOutput" id="canvasOutput">
-
-        </canvas> -->
+    <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <div class="videoArea" >
             <div class="tvHead" ref="tvHead">
                 <div class="playerWrapper" @click="play">
@@ -248,12 +237,13 @@ onDeactivated( () => {
                             'width': `${displayPointer}%`,
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
                             }"> -->
-                            <video ref="videoInput" :src="videoUrl" id="videoInput" :style="{'z-index': '0'}"
+                            <video ref="videoInput" :src="videoUrl" id="videoInput" :style="{'z-index': '0','display': 'none'}" poster
                                 loop crossorigin="true" muted>
                             </video>
 
                         <!-- </div> -->
                         <canvas id="canvasOutput" ref="canvasOutput"  ></canvas>
+                        <canvas id="canvasRead" ref="canvasRead" style="display: none;"></canvas>
                     </div>
 
                 </div>
@@ -323,7 +313,7 @@ onDeactivated( () => {
 
     .videoArea {
         width: 85vw;
-        height: 95%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         // background-color: black;
@@ -345,7 +335,7 @@ onDeactivated( () => {
             border-radius: 12px;
             @media(max-width: 1000px) {
                 width: calc(100vw - 50px);
-                height: 95%;
+                height: 98%;
             }
             .playerWrapper {
                 $videoMinW: 60vw;
