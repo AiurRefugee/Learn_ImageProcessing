@@ -75,22 +75,12 @@ function navigateTo(option) {
 }
 
 onMounted(() => {   
-  console.log('onMounted')
-    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
-    console.log(dark.value)
-  store.dispatch('systemInit') 
-  // window.onresize =() =>{
-  //   if(window.innerWidth < 1000) {
-  //     size.value = '70%'
-  //   } else {
-  //     size.value = '40%'
-  //   }
-  // }; 
+  console.log('onMounted') 
+  console.log(dark.value) 
 })
 
 onActivated( () => {
-    console.log('onActivated')
-    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
+    console.log('onActivated') 
     console.log(dark.value)
 })
 
@@ -265,14 +255,15 @@ p{
     display: flex;
     // background-color: blue;
     width: 100vw;
-    flex-grow: 1;
-    padding: 5%;
+    flex-grow: 1; 
     justify-content: center;
+    padding-top: 5%;
     align-items: flex-start;
     @media(max-width: 1000px) {
       flex-direction: column;  
       justify-content: flex-start;
       align-items: center;
+      padding-top: 0;
     }
     .centerItem {
       @include center();
@@ -280,14 +271,17 @@ p{
       height: 50%;
       font-size: 20px;
       flex-direction: column;
-      
+      flex-grow: 1;
+      transition: all 0.5s ease;
       @media (max-width: 1000px) {
         width: 90%;
+        max-height: 30%;
       }
       .centerIcon {
         width: 50%;
         @media (max-width: 1000px) {
           width: 30%;
+          
         }
       }
       .text{
