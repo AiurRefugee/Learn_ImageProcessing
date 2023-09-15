@@ -600,7 +600,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   ],
   primaryClass: "图像分割",
   secondrayClass: "边界分割",
-  selected: true,
+  selected: false,
   imageAvaliable: true,
   params: [
     {

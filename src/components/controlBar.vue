@@ -251,7 +251,7 @@ onActivated( () => {
                     :style="{
                         'background-color': cameraMode? 'rgb(208 208 208)' : 'red',
                         'border-radius': recording ? '5px' : '50%',
-                        'width': recording ? '50%' : '85%'
+                        'width': recording ? '60%' : '80%'
                         }">
                     </div>
             </div>
@@ -393,6 +393,7 @@ $controlZ: 50;
                 
     }
     .spacer:last-child {
+        flex-wrap: nowrap;
         @media(max-width: 600px) {
             display: grid;
             grid-template-columns: 1fr 1fr;

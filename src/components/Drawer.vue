@@ -100,7 +100,7 @@ onUnmounted( () => {
                     <h4>筛选：</h4> 
                 </el-col> 
                 <el-col :span="24 - filterBarLabel" s>
-                  <el-select v-model="selectedProcessions" filterable @change="show"
+                  <el-select v-model="selectedProcessions" filterable
                     placeholder="请选择条件" multiple collapse-tags :max-collapse-tags="maxCollapseNum">
                     <el-option-group
                       v-for="group in classNames"
