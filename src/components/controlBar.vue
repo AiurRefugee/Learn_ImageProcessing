@@ -222,8 +222,7 @@ onMounted( async () => {
 })
 
 onActivated( () => {
-    console.log('onActivated')
-    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
+    console.log('onActivated') 
     console.log(dark.value)
 })
 
@@ -369,6 +368,7 @@ $controlZ: 50;
             width: 100%;
             flex-grow: 1;
             font-size: 2vh;
+            min-height: calc(2vh + 10px);
             display: flex;
             justify-content: center;
             font-weight: 900;
