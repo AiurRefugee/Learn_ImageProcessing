@@ -9,7 +9,7 @@ const cameraOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
-let videoLoading = false
+let cameraVideoLoading = false
 
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 const worker = computed( () => store.getters.worker)
@@ -42,6 +42,7 @@ defineExpose({
 })
 
 async function init() {
+    console.log('cameraVideoLoading', cameraVideoLoading)
     navigator.mediaDevices.getUserMedia({ video:
         {
             facingMode: faceMode.value,
@@ -66,28 +67,28 @@ async function init() {
         console.log("An error occurred! " + error);
     });
     await nextTick()
-    let video = document.getElementsByTagName('video')[0]
- 
+    let video = document.getElementById('cameraInput') 
     width = video.clientWidth
     height = video.clientHeight
-    console.log(height)
+    console.log('cameraModule video', width)
     canvasRead.value.width = width
     canvasRead.value.height = height  
     cameraOutput.value.width = width
-    cameraOutput.value.height = height 
+    cameraOutput.value.height = height  
+    cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
     if(interval) {
         clearInterval(interval)
     } 
 
     worker.value.onmessage = function(event) { 
-
+        // console.log('onMessage')
         if(event.data.msg == 'loading') {
             // ElMessage({
             //     message: `Waiting for OpenCV to be loaded.`,
             //     grouping: true,
             //     type: 'error',
             // })
-            videoLoading = false
+            cameraVideoLoading = false
             return false
         }
 
@@ -105,24 +106,25 @@ async function init() {
                 })
             }) 
         } 
-        videoLoading = false
+        cameraVideoLoading = false
 
     };
          
     interval = setInterval( () => {
 
-    try { 
-        processVideo()  
-    } catch(error) {
-        console.log(error)
-    }
+        try { 
+            processVideo()   
+        } catch(error) {
+            console.log(error)
+        }
 
     }, 1000 / FPS) 
 
 } 
  
 function processVideo() {
-    if(!videoLoading) {
+    // console.log('processing Camera') 
+    if(!cameraVideoLoading) {
         const context = canvasRead.value.getContext('2d', { willReadFrequently: true }) ;   
         context.clearRect(0, 0, width, height)
         context.fillStyle = 'black'; // 或其他背景色
@@ -131,33 +133,35 @@ function processVideo() {
         context.drawImage(cameraInput.value, 0, 0); 
         // 获取图像数据
         let imageData = context.getImageData(0, 0, width, height);  
-        
+        // console.log('postMessage')
         worker.value.postMessage({
             image: imageData,
             paramsList: configs.value
         }); // 发送图像数据给 Web Worker
-        videoLoading = true
-        }
+        cameraVideoLoading = true
+    }
 }
 
 function release() {
-    console.log('cameraOutput', cameraOutput.value)
-    cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    cameraVideoLoading = false
     if (mediaStream) {
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
     }
     if(interval) {
+        console.log('clear')
         clearInterval(interval) 
         interval = null
     } 
+    // console.log('cameraOutput', cameraOutput.value)
+    // cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
     
 }
 
 onMounted( async () => { 
-    console.log('camera onMounted') 
-    console.log('cameraOutput', cameraOutput.value)
+    console.log('camera onMounted')  
+    console.log('interval', interval)
     if(!interval) {
         await init()
     }
@@ -165,9 +169,8 @@ onMounted( async () => {
 })
 
 onActivated( async () => {
-    console.log('camera onActivated')
-    console.log('cameraOutput', cameraOutput.value)
-    console.log(interval)
+    console.log('camera onActivated') 
+    console.log('interval', interval) 
     if(!interval) {
         await init()
     }

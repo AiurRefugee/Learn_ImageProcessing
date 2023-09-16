@@ -64,11 +64,11 @@ function toggleMode() {
       </keep-alive>
     </transition>
     <transition mode="out-in">
-      <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
-    </transition> 
       <keep-alive>
-        <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/> 
-      </keep-alive>
+        <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
+      </keep-alive> 
+    </transition>  
+    <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>  
   </div>
  
 </template>

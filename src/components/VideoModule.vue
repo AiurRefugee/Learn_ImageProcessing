@@ -115,6 +115,7 @@ async function play() {
  
 
 function processVideo() { 
+    console.log('processing Video')
     if(!videoLoading) {
         const context = canvasRead.value.getContext('2d', { willReadFrequently: true });   
         context.clearRect(0, 0, width, height)
@@ -155,6 +156,7 @@ function upload() {
 }
 
 async function fileChange() {
+    console.log('fileChange')
     const file = videoUpload.value.files[0]
     if(file) {
         const fileName = file.name
@@ -172,7 +174,7 @@ async function fileChange() {
 
 async function init() {  
     await nextTick()
-    let video = document.getElementsByTagName('video')[0] 
+    let video = document.getElementById('videoInput')
     duration = video.duration
     width = video.videoWidth
     height = video.videoHeight
@@ -182,10 +184,9 @@ async function init() {
     canvasOutput.value.height = height
     canvasRead.value.width = width
     canvasRead.value.height = height 
-    canvasOutput.value.getContext('2d', { willReadFrequently: true }).clearRect(0, 0, width, height)
-
-    videoInput.value.addEventListener('loadedmetadata', init)  
-    videoUpload.value.addEventListener( "change", fileChange)   
+    console.log('videoModule video', width)
+    console.log(canvasOutput.value)
+    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 
     worker.value.onmessage = function(event) { 
 
@@ -236,6 +237,8 @@ async function reSize() {
 onActivated(  async () => {
     console.log('video Activated') 
     await init()
+    videoInput.value.addEventListener('loadedmetadata', init)  
+    videoUpload.value.addEventListener( "change", fileChange)   
     // document.body.style.setProperty('--el-text-color-primary', 'white')
     window.addEventListener('resize', reSize)
     
@@ -245,16 +248,15 @@ onDeactivated( () => {
     console.log('video onDeactivated')
     // document.body.style.setProperty('--el-text-color-primary', 'black')
     playing.value = false
+    videoLoading = false
     if(interval) {
         clearInterval(interval)
         interval = null
-    }
-    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    } 
 })
 
 onUnmounted( () => {
-    console.log('video onUnmounted')
-    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    console.log('video onUnmounted') 
 })
 
 </script>

@@ -70,8 +70,7 @@ function outputImage() {
     }
 }
 
-async function control(option) {  
-    ctx.value = null
+async function control(option) {   
     if(timeCount.value > 0) {
         endRecord()
     }
