@@ -91,7 +91,7 @@ const processImage = () =>  {
     imageOutSrc.value = imageOutput.value.toDataURL()
     imageUrlList.value.push(imageOutSrc.value)
     for (const process of filtredConfigs.value) {
-        if(process.imageAvaliable && process.selected) {
+        if(process.imageAvilable && process.selected) {
             let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
             if(!res) {
                 process.selected = !process.selected
