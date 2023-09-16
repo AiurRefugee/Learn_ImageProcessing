@@ -1,6 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, onActivated, onDeactivated} from 'vue'
-import cv from 'opencv.js';
+import { onMounted, ref, computed, nextTick, onActivated, onDeactivated, onUnmounted} from 'vue' 
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex';  
 
@@ -21,28 +20,24 @@ const videoInput = ref(null)
 const size = ref(Object)
 const canvasOutput = ref(null)
 const canvasRead = ref(null)
-const FPS = 60;
-const camerSwitch = ref(false)
-const videoModuleWrapper = ref(null)
-const tvHead = ref(null)
-const videoWitdth = ref(0)
-const videoHeight = ref(0)
-const displayPointer = ref(50)
-let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
-let videoLoading = false
+const FPS = 60; 
+const videoModuleWrapper = ref(null) 
+const displayPointer = ref(50) 
+let videoLoading = false 
 
 
 const curOpt = computed( () => store.getters.currentOption )
-const filtredConfigs = computed( () => store.getters.filteredProcesses ) 
+const processConfigs = computed( () => store.getters.processConfigs ) 
 const worker = computed( () => store.getters.worker)
 const configs = computed( () => {
-    let res = filtredConfigs.value.map( (item, index) => {
+    return processConfigs.value.map( (item, index) => {
         return {
             selected: item.selected,
+            videoAvailable: item.videoAvailable,
+            processIndex: index,
             params: item.params.map( item => item.paramValue)
         }
-    }) 
-    return res
+    })  
 })
 
 let width, height, interval, duration 
@@ -54,8 +49,7 @@ async function play() {
             playing.value = !playing.value
             if(!interval) {
                 interval = setInterval( () => {
-                    try { 
- 
+                    try {  
                         processVideo() 
                     } catch(error) {
                         console.log(error)
@@ -99,7 +93,7 @@ async function play() {
 //     if(playing.value) {
 //         console.log('processing')
 //         src.copyTo(dst)
-//         filtredConfigs.value.map( (process, index) => {
+//         processConfigs.value.map( (process, index) => {
 //             try {
 //                 if(process.selected && process.videoAvaliable !== false) {
 //                     let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
@@ -120,9 +114,9 @@ async function play() {
 // };
  
 
-function processVideo() {
+function processVideo() { 
     if(!videoLoading) {
-        const context = canvasRead.value.getContext('2d');   
+        const context = canvasRead.value.getContext('2d', { willReadFrequently: true });   
         context.clearRect(0, 0, width, height)
         context.fillStyle = 'black'; // 或其他背景色
         context.fillRect(0, 0, width, height);    
@@ -130,7 +124,7 @@ function processVideo() {
         context.drawImage(videoInput.value, 0, 0); 
         // 获取图像数据
         let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
-    
+        // console.log(configs.value)
         worker.value.postMessage({
             image: imageData,
             paramsList: configs.value
@@ -176,10 +170,7 @@ async function fileChange() {
     await init() 
 }
 
-async function init() {
-    // videoWitdth.value = tvHead.value.clientWidth * 0.8
-    // videoHeight.value = tvHead.value.clientHeight * 0.8
-    await nextTick()
+async function init() {  
     await nextTick()
     let video = document.getElementsByTagName('video')[0] 
     duration = video.duration
@@ -191,27 +182,43 @@ async function init() {
     canvasOutput.value.height = height
     canvasRead.value.width = width
     canvasRead.value.height = height 
-    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    canvasOutput.value.getContext('2d', { willReadFrequently: true }).clearRect(0, 0, width, height)
 
-    videoInput.value.addEventListener('loadedmetadata', init) 
-    await nextTick()
+    videoInput.value.addEventListener('loadedmetadata', init)  
     videoUpload.value.addEventListener( "change", fileChange)   
+
     worker.value.onmessage = function(event) { 
-        let context = canvasOutput.value.getContext('2d') 
-        context.clearRect(0, 0, width, height)
-        context.fillStyle = 'black'; // 或其他背景色
-        context.fillRect(0, 0, width, height);    
+
+        if(event.data.msg == 'loading') {
+            // ElMessage({
+            //     message: `Waiting for OpenCV to be loaded.`,
+            //     grouping: true,
+            //     type: 'error',
+            // })
+            videoLoading = false
+            return false
+        }
+
+        let context = canvasOutput.value.getContext('2d', { willReadFrequently: true }) 
+        context.clearRect(0, 0, width, height) 
         context.putImageData(event.data.image, 0, 0)
-        videoLoading = false
+        
         if(event.data.type == 'error') { 
-            let item = filtredConfigs.value[event.data.index]
-            item.selected = false
-            ElMessage({
-                message: `${item.title}参数错误.`,
-                grouping: true,
-                type: 'error',
+            event.data.indexs.map(item => {
+                processConfigs.value[item].selected = false
+                ElMessage({
+                    message: `${processConfigs.value[item].title}参数错误或不支持视频处理.`,
+                    grouping: true,
+                    type: 'error',
+                })
             })
+            // ElMessage({
+            //     message: `${item.title}参数错误.`,
+            //     grouping: true,
+            //     type: 'error',
+            // })
         } 
+        videoLoading = false
 
     };
 }
@@ -235,23 +242,26 @@ onActivated(  async () => {
 })
 
 onDeactivated( () => {
-    console.log('video deactive')
+    console.log('video onDeactivated')
     // document.body.style.setProperty('--el-text-color-primary', 'black')
     playing.value = false
     if(interval) {
         clearInterval(interval)
         interval = null
     }
-    if(videoInput.value) {
-        canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-    }
+    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+})
+
+onUnmounted( () => {
+    console.log('video onUnmounted')
+    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 })
 
 </script>
 <template>
     <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <div class="videoArea" >
-            <div class="tvHead" ref="tvHead">
+            <div class="tvHead">
                 <div class="playerWrapper" @click="play">
                     <div class="videoCanvasWrapper">
                         <!-- <div class="videoWrapper" :style="{ 

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, onDeactivated, onActivated} from 'vue'
+import { onMounted, ref, computed, onDeactivated, onActivated, onUnmounted} from 'vue'
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus';
 import { useStore } from 'vuex';
@@ -53,7 +53,7 @@ const srcList = ref(
 let src
 let dst = new cv.Mat()
 
-const filtredConfigs = computed( () => store.getters.filteredProcesses )
+const filtredConfigs = computed( () => store.getters.processConfigs )
 
 // const worker = computed( () => store.getters.worker)
 
@@ -96,7 +96,7 @@ const processImage = () =>  {
             if(!res) {
                 process.selected = !process.selected
             }
-            src = dst
+            dst.copyTo(src)
 
             cv.imshow('imageOutput', src);
             imageOutSrc.value = imageOutput.value.toDataURL()
@@ -146,9 +146,11 @@ function inputChange(e) {
 }
 
 onMounted(() => {
-    // fileInput.value.addEventListener('change', () => {
-    //     inputChange()
-    // })
+    console.log('image onMounted')
+})
+
+onUnmounted( () => {
+    console.log('image onUnmounted')
 })
 
 onActivated( () => {

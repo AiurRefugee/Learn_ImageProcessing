@@ -33,8 +33,7 @@ const direction = ref("ltr")
 
 const curOpt = computed( () => store.getters.currentOption )
 const cameraCount = computed(() => store.getters.cameraNum)
-const cameraStatus = computed( () => store.getters.cameraStatus )
-const drawerSwitch = computed( () => store.getters.drawerSwitch)
+const cameraStatus = computed( () => store.getters.cameraStatus) 
 
 const emit = defineEmits(['outputImage', 'toggleMode'])
 
@@ -71,18 +70,22 @@ function outputImage() {
     }
 }
 
-async function control(option) {
-
-    if(option == 'camera' && cameraStatus.value != 'Normal') {
-        console.log('cameraStatus', cameraStatus)
-        router.push(`/noCamera/${cameraStatus}`)
-    }
-    store.dispatch('set_currentOption', option)
+async function control(option) {  
     ctx.value = null
     if(timeCount.value > 0) {
         endRecord()
     }
-    await nextTick()
+    if(option != curOpt.value) {
+        store.dispatch('set_currentOption', option)
+        if(option == "camera") { 
+            if(cameraStatus.value != 'Normal') {
+                router.push({
+                    path: `/noCamera/${cameraStatus.value}`
+                })
+            }
+        }
+        
+    }
 }
 
 function toggleMode() {
@@ -116,10 +119,10 @@ function downloadVideo(data) {
 function takePhoto() {
     controller.value.animate([
         { transform: 'scale(1)'},
-        { transform: 'scale(0.7)'},
+        { transform: 'scale(0.9)', filter: 'brightness(1.5)'},
         { transform: 'scale(1)'}
     ], {
-        duration: 200,
+        duration: 100,
         easing: 'ease-in',
         fill: 'forwards'
     })
@@ -250,7 +253,7 @@ onActivated( () => {
                 <div class="controller" ref="controller"
                     :style="{
                         'background-color': cameraMode? 'rgb(208 208 208)' : 'red',
-                        'border-radius': recording ? '5px' : '50%',
+                        'border-radius': recording ? '10px' : '50%',
                         'width': recording ? '60%' : '80%'
                         }">
                     </div>
@@ -278,7 +281,7 @@ onActivated( () => {
                     :active-action-icon="Moon" :inactive-action-icon="Sunny"
                     @change="changedark"/>
                 </div> 
-                <div class="spaceItem" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
+                <div class="spaceItem" v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'" ref="refresh">
                     <el-icon class="spaceItem"
 
                         color="white"
@@ -348,6 +351,7 @@ $controlZ: 50;
         height: 10vh;
         flex-direction: row;
         align-content: center;
+        padding-top: 10px;
         padding-bottom: 15px;
         top: null;
         bottom: 0;

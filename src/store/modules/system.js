@@ -27,8 +27,7 @@ const system = {
         }
     },
     actions: {
-        set_currentOption({ commit }, param) {
-          console.log(param)
+        set_currentOption({ commit }, param) { 
             commit("UPDATE_CURRENTOPTION", param)
         },
         set_cameraNum({ commit }, param) {

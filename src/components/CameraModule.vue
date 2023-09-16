@@ -1,13 +1,10 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, onUnmounted, onActivated} from 'vue'
-import cv from 'opencv.js';
+import { onMounted, ref, computed, nextTick, onUnmounted, onActivated, onDeactivated} from 'vue'
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex';
-
+import { useStore } from 'vuex'; 
 const store = useStore()
 const cameraInput = ref(null)
-const canvasRead = ref(null)
-const size = ref(Object)
+const canvasRead = ref(null) 
 const cameraOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
@@ -17,18 +14,19 @@ let videoLoading = false
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 const worker = computed( () => store.getters.worker)
 
-const filtredConfigs = computed( () => store.getters.filteredProcesses )
+const processConfigs = computed( () => store.getters.processConfigs )
 const configs = computed( () => {
-    let res = filtredConfigs.value.map( (item, index) => {
+    return processConfigs.value.map( (item, index) => {
         return {
             selected: item.selected,
+            videoAvailable: item.videoAvailable,
+            processIndex: index,
             params: item.params.map( item => item.paramValue)
         }
-    }) 
-    return res
+    })  
 })
-
-let width, height, mediaStream, fgmask, interval, faces, classifier
+let width, height, mediaStream
+let interval = null
 
 
 
@@ -82,56 +80,46 @@ async function init() {
     } 
 
     worker.value.onmessage = function(event) { 
+
+        if(event.data.msg == 'loading') {
+            // ElMessage({
+            //     message: `Waiting for OpenCV to be loaded.`,
+            //     grouping: true,
+            //     type: 'error',
+            // })
+            videoLoading = false
+            return false
+        }
+
         let context = cameraOutput.value.getContext('2d', { willReadFrequently: true }) 
         context.clearRect(0, 0, width, height) 
         context.putImageData(event.data.image, 0, 0)
-        videoLoading = false
+
         if(event.data.type == 'error') { 
-            let item = filtredConfigs.value[event.data.index]
-            item.selected = false
-            ElMessage({
-                message: `${item.title}参数错误.`,
-                grouping: true,
-                type: 'error',
-            })
+            event.data.indexs.map(item => {
+                processConfigs.value[item].selected = false
+                ElMessage({
+                    message: `${processConfigs.value[item].title}参数错误或不支持视频处理.`,
+                    grouping: true,
+                    type: 'error',
+                })
+            }) 
         } 
+        videoLoading = false
 
-    }; 
-        
-    setTimeout( () => {
-        interval = setInterval( () => {
+    };
+         
+    interval = setInterval( () => {
 
-        try { 
-            processVideo()  
-        } catch(error) {
-            console.log(error)
-        }
+    try { 
+        processVideo()  
+    } catch(error) {
+        console.log(error)
+    }
 
-        }, 1000 / FPS)
-    }, 3000)
+    }, 1000 / FPS) 
 
-}
-
-// function processVideo() {
-//     src.copyTo(dst)
-//     filtredConfigs.value.map( (process, index) => {
-//         try {
-//             if(process.selected) {
-//                 let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-//                 if(!res) {
-//                     process.selected = !process.selected
-
-//                 }
-//             }
-//         } catch (error) {
-//             // clearInterval(interval)
-
-//             console.log(error)
-
-//         }
-//     })
-
-// };
+} 
  
 function processVideo() {
     if(!videoLoading) {
@@ -152,27 +140,50 @@ function processVideo() {
         }
 }
 
-onMounted( async () => { 
-    await init() 
-
-})
-
-onActivated( async () => {
-    await init()
-})
-
-onUnmounted(() => {
-    console.log('camera unmount')
+function release() {
+    console.log('cameraOutput', cameraOutput.value)
+    cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
     if (mediaStream) {
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
-        // cameraOutput.value.getContext('2d', { willReadFrequently: true }) .clearRect(0, 0, width, height)
     }
     if(interval) {
-        clearInterval(interval)
+        clearInterval(interval) 
+        interval = null
     } 
+    
+}
+
+onMounted( async () => { 
+    console.log('camera onMounted') 
+    console.log('cameraOutput', cameraOutput.value)
+    if(!interval) {
+        await init()
+    }
+
 })
+
+onActivated( async () => {
+    console.log('camera onActivated')
+    console.log('cameraOutput', cameraOutput.value)
+    console.log(interval)
+    if(!interval) {
+        await init()
+    }
+})
+
+
+onDeactivated( () => {
+    console.log('camvea onDeactivated')
+    release()
+})
+
+onUnmounted(() => {
+    console.log('camera onUnmounted')
+    release()
+})
+
 
 </script>
 <template>
@@ -206,7 +217,7 @@ canvas {
     align-items: center;
      #cameraInput {
         // display: none;
-        opacity: 0.5;
+        opacity: 0;
         width: 100vw;
         height: 100vh;
         z-index: 0;
@@ -217,8 +228,7 @@ canvas {
         width: 100vw;
         height: 100vh; 
         background-color: black;
-        z-index: 1; 
-        opacity: 0.5;
+        z-index: 1;  
      }
      // animation: rotate360 1s linear;
 }

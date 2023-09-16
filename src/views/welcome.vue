@@ -117,7 +117,7 @@ onActivated( () => {
             <el-link :underline="false" @click="openDialog('Element +')">Element +</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
-            <el-switch v-model="dark" :active-action-icon="Moon" :inactive-action-icon="Sunny"  style="--el-switch-on-color: gray" @change="changeTheme">
+            <el-switch v-model="dark" :active-action-icon="Moon" :inactive-action-icon="Sunny" @change="changeTheme">
             </el-switch>
             <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>
@@ -132,19 +132,19 @@ onActivated( () => {
         <div class="centerItem" @click="navigateTo('image')">
           <PictureFilled class="centerIcon"/>
           <div class="text">
-            <div>从图片输入</div> 
+            <div>Image</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('video')">
           <VideoPlay class="centerIcon"/>
           <div class="text">
-            <div>从视频输入</div> 
+            <div>Video</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('camera')">
           <CameraFilled class="centerIcon"/>
           <div class="text">
-            <div>从摄像头输入</div> 
+            <div>Camera</div> 
           </div> 
       </div>
     </div>
