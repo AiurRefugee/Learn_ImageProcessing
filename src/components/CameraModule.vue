@@ -145,6 +145,7 @@ function processVideo() {
 function release() {
     cameraVideoLoading = false
     if (mediaStream) {
+        console.log('tracks', mediaStream.getTracks())
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
@@ -191,13 +192,9 @@ onUnmounted(() => {
 </script>
 <template>
     <div ref="cameraWrapper" class="cameraWrapper">
-        <video ref="cameraInput" id="cameraInput" > 
-        </video>
-        <canvas ref="cameraOutput" id="cameraOutput">
+        <video ref="cameraInput" id="cameraInput"></video>
+        <canvas ref="cameraOutput" id="cameraOutput"></canvas>
         <canvas id="canvasRead" ref="canvasRead" style="display: none;"></canvas>
-
-
-        </canvas>
     </div>
 </template>
 <style lang="scss">
@@ -220,9 +217,9 @@ canvas {
     align-items: center;
      #cameraInput {
         // display: none;
-        opacity: 0;
-        width: 100vw;
-        height: 100vh;
+        opacity: 0.5;
+        // width: 100vw;
+        // height: 100vh;
         z-index: 0;
         object-fit: cover;
         position: absolute;

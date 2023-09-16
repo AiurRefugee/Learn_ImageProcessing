@@ -91,7 +91,7 @@ const processImage = () =>  {
     imageOutSrc.value = imageOutput.value.toDataURL()
     imageUrlList.value.push(imageOutSrc.value)
     for (const process of filtredConfigs.value) {
-        if(process.imageAvilable && process.selected) {
+        if(process.imageAvailable && process.selected) {
             let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
             if(!res) {
                 process.selected = !process.selected
@@ -105,21 +105,6 @@ const processImage = () =>  {
     }
 
 }
-
-// function processImage() { 
-    
-//     const context = imageOutput.value.getContext('2d');  
-//     imageOutput.value.width = imageSrc.value.width
-//     imageOutput.value.height = imageSrc.value.height 
-//     console.log(imageSrc.value.width)
-//     // 将图像绘制到 canvas 上
-//     context.drawImage(imageSrc.value, 0, 0); 
-//     // 获取图像数据
-//     let imageData = context.getImageData(0, 0, imageSrc.value.width, imageSrc.value.height);  
-//     console.log(imageData)
-//     worker.value.postMessage(imageData); // 发送图像数据给 Web Worker
-
-// }
 
 function selectChange() {
     loading.value = true
@@ -173,7 +158,8 @@ onDeactivated( () => {
                     <el-image :src="imageOutSrc"
                         :preview-src-list="imageUrlList"
                         v-if="!loading"
-                        fit="fill"
+                        fit="cover"
+                        :infinite = "false"
                         hide-on-click-modal 
                         >
                     </el-image>
@@ -257,6 +243,8 @@ onDeactivated( () => {
     //     height: 78vh;
     // }
     .inoutput {
+        $marSize: 30px;
+        $marHorizon: 30px;
         display: flex;
         flex-direction: column;
         width: 85vw;
@@ -276,13 +264,10 @@ onDeactivated( () => {
         @media(max-width: 490px) {
             width: 90vw;
         }
-        .imageArea {
-            $marSize: 10px;
-            $height : calc(90% - 2* $marSize);
-            height: $height;
-            margin: $marSize;
-            max-width: calc(100% - 2* $marSize);
-            max-height: $height;
+        .imageArea {  
+            margin: $marSize $marHorizon;
+            width: calc(100% - 2* $marSize);
+            height: calc(90% - 2* $marSize);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -297,8 +282,7 @@ onDeactivated( () => {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                // border: 2px solid white;
-                // z-index: 10;
+                max-height: 100%;
                 display: flex;
                 justify-content: center;
                 img {
@@ -329,7 +313,9 @@ onDeactivated( () => {
             width: 100%;
             // color: black;
             display: flex;
+            padding-top: $marSize;
             justify-content: center;
+            align-items: flex-start;
             height: 10%;
             position: absolute;
             font-size: 20px;
