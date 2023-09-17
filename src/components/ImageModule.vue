@@ -1,20 +1,19 @@
 <script setup>
-import { onMounted, ref, computed, onDeactivated, onActivated, onUnmounted} from 'vue'
+import { onMounted, ref, computed, watch, onDeactivated, onActivated, onUnmounted, nextTick} from 'vue'
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus';
-import { useStore } from 'vuex';
+import { useStore } from 'vuex';  
 
 const store = useStore()
 
-const imageUrl = ref('/src/assets/imgs/Lena.png')
+const imageUrl = ref('/src/assets/imgs/gundam.jpeg')
 const imageUrlList = ref([])
 const loading = ref(true)
 const imageOption = ref()
 const imageOutSrc = ref(null)
-const imageSrc = ref(null) // <img>
+const imageInput = ref(null) // <img>
 const fileInput = ref(null) // <input>
-const imageOutput = ref(null) // <canvas></canvas>
-const imgName = ref("gang.webp")
+const imageOutput = ref(null) // <canvas></canvas> 
 const srcList = ref(
     [
         {
@@ -52,30 +51,22 @@ const srcList = ref(
 ])
 let src
 let dst = new cv.Mat()
+let width, height
 
-const filtredConfigs = computed( () => store.getters.processConfigs )
-
-// const worker = computed( () => store.getters.worker)
+const processConfigs = computed( () => store.getters.processConfigs )
+ 
 
 defineExpose( {
     outputImage
 })
 
-function outputImage() {
-    // worker.value.onmessage = function(event) {
-    //     console.log(typeof event.data)
-    //     imageOutput.value.getContext()
-    // };
-    imageUrlList.value.length = 0
-
+function outputImage() {  
+    let image = document.getElementById('imageInput')  
+    imageUrlList.value.length = 0 
     try {
-        src = cv.imread(imageSrc.value)
-
-
-
+        src = cv.imread(image)  
         processImage()
-        loading.value = false 
-
+        loading.value = false   
     } catch(error) {
         console.log(error)
         ElMessage({
@@ -90,13 +81,14 @@ const processImage = () =>  {
     cv.imshow('imageOutput', src);
     imageOutSrc.value = imageOutput.value.toDataURL()
     imageUrlList.value.push(imageOutSrc.value)
-    for (const process of filtredConfigs.value) {
+    for (const process of processConfigs.value) { 
         if(process.imageAvailable && process.selected) {
             let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+           
             if(!res) {
                 process.selected = !process.selected
             }
-            dst.copyTo(src)
+            src = dst
 
             cv.imshow('imageOutput', src);
             imageOutSrc.value = imageOutput.value.toDataURL()
@@ -104,20 +96,19 @@ const processImage = () =>  {
         }
     }
 
-}
+} 
 
 function selectChange() {
     loading.value = true
 }
 
 function upload() {
-    fileInput.value.click()
-    console.log('a', imageUrl.value)
+    fileInput.value.click() 
 }
+
 function inputChange(e) {
 
-    const file = e.target.files[0]
-    console.log(file)
+    const file = e.target.files[0] 
     if(file) {
         let url = URL.createObjectURL(file)
         srcList.value.push({
@@ -126,24 +117,26 @@ function inputChange(e) {
         })
         imageUrl.value = url
         loading.value = true
-    }
-    console.log('input', imageUrl.value)
+    } 
 }
+ 
 
 onMounted(() => {
     console.log('image onMounted')
 })
 
-onUnmounted( () => {
-    console.log('image onUnmounted')
-})
-
-onActivated( () => {
+onActivated( async () => {
     console.log('image Activated')
-    
+    let image = document.getElementById('imageInput')
+    width = image.clientWidth
+    height = image.clientHeight 
 })
 onDeactivated( () => {
     console.log('image Deactivated')
+})
+
+onUnmounted( () => {
+    console.log('image onUnmounted')
 })
 
 </script>
@@ -151,26 +144,19 @@ onDeactivated( () => {
     <div class="imageModuleWrapper">
 
         <div class="inoutput">
-            <div class="imageArea">
-                <div class="imgWrapper">
-                    <img id="imageSrc" ref="imageSrc" :src="imageUrl"
-                        :style="{display: loading ? 'flex' : 'none'}" />
-                    <el-image :src="imageOutSrc"
-                        :preview-src-list="imageUrlList"
-                        v-if="!loading"
-                        fit="cover"
-                        :infinite = "false"
-                        hide-on-click-modal 
-                        >
-                    </el-image>
-                </div>
-
-
-                <!-- <canvas id="imageOutput" class="imageWrapper"></canvas> -->
-
+            <div class="imageArea"> 
+                <img id="imageInput" ref="imageInput" :src="imageUrl" style="display: none;"/>
+                <img id="imageSrc" :src="imageUrl"
+                    :style="{display: loading ? 'flex' : 'none'}" />
+                <el-image :src="imageOutSrc"
+                    :preview-src-list="imageUrlList"
+                    v-if="!loading"
+                    fit="contain"
+                    hide-on-click-modal 
+                    >
+                </el-image>  
                 <canvas ref="imageOutput" id="imageOutput" style="display: none;"></canvas>
-            </div>
-
+            </div> 
             <div class="labelArea">
                 <el-row justify="center" align="middle" :gutter="20" style="width: 100%;">
                     <el-col :span="12" class="labelItem">
@@ -206,6 +192,7 @@ onDeactivated( () => {
     display: flex;
     overflow: hidden;
     justify-content: center;
+    max-height: 100%;
  }
  .labelArea .el-scrollbar {
     max-width: 30vw;
@@ -221,6 +208,9 @@ onDeactivated( () => {
 .el-image-viewer__canvas {
     max-width: 90%;
 } 
+.el-select-dropdown__item {
+    max-width: min(50vw, 300px);
+}
 .imageModuleWrapper {
     display: flex;
     width: 90vw;
@@ -244,7 +234,7 @@ onDeactivated( () => {
     // }
     .inoutput {
         $marSize: 30px;
-        $marHorizon: 30px;
+        $marginHorizon: 30px;
         display: flex;
         flex-direction: column;
         width: 85vw;
@@ -264,44 +254,35 @@ onDeactivated( () => {
         @media(max-width: 490px) {
             width: 90vw;
         }
-        .imageArea {  
-            margin: $marSize $marHorizon;
-            width: calc(100% - 2* $marSize);
-            height: calc(90% - 2* $marSize);
+        .imageArea {
+            
+            height : calc(90% - 2* $marSize); 
+            margin: $marSize $marginHorizon;
+            width: calc(100% - 2* $marginHorizon); 
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
             // border: 2px solid white;
             border-radius: 10px;
-            // z-index: 11;
-            .imgWrapper {
-                border-radius: 10px;
-                overflow: hidden;
-                // max-height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                max-height: 100%;
-                display: flex;
-                justify-content: center;
-                img {
-                    border-radius: 10px;
-                    object-fit: cover;
+            // z-index: 11; 
+                #imageSrc {
+                    border-radius: 15px;
+                    object-fit: contain;
+                    max-width: 100%;
                     max-height: 100%;
                     // z-index: 121;
                 }
-                // .imageWrapperIn {
-                //     display: flex;
-                //     justify-content: center;
-                //     align-items: center;
-                //     overflow: hidden;
-
-                //     border-radius: 10px;
-
-                // }
-
-            }
+                #imageOutput {
+                    border-radius: 15px;
+                    object-fit: contain;
+                    max-width: 100%;
+                    max-height: 100%;
+                }
+                img {
+                    border-radius: 10px;
+                }
+                
 
 
         }
@@ -314,9 +295,9 @@ onDeactivated( () => {
             width: 100%;
             // color: black;
             display: flex;
-            padding-top: $marSize;
             justify-content: center;
             align-items: flex-start;
+            padding-top: $marginHorizon;
             height: 10%;
             position: absolute;
             font-size: 20px;
@@ -326,8 +307,7 @@ onDeactivated( () => {
             }
             .labelItem {
                 display: flex;
-                justify-content: center;
-                align-items: center;
+                justify-content: center; 
                 align-items: center;
                 color: gray;
                 font-size: 15px;
