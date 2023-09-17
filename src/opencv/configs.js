@@ -1059,8 +1059,8 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
       paramValue: cv.GC_INIT_WITH_RECT,
       widget:{
         type: "selecter",
-        selectLabels: ['cv.GC_INIT_WITH_RECT', 'cv.GC_INIT_WITH_MASK', 'cv.GC_EVAL', 'cv.GC_EVAL_FREEZE_MODEL'],
-        selectValues: [cv.GC_INIT_WITH_RECT, cv.GC_INIT_WITH_MASK, cv.GC_EVAL, cv.GC_EVAL_FREEZE_MODEL]
+        selectLabels: ['cv.GC_INIT_WITH_RECT', 'cv.GC_INIT_WITH_MASK', 'cv.GC_EVAL'],
+        selectValues: [cv.GC_INIT_WITH_RECT, cv.GC_INIT_WITH_MASK, cv.GC_EVAL]
       } 
     }
   ],

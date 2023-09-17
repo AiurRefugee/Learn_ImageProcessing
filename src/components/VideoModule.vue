@@ -40,22 +40,20 @@ const configs = computed( () => {
     })  
 })
 
-let width, height, interval, duration 
+let width, height, duration 
+let interval = null
 
 async function play() { 
     if(!playing.value && videoInput.value.src != ''){
         try {
             await videoInput.value.play()
             playing.value = !playing.value
-            if(!interval) {
-                interval = setInterval( () => {
-                    try {  
-                        processVideo() 
-                    } catch(error) {
-                        console.log(error)
-                    }
-                }, 1000 / FPS)
-            }
+             
+            try {  
+                processVideo() 
+            } catch(error) {
+                console.log(error)
+            } 
         } catch(error) {
             playing.value = false
 
@@ -71,7 +69,7 @@ async function play() {
         try {
             await videoInput.value.pause()
             playing.value = !playing.value
-            clearInterval(interval)
+            clearTimeout(interval)
             interval = null
         } catch(error) {
             playing.value = true
@@ -86,37 +84,11 @@ async function play() {
 
 
 }
-
-// function processVideo() {
-
-
-//     if(playing.value) {
-//         console.log('processing')
-//         src.copyTo(dst)
-//         processConfigs.value.map( (process, index) => {
-//             try {
-//                 if(process.selected && process.videoAvaliable !== false) {
-//                     let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-
-//                 }
-//                 if(process.videoAvaliable === false) {
-//                     process.selected = false
-//                 }
-//             } catch (error) {
-//                 // clearInterval(interval)
-
-//                 console.log(error)
-
-//             }
-//         })
-//     }
-
-// };
  
 
-function processVideo() { 
-    console.log('processing Video')
-    if(!videoLoading) {
+function processVideo() {   
+    if(playing.value) {
+        console.log('processing Video')
         const context = canvasRead.value.getContext('2d', { willReadFrequently: true });   
         context.clearRect(0, 0, width, height)
         context.fillStyle = 'black'; // 或其他背景色
@@ -129,9 +101,9 @@ function processVideo() {
         worker.value.postMessage({
             image: imageData,
             paramsList: configs.value
-        }); // 发送图像数据给 Web Worker
-        videoLoading = true
-        }
+        }); // 发送图像数据给 Web Worker 
+         
+    }
 }
 
 function zoom() {
@@ -175,6 +147,7 @@ async function fileChange() {
 async function init() {  
     await nextTick()
     let video = document.getElementById('videoInput')
+    
     duration = video.duration
     width = video.videoWidth
     height = video.videoHeight
@@ -188,9 +161,12 @@ async function init() {
 
     await nextTick()
     worker.value.onmessage = function(event) { 
-
+        // console.log('message')
+        videoLoading = false
+        interval = setTimeout(processVideo,
+        1000 / FPS)
         if(event.data.msg == 'loading') { 
-            videoLoading = false
+            // videoLoading = false
             return false
         }
 
@@ -213,7 +189,7 @@ async function init() {
             //     type: 'error',
             // })
         } 
-        videoLoading = false
+        
 
     };
 }
@@ -225,6 +201,7 @@ async function reSize() {
 
 onActivated(  async () => {
     console.log('video Activated') 
+    document.getElementById('canvasOutput').getContext('2d').clearRect(0, 0, 3840, 2560)
     await init()
     videoInput.value.addEventListener('loadedmetadata', init)  
     videoUpload.value.addEventListener( "change", fileChange)   
@@ -238,8 +215,13 @@ onDeactivated( () => {
     // document.body.style.setProperty('--el-text-color-primary', 'black')
     playing.value = false
     videoLoading = false
+    try{
+        document.getElementById('canvasOutput').getContext('2d').clearRect(0, 0, 3840, 2560)
+    } catch {
+        
+    }
     if(interval) {
-        clearInterval(interval)
+        clearTimeout(interval)
         interval = null
     } 
 })
@@ -254,12 +236,12 @@ onUnmounted( () => {
         <div class="videoArea" >
             <div class="tvHead">
                 <div class="playerWrapper" @click="play">
-                    <div class="videoCanvasWrapper">
+                    <div class="videoCanvasWrapper" v-if="curOpt == 'video'">
                         <!-- <div class="videoWrapper" :style="{ 
                             'width': `${displayPointer}%`,
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
                             }"> -->
-                            <video ref="videoInput" :src="videoUrl" id="videoInput" :style="{'z-index': '0','display': 'none'}" poster
+                            <video ref="videoInput" :src="videoUrl" id="videoInput" poster
                                 loop crossorigin="true" muted>
                             </video>
 

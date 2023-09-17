@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, onUnmounted, onActivated, onDeactivated} from 'vue'
+import { onMounted, ref, computed, watch, nextTick, onUnmounted, onActivated, onDeactivated} from 'vue'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'; 
 const store = useStore()
@@ -9,7 +9,9 @@ const cameraOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
+const vloading = ref(true)
 let cameraVideoLoading = false
+let Message
 
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 const worker = computed( () => store.getters.worker)
@@ -42,30 +44,35 @@ defineExpose({
     }
 })
 
+watch( vloading, () => {
+    Message.close()
+})
+
 async function init() {
-    await nextTick()
-    console.log('cameraVideoLoading', cameraVideoLoading)
-    let display = await navigator.mediaDevices.getUserMedia(
-        { video:
-            {
-                facingMode: faceMode.value,
-                width: 3840,
-                height: 2560 
-            },
-            audio: false
-        }
-    ) 
-    let settings = display.getVideoTracks()[0].getSettings();
-    width = settings.width;
-    height = settings.height;  
-    console.log(width)
-    cameraInput.value.srcObject = display
-    cameraInput.value.play()
-    if(interval) {
-        clearInterval(interval)
-    }  
-    
-    initVideo()
+    try {
+        await nextTick() 
+        let display = await navigator.mediaDevices.getUserMedia(
+            { video:
+                {
+                    facingMode: faceMode.value,
+                    width: 3840,
+                    height: 2560 
+                },
+                audio: false
+            }
+        ) 
+        let settings = display.getVideoTracks()[0].getSettings();
+        width = settings.width;
+        height = settings.height;  
+        // console.log(width)
+        cameraInput.value.srcObject = display 
+        if(interval) {
+            clearTimeout(interval)
+        }   
+        initVideo()
+    } catch(error) {
+        console.log(error)
+    }
 
 } 
  
@@ -73,16 +80,12 @@ async function init() {
 function initWorker() {
     worker.value.onmessage = function(event) { 
         // console.log('onMessage')
-        if(event.data.msg == 'loading') {
-            // ElMessage({
-            //     message: `Waiting for OpenCV to be loaded.`,
-            //     grouping: true,
-            //     type: 'error',
-            // })
-            cameraVideoLoading = false
+        interval = setTimeout(processVideo,
+        1000 / FPS)
+        if(event.data.msg == 'loading') {  
             return false
         }
-
+        vloading.value = false
         let context = cameraOutput.value.getContext('2d', { willReadFrequently: true }) 
         context.clearRect(0, 0, width, height) 
         context.putImageData(event.data.image, 0, 0)
@@ -96,8 +99,8 @@ function initWorker() {
                     type: 'error',
                 })
             }) 
-        } 
-        cameraVideoLoading = false
+        }  
+        
 
     };
 }
@@ -108,18 +111,18 @@ function initVideo() {
     cameraOutput.value.width = width
     cameraOutput.value.height = height  
     cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
-    interval = setInterval( () => { 
-        try { 
-            processVideo()   
+    if(!interval) {
+        try {  
+            processVideo() 
         } catch(error) {
             console.log(error)
-        } 
-    }, 1000 / FPS) 
+        }
+    }
 }
 
 function processVideo() {
-    // console.log('processing Camera') 
-    if(!cameraVideoLoading) {
+    // console.log('processing Camera')  
+        // console.log('camera processing')
         const context = canvasRead.value.getContext('2d', { willReadFrequently: true }) ;   
         context.clearRect(0, 0, width, height)
         context.fillStyle = 'black'; // 或其他背景色
@@ -133,8 +136,7 @@ function processVideo() {
             image: imageData,
             paramsList: configs.value
         }); // 发送图像数据给 Web Worker
-        cameraVideoLoading = true
-    }
+          
 }
 
 function release() {
@@ -143,15 +145,10 @@ function release() {
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
-    }
-    if(interval) {
-        console.log('clear')
-        clearInterval(interval) 
-        interval = null
     } 
-    // console.log('cameraOutput', cameraOutput.value)
-    // cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
-    
+    console.log('clear')
+    clearTimeout(interval) 
+    interval = null  
 }
 
 onMounted( async () => { 
@@ -160,6 +157,7 @@ onMounted( async () => {
     if(!interval) { 
         await nextTick()
         initWorker()
+        await nextTick()
         await init()
     }
 
@@ -168,9 +166,14 @@ onMounted( async () => {
 onActivated( async () => {
     console.log('camera onActivated') 
     console.log('interval', interval) 
+    Message = ElMessage({ 
+        message: 'Module is loading.',
+        duration: 0
+    })
     if(!interval) {
         await nextTick()
         initWorker()
+        await nextTick()
         await init() 
     }
 })
@@ -190,7 +193,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div ref="cameraWrapper" class="cameraWrapper">
-        <video ref="cameraInput" id="cameraInput"></video>
+        <video ref="cameraInput" id="cameraInput" autoplay></video>
         <canvas ref="cameraOutput" id="cameraOutput"></canvas>
         <canvas id="canvasRead" ref="canvasRead" style="display: none;"></canvas>
     </div>
@@ -215,19 +218,20 @@ canvas {
     align-items: center;
     overflow: hidden;
      #cameraInput {
-        // display: none;
-        opacity: 0.5;
-        // width: 100vw;
-        // height: 100vh;
-        z-index: 0;
-        object-fit: cover;
+        // display: none; 
+        width: 100vw;
         position: absolute;
+        z-index: 0;
+        opacity: 0;
+        height: 100vh; 
+        object-fit: cover; 
      }
      #cameraOutput {
         width: 100vw;
         height: 100vh; 
+        display: flex;
         background-color: black;
-        object-fit: cover;
+        object-fit: contain;
         z-index: 1;  
      }
      // animation: rotate360 1s linear;
