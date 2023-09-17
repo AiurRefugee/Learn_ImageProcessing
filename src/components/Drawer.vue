@@ -14,14 +14,13 @@ const filterBarLabel = ref(4)
 
 const contentWidth = ref(24 - labelWidth.value) 
 const selectedProcessions = ref([]) 
-  
+
+const maxCollapseNum = ref(window.innerWidth >= 600 ? 5 : 2)
 const classNames = ref(classification)
 const drawerSwitch = computed( () => store.getters.drawerSwitch )
 const curOpt = computed( () => store.getters.currentOption )
 const configs = computed( () => store.getters.processConfigs)
-const maxCollapseNum = computed( () => {
-  return window.innerWidth >= 600 ? 5 : 2
-})
+
 
 const dark = ref(localStorage['vueuse-color-scheme'] == 'dark')
 
@@ -43,6 +42,16 @@ function close() {
 
 function toggle() {
   store.dispatch('toggle_currentOption')
+}
+
+async function reSize() {
+    console.log('resize')
+    maxCollapseNum.value = window.innerWidth >= 600 ? 5 : 2
+    // if(curOpt.value == 'video') {
+    //     playing.value = false
+    //    await init()
+       
+    // }
 }
 
 onMounted( async () => { 
@@ -185,6 +194,10 @@ div::-webkit-scrollbar-track {
 .el-slider {
   width: calc(100% - 20px);
   padding-left: 10px;
+}
+.el-select-dropdown__item {
+  width: 100%;
+  max-width: 100%;
 }
 .drawer-enter-from,
 .drawer-leave-to {

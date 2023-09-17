@@ -3,9 +3,13 @@
     display: flex;
     align-items: flex-start;
     width: 100%;
-    max-width: 50vw;
+    max-width: min(50vw, 30px);
     overflow: auto;
     // max-height: 500px;
+}
+
+.el-select-dropdown__item {
+    max-width: min(50vw, 300px);
 }
 
 .el-carousel__container {

@@ -287,7 +287,8 @@ onDeactivated( () => {
                 justify-content: center;
                 img {
                     border-radius: 10px;
-                    object-fit: fill;
+                    object-fit: cover;
+                    max-height: 100%;
                     // z-index: 121;
                 }
                 // .imageWrapperIn {
