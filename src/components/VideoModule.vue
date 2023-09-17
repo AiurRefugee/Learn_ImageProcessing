@@ -183,10 +183,10 @@ async function init() {
     canvasOutput.value.width = width
     canvasOutput.value.height = height
     canvasRead.value.width = width
-    canvasRead.value.height = height  
-    console.log(canvasOutput.value)
+    canvasRead.value.height = height   
     canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 
+    await nextTick()
     worker.value.onmessage = function(event) { 
 
         if(event.data.msg == 'loading') { 
@@ -269,7 +269,7 @@ onUnmounted( () => {
                     </div>
 
                 </div>
-                <div class="videoController" :style="{'max-height': videoHeight,'overflow': 'hidden'}">
+                <div class="videoController" >
                     <el-row justify="center" align="middle" style="width: 80%;">
                         <el-col :span="3">
                             <text>Input Source</text>

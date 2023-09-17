@@ -37,11 +37,13 @@ defineExpose({
             {transform: 'rotateY(360deg)'},
         ], 800)
         camerSwitch.value = !camerSwitch.value
+        await nextTick()
         await init()
     }
 })
 
 async function init() {
+    await nextTick()
     console.log('cameraVideoLoading', cameraVideoLoading)
     let display = await navigator.mediaDevices.getUserMedia(
         { video:
@@ -56,6 +58,7 @@ async function init() {
     let settings = display.getVideoTracks()[0].getSettings();
     width = settings.width;
     height = settings.height;  
+    console.log(width)
     cameraInput.value.srcObject = display
     cameraInput.value.play()
     if(interval) {
@@ -155,6 +158,7 @@ onMounted( async () => {
     console.log('camera onMounted')  
     console.log('interval', interval)
     if(!interval) { 
+        await nextTick()
         initWorker()
         await init()
     }
@@ -165,6 +169,7 @@ onActivated( async () => {
     console.log('camera onActivated') 
     console.log('interval', interval) 
     if(!interval) {
+        await nextTick()
         initWorker()
         await init() 
     }
@@ -208,6 +213,7 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
      #cameraInput {
         // display: none;
         opacity: 0.5;

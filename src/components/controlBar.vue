@@ -341,6 +341,7 @@ $controlZ: 50;
     position: absolute;
     right: 0;
     z-index: $controlZ;
+    overflow: hidden;
     // background-color: green;
     flex-direction: column;
     @media (max-width: 1000px) {

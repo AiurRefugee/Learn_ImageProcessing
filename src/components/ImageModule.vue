@@ -242,6 +242,7 @@ onUnmounted( () => {
     justify-content: flex-start;
     align-items: center;
     position: absolute;
+    overflow: hidden;
     left: 0;
     @media(max-width: 1000px) {
         // padding-top: 15%;
