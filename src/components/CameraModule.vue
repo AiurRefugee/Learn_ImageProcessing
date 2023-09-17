@@ -43,43 +43,31 @@ defineExpose({
 
 async function init() {
     console.log('cameraVideoLoading', cameraVideoLoading)
-    navigator.mediaDevices.getUserMedia({ video:
-        {
-            facingMode: faceMode.value,
-            width: 3840,
-            height: 2560
-
-        },
-        audio: false
-    })
-    .then(function(stream) {
-        mediaStream = stream
-        cameraInput.value.srcObject = stream;
-        cameraInput.value.play();
-        
-    })
-    .catch(function(error) {
-        ElMessage({
-            message: error,
-            grouping: true,
-            type: 'error',
-        })
-        console.log("An error occurred! " + error);
-    });
-    await nextTick()
-    let video = document.getElementById('cameraInput') 
-    width = video.clientWidth
-    height = video.clientHeight
-    console.log('cameraModule video', width)
-    canvasRead.value.width = width
-    canvasRead.value.height = height  
-    cameraOutput.value.width = width
-    cameraOutput.value.height = height  
-    cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    let display = await navigator.mediaDevices.getUserMedia(
+        { video:
+            {
+                facingMode: faceMode.value,
+                width: 3840,
+                height: 2560 
+            },
+            audio: false
+        }
+    ) 
+    let settings = display.getVideoTracks()[0].getSettings();
+    width = settings.width;
+    height = settings.height;  
+    cameraInput.value.srcObject = display
+    cameraInput.value.play()
     if(interval) {
         clearInterval(interval)
-    } 
+    }  
+    
+    initVideo()
 
+} 
+ 
+
+function initWorker() {
     worker.value.onmessage = function(event) { 
         // console.log('onMessage')
         if(event.data.msg == 'loading') {
@@ -109,19 +97,23 @@ async function init() {
         cameraVideoLoading = false
 
     };
-         
-    interval = setInterval( () => {
+}
 
+function initVideo() {  
+    canvasRead.value.width = width
+    canvasRead.value.height = height  
+    cameraOutput.value.width = width
+    cameraOutput.value.height = height  
+    cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    interval = setInterval( () => { 
         try { 
             processVideo()   
         } catch(error) {
             console.log(error)
-        }
-
+        } 
     }, 1000 / FPS) 
+}
 
-} 
- 
 function processVideo() {
     // console.log('processing Camera') 
     if(!cameraVideoLoading) {
@@ -162,7 +154,8 @@ function release() {
 onMounted( async () => { 
     console.log('camera onMounted')  
     console.log('interval', interval)
-    if(!interval) {
+    if(!interval) { 
+        initWorker()
         await init()
     }
 
@@ -172,7 +165,8 @@ onActivated( async () => {
     console.log('camera onActivated') 
     console.log('interval', interval) 
     if(!interval) {
-        await init()
+        initWorker()
+        await init() 
     }
 })
 
@@ -227,6 +221,7 @@ canvas {
         width: 100vw;
         height: 100vh; 
         background-color: black;
+        object-fit: cover;
         z-index: 1;  
      }
      // animation: rotate360 1s linear;
