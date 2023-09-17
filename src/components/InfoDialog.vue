@@ -20,10 +20,8 @@ function close() {
     emit('close')
 }
 
-function parse(mark) {
-    console.log(mark)
-    let res = marked(mark, { breaks: true })
-    console.log(res)
+function parse(mark) { 
+    let res = marked(mark, { breaks: true }) 
     return res
 }
 // const output = computed( () => {

@@ -21,9 +21,7 @@ const camera = ref(null)
 const curOpt = computed( () => store.getters.currentOption )
 const cameraStatus = computed( () => store.getters.cameraStatus ) 
 
-onMounted(() => {
-  // store.dispatch('systemInit')
-  console.log('aaa', cameraStatus.value)
+onMounted(() => { 
   store.dispatch('initWorker') 
   store.dispatch('set_currentOption', option)
   store.dispatch('systemInit') 

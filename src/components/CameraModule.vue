@@ -144,8 +144,7 @@ function processVideo() {
 
 function release() {
     cameraVideoLoading = false
-    if (mediaStream) {
-        console.log('tracks', mediaStream.getTracks())
+    if (mediaStream) { 
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象

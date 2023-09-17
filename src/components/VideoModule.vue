@@ -183,19 +183,13 @@ async function init() {
     canvasOutput.value.width = width
     canvasOutput.value.height = height
     canvasRead.value.width = width
-    canvasRead.value.height = height 
-    console.log('videoModule video', width)
+    canvasRead.value.height = height  
     console.log(canvasOutput.value)
     canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
 
     worker.value.onmessage = function(event) { 
 
-        if(event.data.msg == 'loading') {
-            // ElMessage({
-            //     message: `Waiting for OpenCV to be loaded.`,
-            //     grouping: true,
-            //     type: 'error',
-            // })
+        if(event.data.msg == 'loading') { 
             videoLoading = false
             return false
         }
@@ -226,12 +220,7 @@ async function init() {
   
 
 async function reSize() {
-    console.log('resize')
-    // if(curOpt.value == 'video') {
-    //     playing.value = false
-    //    await init()
-       
-    // }
+    console.log('resize') 
 }
 
 onActivated(  async () => {

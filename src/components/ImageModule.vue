@@ -9,7 +9,8 @@ const store = useStore()
 const imageUrl = ref('/src/assets/imgs/gundam.jpeg')
 const imageUrlList = ref([])
 const loading = ref(true)
-const imageOption = ref()
+const showViewer = ref(false)
+const elImage = ref()
 const imageOutSrc = ref(null)
 const imageInput = ref(null) // <img>
 const fileInput = ref(null) // <input>
@@ -66,7 +67,7 @@ function outputImage() {
     try {
         src = cv.imread(image)  
         processImage()
-        loading.value = false   
+          
     } catch(error) {
         console.log(error)
         ElMessage({
@@ -79,6 +80,7 @@ function outputImage() {
 
 const processImage = () =>  {
     cv.imshow('imageOutput', src);
+    loading.value = false 
     imageOutSrc.value = imageOutput.value.toDataURL()
     imageUrlList.value.push(imageOutSrc.value)
     for (const process of processConfigs.value) { 
@@ -119,6 +121,17 @@ function inputChange(e) {
         loading.value = true
     } 
 }
+
+function preview() {
+    if(!loading.value) {
+        console.log('click')
+        showViewer.value = true
+    }
+}
+
+function closeViewer() {
+    showViewer.value = false
+}
  
 
 onMounted(() => {
@@ -148,14 +161,17 @@ onUnmounted( () => {
                 <img id="imageInput" ref="imageInput" :src="imageUrl" style="display: none;"/>
                 <img id="imageSrc" :src="imageUrl"
                     :style="{display: loading ? 'flex' : 'none'}" />
-                <el-image :src="imageOutSrc"
-                    :preview-src-list="imageUrlList"
-                    v-if="!loading"
+                <el-image-viewer :src="imageOutSrc"
+                    :url-list="imageUrlList"
+                    v-if="showViewer"
                     fit="contain"
+                    ref="elImage"
+                    :infinite="false"
                     hide-on-click-modal 
+                    @close="closeViewer"
                     >
-                </el-image>  
-                <canvas ref="imageOutput" id="imageOutput" style="display: none;"></canvas>
+                </el-image-viewer>  
+                <canvas ref="imageOutput" id="imageOutput" :style="{display: !loading ? 'flex' : 'none'}" @click="preview"></canvas>
             </div> 
             <div class="labelArea">
                 <el-row justify="center" align="middle" :gutter="20" style="width: 100%;">
@@ -189,11 +205,14 @@ onUnmounted( () => {
     width: 70%;
  }
  .el-image {
-    display: flex;
+    display: none;
     overflow: hidden;
     justify-content: center;
     max-height: 100%;
- }
+    max-width: 100;
+    width: auto;
+    border-radius: 15px; 
+ } 
  .labelArea .el-scrollbar {
     max-width: 30vw;
  }
@@ -202,6 +221,7 @@ onUnmounted( () => {
         height: 40px;
     }
 }
+
 .el-image-viewer__next, .el-image-viewer__prev, .el-image-viewer__close {
     background-color: transparent;
 }
@@ -209,7 +229,10 @@ onUnmounted( () => {
     max-width: 90%;
 } 
 .el-select-dropdown__item {
-    max-width: min(50vw, 300px);
+    max-width: 50vw;
+    @media(max-width: 1000px) {
+        max-width: min(50vw, 300px);
+    }
 }
 .imageModuleWrapper {
     display: flex;
@@ -264,7 +287,7 @@ onUnmounted( () => {
             align-items: center;
             overflow: hidden;
             // border: 2px solid white;
-            border-radius: 10px;
+            border-radius: 12px;
             // z-index: 11; 
                 #imageSrc {
                     border-radius: 15px;
@@ -278,10 +301,7 @@ onUnmounted( () => {
                     object-fit: contain;
                     max-width: 100%;
                     max-height: 100%;
-                }
-                img {
-                    border-radius: 10px;
-                }
+                } 
                 
 
 

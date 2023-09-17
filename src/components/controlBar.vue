@@ -93,8 +93,7 @@ function toggleMode() {
         { transform: 'rotate(360deg)'}
     ],
     500
-    )
-    console.log(refresh.value)
+    ) 
     emit('toggleMode')
 }
 
@@ -147,8 +146,7 @@ function takePhoto() {
 
 function beginRecord() {
     timeCount.value = 0
-    timeString.value = '00:00:00'
-    console.log('record', ctx.value)
+    timeString.value = '00:00:00' 
     recording.value = true
     if(curOpt.value == 'image') {
         emit('outputImage')

@@ -56,10 +56,7 @@ async function reSize() {
 
 onMounted( async () => { 
   // console.log('test'. filtredConfigs.value)
-  console.log('onMounted') 
-  window.addEventListener('storage', (e) => {
-    console.log("storage值发生变化后触发:", e)
-  }); 
+  console.log('onMounted')  
    
 })
 
