@@ -11,6 +11,7 @@ const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
 const vloading = ref(true)
 let cameraVideoLoading = false
+let contextRead, contextDraw
 let Message
 
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
@@ -33,7 +34,7 @@ let interval = null
 
 
 defineExpose({
-    toggleMode: async () => {
+    toggleMode: async () => { 
         cameraWrapper.value.animate([
             {transform: 'rotateY(0)'},
             {transform: 'rotateY(360deg)'},
@@ -50,8 +51,9 @@ watch( vloading, () => {
 
 async function init() {
     try {
-        await nextTick() 
-        let display = await navigator.mediaDevices.getUserMedia(
+        await nextTick()
+        release() 
+        mediaStream = await navigator.mediaDevices.getUserMedia(
             { video:
                 {
                     facingMode: faceMode.value,
@@ -61,16 +63,34 @@ async function init() {
                 audio: false
             }
         ) 
-        let settings = display.getVideoTracks()[0].getSettings();
-        width = settings.width;
-        height = settings.height;  
-        // console.log(width)
-        cameraInput.value.srcObject = display 
+        let settings = mediaStream.getVideoTracks()[0].getSettings();
+        switch(screen.orientation.type) {
+            case 'landscape-primary':
+            case 'landscape-secondary':
+                width = Math.max(settings.width, settings.height);
+                height = Math.min(settings.width, settings.height);  
+                console.log(width, height)
+                break;
+            case 'portrait-primary':
+            case 'portrait-secondary':
+                width = Math.min(settings.width, settings.height);
+                height = Math.max(settings.width, settings.height); 
+                console.log(width, height)
+                break;
+            default: 
+                width = 3840
+                height = 2560
+        }
+        
+        
+        // console.log(settings.width, settings.height)
+        cameraInput.value.srcObject = mediaStream 
         if(interval) {
             clearTimeout(interval)
         }   
         initVideo()
     } catch(error) {
+        release()
         console.log(error)
     }
 
@@ -85,10 +105,9 @@ function initWorker() {
         if(event.data.msg == 'loading') {  
             return false
         }
-        vloading.value = false
-        let context = cameraOutput.value.getContext('2d', { willReadFrequently: true }) 
-        context.clearRect(0, 0, width, height) 
-        context.putImageData(event.data.image, 0, 0)
+        vloading.value = false 
+        contextDraw.clearRect(0, 0, width, height) 
+        contextDraw.putImageData(event.data.image, 0, 0)
 
         if(event.data.type == 'error') { 
             event.data.indexs.map(item => {
@@ -105,16 +124,19 @@ function initWorker() {
     };
 }
 
-function initVideo() {  
+function initVideo() {   
     canvasRead.value.width = width
     canvasRead.value.height = height  
     cameraOutput.value.width = width
     cameraOutput.value.height = height  
-    cameraOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+    contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+    contextDraw.clearRect(0, 0, width, height)
     if(!interval) {
         try {  
             processVideo() 
         } catch(error) {
+            release()
             console.log(error)
         }
     }
@@ -122,15 +144,12 @@ function initVideo() {
 
 function processVideo() {
     // console.log('processing Camera')  
-        // console.log('camera processing')
-        const context = canvasRead.value.getContext('2d', { willReadFrequently: true }) ;   
-        context.clearRect(0, 0, width, height)
-        context.fillStyle = 'black'; // 或其他背景色
-        context.fillRect(0, 0, width, height);    
+        // console.log('camera processing') 
+        contextRead.clearRect(0, 0, width, height) 
         // 将图像绘制到 canvas 上
-        context.drawImage(cameraInput.value, 0, 0); 
+        contextRead.drawImage(cameraInput.value, 0, 0); 
         // 获取图像数据
-        let imageData = context.getImageData(0, 0, width, height);  
+        let imageData = contextRead.getImageData(0, 0, width, height);  
         // console.log('postMessage')
         worker.value.postMessage({
             image: imageData,
@@ -151,17 +170,24 @@ function release() {
     interval = null  
 }
 
-onMounted( async () => { 
-    console.log('camera onMounted')  
-    console.log('interval', interval)
-    if(!interval) { 
-        await nextTick()
-        initWorker()
-        await nextTick()
-        await init()
-    }
+// function rotationChange() {
+//     console.log('rotation changed to:', screen.orientation.type);
+// }
 
-})
+// screen.orientation.addEventListener('change', rotationChange);
+
+
+// onMounted( async () => { 
+//     console.log('camera onMounted')  
+//     console.log('interval', interval)
+//     if(!interval) { 
+//         await nextTick()
+//         initWorker()
+//         await nextTick()
+//         await init()
+//     }
+
+// })
 
 onActivated( async () => {
     console.log('camera onActivated') 
@@ -170,6 +196,13 @@ onActivated( async () => {
         message: 'Module is loading.',
         duration: 0
     })
+    console.log('orientation:', screen.orientation.type)
+    screen.orientation.addEventListener('change' ,async function() {
+        // 在方向变化时执行相应的操作，例如旋转视频元素
+        // 你可以根据设备的方向来旋转视频元素
+        console.log('orientation:', screen.orientation.type) 
+        await init()
+    });
     if(!interval) {
         await nextTick()
         initWorker()
@@ -206,10 +239,7 @@ onUnmounted(() => {
     100% {
     transform: rotateY(360deg); /* 360度旋转，一周 */
     }
-}
-canvas {
-    object-fit: fill;
-}
+} 
 .cameraWrapper {
     width: 100vw;
     height: 100vh;
@@ -223,14 +253,17 @@ canvas {
         position: absolute;
         z-index: 0;
         opacity: 0;
+        display: none;
         height: 100vh; 
         object-fit: cover; 
+        orientation: landscape;
      }
      #cameraOutput {
         width: 100vw;
         height: 100vh; 
-        display: flex;
-        background-color: black;
+        display: flex; 
+        // display: none;
+        background-color: gray;
         object-fit: contain;
         z-index: 1;  
      }
