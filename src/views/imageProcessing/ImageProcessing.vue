@@ -23,21 +23,15 @@ const cameraStatus = computed( () => store.getters.cameraStatus )
 
 onMounted(() => { 
   store.dispatch('initWorker') 
+  console.log(option)
   store.dispatch('set_currentOption', option)
   store.dispatch('systemInit') 
 })
 
-// functions
-
 function outputImage() { 
-  switch(curOpt.value) {
-    case 'image':  
-        image.value.outputImage()
-      break
-    case 'camera':
-        camera.value.outputImage()
-        break
-  }
+  if (curOpt.value == 'image') {
+    image.value.outputImage()
+  } 
 }
 
 function toggleMode() {

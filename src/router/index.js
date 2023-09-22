@@ -3,12 +3,20 @@ import { useStore } from 'vuex';
 const store = useStore()
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
       name: 'welcome',
       component: () => import('@/views/welcome.vue'),
+      meta: {
+        title: 'Learn ImageProcessing'
+      }
+    },
+    {
+      path: '/imageProcessing',
+      name: 'imageProcessing',  
+      component: () => import('@/views/imageProcessing/ImageProcessing.vue'),
       meta: {
         title: 'Learn ImageProcessing'
       }

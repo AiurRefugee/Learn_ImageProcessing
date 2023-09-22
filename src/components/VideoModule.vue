@@ -20,10 +20,11 @@ const videoInput = ref(null)
 const size = ref(Object)
 const canvasOutput = ref(null)
 const canvasRead = ref(null)
-const FPS = 60; 
+const FPS = 30; 
 const videoModuleWrapper = ref(null) 
 const displayPointer = ref(50) 
 let videoLoading = false 
+let contextRead, contextDraw
 
 
 const curOpt = computed( () => store.getters.currentOption )
@@ -88,15 +89,12 @@ async function play() {
 
 function processVideo() {   
     if(playing.value) {
-        console.log('processing Video')
-        const context = canvasRead.value.getContext('2d', { willReadFrequently: true });   
-        context.clearRect(0, 0, width, height)
-        context.fillStyle = 'black'; // 或其他背景色
-        context.fillRect(0, 0, width, height);    
+        console.log('processing Video')   
+        contextRead.clearRect(0, 0, width, height) 
         // 将图像绘制到 canvas 上
-        context.drawImage(videoInput.value, 0, 0); 
+        contextRead.drawImage(videoInput.value, 0, 0); 
         // 获取图像数据
-        let imageData = context.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
+        let imageData = contextRead.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
         // console.log(configs.value)
         worker.value.postMessage({
             image: imageData,
@@ -146,8 +144,7 @@ async function fileChange() {
 
 async function init() {  
     await nextTick()
-    let video = document.getElementById('videoInput')
-    
+    let video = document.getElementById('videoInput') 
     duration = video.duration
     width = video.videoWidth
     height = video.videoHeight
@@ -157,8 +154,13 @@ async function init() {
     canvasOutput.value.height = height
     canvasRead.value.width = width
     canvasRead.value.height = height   
-    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
+    contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+    contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
+    contextDraw.clearRect(0, 0, width, height)
 
+    
+}
+async function initWorker() {
     await nextTick()
     worker.value.onmessage = function(event) { 
         // console.log('message')
@@ -169,10 +171,9 @@ async function init() {
             // videoLoading = false
             return false
         }
-
-        let context = canvasOutput.value.getContext('2d', { willReadFrequently: true }) 
-        context.clearRect(0, 0, width, height) 
-        context.putImageData(event.data.image, 0, 0)
+ 
+        contextDraw.clearRect(0, 0, width, height) 
+        contextDraw.putImageData(event.data.image, 0, 0)
         
         if(event.data.type == 'error') { 
             event.data.indexs.map(item => {
@@ -192,16 +193,19 @@ async function init() {
         
 
     };
-}
-  
+}  
 
 async function reSize() {
     console.log('resize') 
 }
 
+onMounted( () => {
+    console.log('video onMounted')
+})
+
 onActivated(  async () => {
     console.log('video Activated') 
-    document.getElementById('canvasOutput').getContext('2d').clearRect(0, 0, 3840, 2560)
+    await initWorker() 
     await init()
     videoInput.value.addEventListener('loadedmetadata', init)  
     videoUpload.value.addEventListener( "change", fileChange)   
@@ -216,7 +220,7 @@ onDeactivated( () => {
     playing.value = false
     videoLoading = false
     try{
-        document.getElementById('canvasOutput').getContext('2d').clearRect(0, 0, 3840, 2560)
+        contextDraw.clearRect(0, 0, 3840, 2560)
     } catch {
         
     }
@@ -335,8 +339,9 @@ onUnmounted( () => {
             overflow: hidden;
             border-radius: 12px;
             @media(max-width: 1000px) {
-                width: calc(100vw - 50px);
+                width: calc(95vw - 50px);
                 height: 95%;
+                margin-top: 5%;
             }
             .playerWrapper {
                 $videoMinW: 60vw;

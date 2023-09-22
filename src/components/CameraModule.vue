@@ -6,7 +6,7 @@ const store = useStore()
 const cameraInput = ref(null)
 const canvasRead = ref(null) 
 const cameraOutput = ref(null)
-const FPS = 60;
+const FPS = 30;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
 const vloading = ref(true)
@@ -14,6 +14,7 @@ let cameraVideoLoading = false
 let contextRead, contextDraw
 let Message
 
+const curOpt = computed( () => store.getters.currentOption )
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 const worker = computed( () => store.getters.worker)
 
@@ -45,9 +46,9 @@ defineExpose({
     }
 })
 
-watch( vloading, () => {
-    Message.close()
-})
+// watch( vloading, () => {
+//     Message.close()
+// })
 
 async function init() {
     try {
@@ -102,10 +103,11 @@ function initWorker() {
         // console.log('onMessage')
         interval = setTimeout(processVideo,
         1000 / FPS)
+        Message.close()
         if(event.data.msg == 'loading') {  
             return false
         }
-        vloading.value = false 
+        // vloading.value = false 
         contextDraw.clearRect(0, 0, width, height) 
         contextDraw.putImageData(event.data.image, 0, 0)
 
@@ -201,7 +203,9 @@ onActivated( async () => {
         // 在方向变化时执行相应的操作，例如旋转视频元素
         // 你可以根据设备的方向来旋转视频元素
         console.log('orientation:', screen.orientation.type) 
-        await init()
+        if(curOpt.value == 'camera') {
+            await init()
+        }
     });
     if(!interval) {
         await nextTick()
@@ -263,8 +267,8 @@ onUnmounted(() => {
         height: 100vh; 
         display: flex; 
         // display: none;
-        background-color: gray;
-        object-fit: contain;
+        // background-color: gray;
+        object-fit: cover;
         z-index: 1;  
      }
      // animation: rotate360 1s linear;
