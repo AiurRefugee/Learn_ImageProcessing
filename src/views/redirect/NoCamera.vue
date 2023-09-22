@@ -29,6 +29,6 @@ function goBack() {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    background-color: white; 
+    // background-color: white; 
 }
 </style>

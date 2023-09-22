@@ -10,7 +10,7 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark) 
 
 const store = useStore()
-const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
+const dark = ref(window.localStorage['vueuse-color-scheme'] == 'auto')
 const pos = ref('left') 
 const showDialog = ref(false) 
 const iconWidth = ref(5)
@@ -62,6 +62,7 @@ function navigateTo(option) {
         path: `/imageProcessing/${option}`
       })
   } else { 
+    console.log(status.value)
      if(status.value == 'Normal') {
       router.push({
         path: `/imageProcessing/${option}`
@@ -76,6 +77,7 @@ function navigateTo(option) {
 
 onMounted(() => {   
   console.log('onMounted') 
+  store.dispatch('systemInit') 
   console.log(dark.value) 
 })
 

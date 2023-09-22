@@ -17,7 +17,7 @@ const toggleDark = useToggle(isDark)
 const $bus = inject('$bus')
 
 //ref
-const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
+const dark = ref(window.localStorage['vueuse-color-scheme'] == 'auto')
 const recording = ref(false)
 const videoCaped = ref([])
 const timeCount = ref(0)
@@ -79,17 +79,21 @@ async function control(option) {
     }
     if(option != curOpt.value) {
         store.dispatch('set_currentOption', option)
-        if(option == "camera") { 
+        if(option == "camera") {
+            console.log('con', cameraStatus.value) 
             if(cameraStatus.value != 'Normal') {
                 router.push({
-                    path: `/noCamera/${cameraStatus.value}`
+                    path: `/noCamera/${cameraStatus.value}`,
+                    replace: true
                 })
             }
+        } else {
+            router.push({
+                path: `/imageProcessing/${option}`,
+                replace: true
+            })
         }
-        router.push({
-            path: `/imageProcessing/${option}`,
-            replace: true
-        })
+        
         
     }
 }
