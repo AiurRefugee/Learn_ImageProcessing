@@ -411,8 +411,7 @@ onUnmounted( () => {
                 min-height: 10%;
                 max-height: 80px;
                 display: flex;
-                justify-content: space-around;
-                position: absolute;
+                justify-content: space-around; 
                 z-index: 2;
                 bottom: 0;
                 padding-bottom: 5px;

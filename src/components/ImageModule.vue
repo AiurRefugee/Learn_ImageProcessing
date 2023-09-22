@@ -62,11 +62,6 @@ let width, height
 // computed
 const curOpt = computed( () => store.getters.currentOption )
 const processConfigs = computed( () => store.getters.processConfigs )
- 
-
-defineExpose( {
-    outputImage
-})
 
 function outputImage() {  
     let image = document.getElementById('imageInput')  
@@ -88,7 +83,8 @@ function outputImage() {
 const processImage = () =>  {
     cv.imshow('imageOutput', src);
     loading.value = false 
-    imageOutSrc.value = imageOutput.value.toDataURL()
+    let imageOutput = document.getElementById('imageOutput')
+    imageOutSrc.value = imageOutput.toDataURL()
     imageUrlList.value.push(imageOutSrc.value)
     for (const process of processConfigs.value) { 
         if(process.imageAvailable && process.selected) {
@@ -100,7 +96,7 @@ const processImage = () =>  {
             src = dst
 
             cv.imshow('imageOutput', src);
-            imageOutSrc.value = imageOutput.value.toDataURL()
+            imageOutSrc.value = imageOutput.toDataURL()
             imageUrlList.value.push(imageOutSrc.value) 
         }
     }
