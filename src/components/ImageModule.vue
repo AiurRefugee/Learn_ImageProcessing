@@ -1,11 +1,16 @@
 <script setup>
-import { onMounted, ref, computed, watch, onDeactivated, onActivated, onUnmounted, nextTick} from 'vue'
+import { onMounted, ref, computed, watch, onDeactivated, onActivated, onUnmounted, nextTick, inject} from 'vue'
 import cv from 'opencv.js';
 import { ElMessage } from 'element-plus';
 import { useStore } from 'vuex';  
 
 const store = useStore()
+ 
+//inject
+const $bus = inject('$bus')
+$bus.on('outputImage', outputImage)
 
+//ref
 const imageUrl = ref('/src/assets/imgs/gundam.jpeg')
 const imageUrlList = ref([])
 const loading = ref(true)

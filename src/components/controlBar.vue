@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onActivated, ref, computed, nextTick, watch} from 'vue'
+import { onMounted, onActivated, ref, computed, nextTick, watch, inject} from 'vue'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -13,6 +13,10 @@ let timeInterval
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
+//inject
+const $bus = inject('$bus')
+
+//ref
 const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
 const recording = ref(false)
 const videoCaped = ref([])
@@ -131,7 +135,7 @@ function takePhoto() {
     try{
         // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
         if(curOpt.value == 'image') {
-            emit('outputImage')
+           $bus.emit('outputImage')
         }
         // cv.imshow(ctx.value.id)
 

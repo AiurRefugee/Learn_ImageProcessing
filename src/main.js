@@ -19,10 +19,16 @@ import store from './store'
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
+import EventBus from '@/utils/eventBus.js'
+// 或者：import EventBus from 'mitt'
+const $bus = new EventBus()
+
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+
+app.provide('$bus', $bus)
 
 app.use(store)
 
