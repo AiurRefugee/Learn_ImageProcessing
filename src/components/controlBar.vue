@@ -39,7 +39,6 @@ const curOpt = computed( () => store.getters.currentOption )
 const cameraCount = computed(() => store.getters.cameraNum)
 const cameraStatus = computed( () => store.getters.cameraStatus) 
 
-const emit = defineEmits(['outputImage', 'toggleMode'])
 
 const options = computed(() => {
    return ['image', 'video', 'camera']
@@ -102,7 +101,7 @@ function toggleMode() {
     ],
     500
     ) 
-    emit('toggleMode')
+    $bus.emit('toggleMode')
 }
 
 function toggleDrawer() {

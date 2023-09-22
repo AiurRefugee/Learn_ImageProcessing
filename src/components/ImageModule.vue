@@ -59,6 +59,8 @@ let src
 let dst = new cv.Mat()
 let width, height
 
+// computed
+const curOpt = computed( () => store.getters.currentOption )
 const processConfigs = computed( () => store.getters.processConfigs )
  
 
@@ -141,13 +143,17 @@ function closeViewer() {
 
 onMounted(() => {
     console.log('image onMounted')
+    if(!curOpt.value) {
+        store.dispatch('set_currentOption', 'image')
+    }
 })
 
 onActivated( async () => {
     console.log('image Activated')
-    let image = document.getElementById('imageInput')
-    width = image.clientWidth
-    height = image.clientHeight 
+    if(!curOpt.value) {
+        store.dispatch('set_currentOption', 'image')
+    }
+    
 })
 onDeactivated( () => {
     console.log('image Deactivated')

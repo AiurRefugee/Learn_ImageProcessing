@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, watch, nextTick, onUnmounted, onActivated, onDeactivated} from 'vue'
+import { onMounted, ref, computed, watch, nextTick, onUnmounted, onActivated, onDeactivated, inject} from 'vue'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'; 
 const store = useStore()
@@ -13,6 +13,10 @@ const vloading = ref(true)
 let cameraVideoLoading = false
 let contextRead, contextDraw
 let Message
+
+//inject
+const $bus = inject('$bus')
+$bus.on('toggleMode', toggleMode)
 
 const curOpt = computed( () => store.getters.currentOption )
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
@@ -33,18 +37,15 @@ let width, height, mediaStream
 let interval = null
 
 
-
-defineExpose({
-    toggleMode: async () => { 
-        cameraWrapper.value.animate([
+async function toggleMode () {
+    cameraWrapper.value.animate([
             {transform: 'rotateY(0)'},
             {transform: 'rotateY(360deg)'},
         ], 800)
         camerSwitch.value = !camerSwitch.value
         await nextTick()
         await init()
-    }
-})
+}
 
 // watch( vloading, () => {
 //     Message.close()
@@ -53,6 +54,9 @@ defineExpose({
 async function init() {
     try {
         await nextTick()
+        if(!curOpt.value) {
+            store.dispatch('set_currentOption', 'image')
+        }
         release() 
         mediaStream = await navigator.mediaDevices.getUserMedia(
             { video:

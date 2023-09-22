@@ -1,12 +1,15 @@
 <script setup>
-import { onMounted, ref, computed, onActivated, onUnmounted, nextTick, watch} from 'vue' 
+import { onMounted, ref, computed, onActivated, onUnmounted, nextTick, watch, inject} from 'vue' 
 import { useStore } from 'vuex'; 
 import { classification } from '@/opencv/configs.js' 
-import InfoDialog from '@/components/InfoDialog.vue'
-const emit = defineEmits(['outputImage']) 
+import InfoDialog from '@/components/InfoDialog.vue' 
  
 const store = useStore() 
 
+//inject
+const $bus = inject('$bus')
+
+//ref
 const infoList = ref([])
 const infoVisible = ref(false) 
 const labelWidth = ref(5)
@@ -27,7 +30,7 @@ const dark = ref(localStorage['vueuse-color-scheme'] == 'dark')
 
 function output() {  
   if(curOpt.value == 'image') {  
-    emit('outputImage')
+    $bus.emit('outputImage')
   }  
 }
 

@@ -24,17 +24,20 @@ const camera = ref(null)
 const curOpt = computed( () => store.getters.currentOption )
 const cameraStatus = computed( () => store.getters.cameraStatus ) 
 
-onMounted(() => { 
+onMounted( async () => { 
   store.dispatch('initWorker')   
   store.dispatch('systemInit') 
-  console.log(curOpt.value)
-  if(!curOpt.value) {
-    store.dispatch('set_currentOption', 'image')
-    router.push({
-      path: `/imageProcessing/image`,
-      replace: true
-    })
-  }
+  console.log(option)
+  setTimeout(async () => {
+    await nextTick()
+    if(!curOpt.value) {
+      store.dispatch('set_currentOption', 'image')
+      router.push({
+        path: `/imageProcessing/image`,
+        replace: true
+      })
+    }
+  }, 200)
 })
 
 function outputImage() { 

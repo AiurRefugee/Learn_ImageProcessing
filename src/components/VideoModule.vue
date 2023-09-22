@@ -143,9 +143,11 @@ async function fileChange() {
 }
 
 async function init() {  
-    await nextTick()
+    console.log('video Init')
+    await nextTick() 
+    store.dispatch('set_currentOption', 'video') 
     let video = document.getElementById('videoInput') 
-    duration = video.duration
+    
     width = video.videoWidth
     height = video.videoHeight
     videoInput.value.width = width
@@ -204,7 +206,11 @@ onMounted( async () => {
     if(!interval) {
         await initWorker() 
         await init()
-        videoInput.value.addEventListener('loadedmetadata', init)  
+        videoInput.value.addEventListener('loadedmetadata', async () => {
+            console.log('metaData Loaded')
+            duration = document.getElementById('videoInput').duration
+            await init()
+        })  
         videoUpload.value.addEventListener( "change", fileChange)   
         // document.body.style.setProperty('--el-text-color-primary', 'white')
         window.addEventListener('resize', reSize)
@@ -213,14 +219,14 @@ onMounted( async () => {
 
 onActivated(  async () => {
     console.log('video Activated') 
-    if(!interval) {
-        await initWorker() 
-        await init()
-        videoInput.value.addEventListener('loadedmetadata', init)  
-        videoUpload.value.addEventListener( "change", fileChange)   
-        // document.body.style.setProperty('--el-text-color-primary', 'white')
-        window.addEventListener('resize', reSize)
-    }
+    // if(!interval) {
+    //     await initWorker() 
+    //     await init()
+    //     videoInput.value.addEventListener('loadedmetadata', init)  
+    //     videoUpload.value.addEventListener( "change", fileChange)   
+    //     // document.body.style.setProperty('--el-text-color-primary', 'white')
+    //     window.addEventListener('resize', reSize)
+    // }
     
 })
 
@@ -230,7 +236,7 @@ onDeactivated( () => {
     playing.value = false
     videoLoading = false
     try{
-        contextDraw.clearRect(0, 0, 3840, 2560)
+        contextDraw.clearRect(0, 0, width, height)
     } catch {
         
     }
@@ -245,7 +251,7 @@ onUnmounted( () => {
     playing.value = false
     videoLoading = false
     try{
-        contextDraw.clearRect(0, 0, 3840, 2560)
+        contextDraw.clearRect(0, 0, width, height)
     } catch {
         
     }
@@ -351,6 +357,7 @@ onUnmounted( () => {
             width: calc(85vw - $boderSize * 2);
             height: 90%;
             margin-top: $boderSize;
+            position: relative;
             outline: $boderSize solid gray;
             background-color: black; 
             display: flex;
@@ -396,7 +403,7 @@ onUnmounted( () => {
                         max-height: 100%;
                         object-fit: contain; 
                         z-index: 1;
-                    }
+                    } 
                 } 
             }
             .videoController {
@@ -405,10 +412,15 @@ onUnmounted( () => {
                 max-height: 80px;
                 display: flex;
                 justify-content: space-around;
+                position: absolute;
+                z-index: 2;
+                bottom: 0;
+                padding-bottom: 5px;
                 color: white;
+                transition: all 0.5s ease;
                 background: linear-gradient(to bottom, gray 1px, black);
-                opacity: 0.8;
-                padding-bottom: 5px; 
+                // opacity: 0.8;
+                // padding-bottom: 5px; 
                 .el-col {
                     display: flex;
                     justify-content: space-around;
