@@ -10,8 +10,7 @@ import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import router from '../../router'; 
 const store = useStore() 
-const route = useRoute() 
-const option = route.params.option
+const route = useRoute()  
 
 
 
@@ -26,10 +25,10 @@ const cameraStatus = computed( () => store.getters.cameraStatus )
 
 onMounted( async () => { 
   store.dispatch('initWorker')   
-  store.dispatch('systemInit') 
-  console.log(option)
+  store.dispatch('systemInit')  
   setTimeout(async () => {
     await nextTick()
+    console.log(curOpt.value)
     if(!curOpt.value) {
       store.dispatch('set_currentOption', 'image')
       router.push({
@@ -37,7 +36,7 @@ onMounted( async () => {
         replace: true
       })
     }
-  }, 200)
+  }, 2000)
 })
 
 function outputImage() { 

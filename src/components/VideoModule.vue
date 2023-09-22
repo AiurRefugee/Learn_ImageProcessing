@@ -144,7 +144,8 @@ async function fileChange() {
 
 async function init() {  
     console.log('video Init')
-    await nextTick() 
+    
+    await nextTick()  
     store.dispatch('set_currentOption', 'video') 
     let video = document.getElementById('videoInput') 
     
@@ -202,7 +203,7 @@ async function reSize() {
 }
 
 onMounted( async () => {
-    console.log('video onMounted')
+    console.log('video onMounted') 
     if(!interval) {
         await initWorker() 
         await init()

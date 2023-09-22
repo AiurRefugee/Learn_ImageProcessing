@@ -87,12 +87,12 @@ async function control(option) {
                     replace: true
                 })
             }
-        } else {
+        }
+        
             router.push({
                 path: `/imageProcessing/${option}`,
                 replace: true
             })
-        }
         
         
     }
