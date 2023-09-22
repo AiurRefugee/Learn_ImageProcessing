@@ -226,7 +226,8 @@ function endRecord() {
 
 onMounted( async () => {
     console.log('control mount')
-
+    await nextTick()
+    console.log(curOpt.value)
 })
 
 onActivated( () => {

@@ -199,18 +199,28 @@ async function reSize() {
     console.log('resize') 
 }
 
-onMounted( () => {
+onMounted( async () => {
     console.log('video onMounted')
+    if(!interval) {
+        await initWorker() 
+        await init()
+        videoInput.value.addEventListener('loadedmetadata', init)  
+        videoUpload.value.addEventListener( "change", fileChange)   
+        // document.body.style.setProperty('--el-text-color-primary', 'white')
+        window.addEventListener('resize', reSize)
+    }
 })
 
 onActivated(  async () => {
     console.log('video Activated') 
-    await initWorker() 
-    await init()
-    videoInput.value.addEventListener('loadedmetadata', init)  
-    videoUpload.value.addEventListener( "change", fileChange)   
-    // document.body.style.setProperty('--el-text-color-primary', 'white')
-    window.addEventListener('resize', reSize)
+    if(!interval) {
+        await initWorker() 
+        await init()
+        videoInput.value.addEventListener('loadedmetadata', init)  
+        videoUpload.value.addEventListener( "change", fileChange)   
+        // document.body.style.setProperty('--el-text-color-primary', 'white')
+        window.addEventListener('resize', reSize)
+    }
     
 })
 
@@ -232,6 +242,17 @@ onDeactivated( () => {
 
 onUnmounted( () => {
     console.log('video onUnmounted') 
+    playing.value = false
+    videoLoading = false
+    try{
+        contextDraw.clearRect(0, 0, 3840, 2560)
+    } catch {
+        
+    }
+    if(interval) {
+        clearTimeout(interval)
+        interval = null
+    } 
 })
 
 </script>
@@ -361,14 +382,14 @@ onUnmounted( () => {
                     position: relative;
                     justify-content: center;
                     align-items: center;  
-                        // border-right: 2px solid white;
-                        video {  
-                            width: 100%;
-                            height: 100%; 
-                            position: absolute;
-                            left: 0;
-                            z-index: 1;
-                        } 
+                    // border-right: 2px solid white;
+                    video {  
+                        width: 100%;
+                        height: 100%; 
+                        position: absolute;
+                        left: 0;
+                        z-index: 1;
+                    } 
                     #canvasOutput {
                         display: flex;  
                         max-width: 100%;

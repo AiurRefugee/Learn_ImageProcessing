@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick} from 'vue'
+import { onMounted, ref, computed, nextTick, inject} from 'vue'
 import ControlBar from '@/components/ControlBar.vue';
 import CameraModule from '@/components/CameraModule.vue';
 import ImageModule from '@/components/ImageModule.vue';
@@ -8,9 +8,12 @@ import Drawer from '@/components/Drawer.vue';
 import { ElMessage } from 'element-plus';  
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
+import router from '../../router'; 
 const store = useStore() 
 const route = useRoute() 
 const option = route.params.option
+
+
 
 // refs
 const image = ref(null)
@@ -22,10 +25,16 @@ const curOpt = computed( () => store.getters.currentOption )
 const cameraStatus = computed( () => store.getters.cameraStatus ) 
 
 onMounted(() => { 
-  store.dispatch('initWorker') 
-  console.log(option)
-  store.dispatch('set_currentOption', option)
+  store.dispatch('initWorker')   
   store.dispatch('systemInit') 
+  console.log(curOpt.value)
+  if(!curOpt.value) {
+    store.dispatch('set_currentOption', 'image')
+    router.push({
+      path: `/imageProcessing/image`,
+      replace: true
+    })
+  }
 })
 
 function outputImage() { 
@@ -44,22 +53,10 @@ function toggleMode() {
   <div class="appContainer"> 
      
     <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
-      
-    <transition mode="out-in">  
-      <keep-alive>
-        <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule>   
-      </keep-alive>
+    
+    <transition>
+      <router-view/>  
     </transition> 
-    <transition mode="out-in"> 
-      <keep-alive>
-        <VideoModule ref="video" v-if="curOpt == 'video'"></VideoModule> 
-      </keep-alive>
-    </transition>
-    <transition mode="out-in">
-      <keep-alive>
-        <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
-      </keep-alive> 
-    </transition>  
     <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>  
   </div>
  

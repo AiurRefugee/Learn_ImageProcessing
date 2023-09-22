@@ -172,28 +172,7 @@ function release() {
     interval = null  
 }
 
-// function rotationChange() {
-//     console.log('rotation changed to:', screen.orientation.type);
-// }
-
-// screen.orientation.addEventListener('change', rotationChange);
-
-
-// onMounted( async () => { 
-//     console.log('camera onMounted')  
-//     console.log('interval', interval)
-//     if(!interval) { 
-//         await nextTick()
-//         initWorker()
-//         await nextTick()
-//         await init()
-//     }
-
-// })
-
-onActivated( async () => {
-    console.log('camera onActivated') 
-    console.log('interval', interval) 
+async function cameraModuleInit() {
     Message = ElMessage({ 
         message: 'Module is loading.',
         duration: 0
@@ -206,12 +185,25 @@ onActivated( async () => {
         if(curOpt.value == 'camera') {
             await init()
         }
-    });
-    if(!interval) {
-        await nextTick()
-        initWorker()
-        await nextTick()
-        await init() 
+    }); 
+    await nextTick()
+    initWorker()
+    await nextTick()
+    await init()  
+}
+
+onMounted( async () => { 
+    console.log('camera onMounted')   
+    if(!interval) { 
+        await cameraModuleInit()
+    }
+
+})
+
+onActivated( async () => {
+    console.log('camera onActivated')  
+    if(!interval) { 
+        await cameraModuleInit()
     }
 })
 
