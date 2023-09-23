@@ -337,6 +337,7 @@ onUnmounted( () => {
     position: absolute;
     margin-left: 4vw;
     left: 0; 
+    background-color: var(--el-bg-color);
     @media (max-width: 1000px) {
         width: 100vw;
         height: 90vh;
@@ -358,7 +359,7 @@ onUnmounted( () => {
         .tvHead {
             $boderSize: 15px;
             width: calc(85vw - $boderSize * 2);
-            height: 90%;
+            height: calc(100% - 70px);
             margin-top: $boderSize;
             position: relative;
             outline: $boderSize solid gray;
@@ -445,7 +446,7 @@ onUnmounted( () => {
 
         }
         .saucer {
-            width: 50vw;
+            width: 70vw;
             height: 10px;
             border: 5px solid gray;
             background-color: gray;

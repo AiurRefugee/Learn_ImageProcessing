@@ -248,6 +248,7 @@ onUnmounted(() => {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    background-color: var(--el-bg-color);
      #cameraInput {
         // display: none; 
         width: 100vw;

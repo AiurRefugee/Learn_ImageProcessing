@@ -13,6 +13,7 @@ div {
     transition: background-color 1s ease;
 } 
 .appContainer {
+    user-select: none;
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -21,7 +22,7 @@ div {
     align-items: center;
     overflow: hidden;
     position: relative;
-    //background-color: black;
+    background-color: var(--el-bg-color);
     overflow: hidden;
     position: relative;
     @media(max-width: 1000px) {
@@ -29,4 +30,8 @@ div {
         justify-content: flex-start;
         align-items: center;
     }
+}
+
+:root {
+    --colorTheme: white;
 }

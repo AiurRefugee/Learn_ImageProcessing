@@ -244,7 +244,7 @@ onUnmounted( () => {
     display: flex;
     width: 90vw;
     height: 100vh;
-    // background-color: blue;
+    background-color: var(--el-bg-color);
     justify-content: flex-start;
     align-items: center;
     position: absolute;

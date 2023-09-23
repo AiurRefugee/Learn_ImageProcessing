@@ -5,7 +5,7 @@ import ElementPlus from 'element-plus'
 // import VueWorker from "vue-worker";
 
 import 'element-plus/dist/index.css'
-import 'element-plus/theme-chalk/dark/css-vars.css'
+// import 'element-plus/theme-chalk/dark/css-vars.css'
 // import '@/styles/index.scss' 
 
 import '@/styles/element.scss'

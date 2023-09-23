@@ -2,48 +2,48 @@
 import { onMounted, onActivated, ref, computed, nextTick, watch, inject} from 'vue'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import { useDark, useToggle } from '@vueuse/core'
+import { ElMessage } from 'element-plus'; 
 import moment from 'moment';
 import { Sunny, Moon, VideoCamera, Picture} from '@element-plus/icons-vue'
+import { changeTheme } from '@/utils/theme.js';
 
 let timeInterval
-
-
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
 
 //inject
 const $bus = inject('$bus')
 
-//ref
-const dark = ref(window.localStorage['vueuse-color-scheme'] == 'auto')
+//ref 
 const recording = ref(false)
 const videoCaped = ref([])
 const timeCount = ref(0)
 const timeString = ref('00:00:00')
 const controllerWrapper = ref(null)
-const controller = ref(null)
-const lightColor = ref('black')
-const darkColor = ref('white')
+const controller = ref(null) 
 const recorder = ref(null)
 
 const store = useStore()
 const router = useRouter()
 const refresh = ref(null)
-const cameraMode = ref(false) // true 拍照 false 摄像
-const direction = ref("ltr")
+const cameraMode = ref(false) // true 拍照 false 摄像 
+const options = ref(['image', 'video', 'camera'])
 
 
 const curOpt = computed( () => store.getters.currentOption )
 const cameraCount = computed(() => store.getters.cameraNum)
 const cameraStatus = computed( () => store.getters.cameraStatus) 
-
-
-const options = computed(() => {
-   return ['image', 'video', 'camera']
-})
-
+const theme = computed( 
+  {
+    get() {
+      console.log(store.getters.theme)
+      return store.getters.theme
+    }, 
+    set(val) {
+      console.log('val', val)
+      store.dispatch('change_Theme', val)
+    }
+  }
+) 
+ 
 const ctx = computed( () => {
     let res
     switch(curOpt.value) {
@@ -56,10 +56,10 @@ const ctx = computed( () => {
 })
 
 
-function changedark() {
-  toggleDark()
-  window.localStorage.setItem("vueuse-color-scheme", 'dark');
-}
+// function changedark() {
+//   toggleDark()
+//   window.localStorage.setItem("vueuse-color-scheme", 'dark');
+// }
 
 function outputImage() {
     if(cameraMode.value) {
@@ -285,13 +285,11 @@ onActivated( () => {
 
                 </div>
                 <div class="spaceItem">
-                    <el-switch v-model="dark" size="large" :width="50"
-                    :active-action-icon="Moon" :inactive-action-icon="Sunny"
-                    @change="changedark"/>
+                    <el-switch v-model="theme" size="large" :width="50"
+                    :active-action-icon="Moon" :inactive-action-icon="Sunny" />
                 </div> 
                 <div class="spaceItem" v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'" ref="refresh">
-                    <el-icon class="spaceItem"
-
+                    <el-icon class="spaceItem" 
                         color="white"
                         @click="toggleMode" :size="30" >
                         <Refresh />
@@ -352,8 +350,7 @@ $controlZ: 50;
     position: absolute;
     right: 0;
     z-index: $controlZ;
-    overflow: hidden;
-    // background-color: green;
+    overflow: hidden; 
     flex-direction: column;
     @media (max-width: 1000px) {
         width: 100vw;

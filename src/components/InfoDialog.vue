@@ -1,10 +1,6 @@
 <script setup>
-import { onMounted, ref, computed, onUnmounted, nextTick, watch} from 'vue' 
+import { onMounted, ref, computed, onUnmounted, nextTick, watch, onActivated} from 'vue' 
 import { marked } from 'marked'
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router'; 
-import { ElMessage } from 'element-plus';  
-import { useDark, useToggle } from '@vueuse/core'  
 
 const emit = defineEmits(['close']) 
 
@@ -24,9 +20,11 @@ function parse(mark) {
     let res = marked(mark, { breaks: true }) 
     return res
 }
-// const output = computed( () => {
 
-// })
+onActivated( async () => {
+    await nextTick()
+    console.log('infoDialog', props.infoVisible)
+})
 
 </script>
 <template> 
@@ -36,8 +34,8 @@ function parse(mark) {
         title="Details"  
         width="80vw" 
         align-center
-        @close="close"
-        @close-auto-focus="close" 
+        destroy-on-close
+        @close="close" 
     >   
         <div class="dialog">
             <el-descriptions

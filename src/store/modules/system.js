@@ -1,11 +1,13 @@
 import { ElMessage } from "element-plus"
+import { changeTheme } from '@/utils/theme.js'
 
 const system = {
     state: {
       currentOption: '',
       cameraNum: 0,
       deviceStatus: 'Normal',
-      worker: null
+      worker: null,
+      theme: false, //false light true dark
     },
     mutations: {
         UPDATE_CURRENTOPTION: (state, param) => {
@@ -24,6 +26,10 @@ const system = {
             //   console.log(event.data);
             // };
           }
+        },
+        CHANGE_THEME: (state, param) => {
+          console.log('param', param)
+          state.theme = param
         }
     },
     actions: {
@@ -73,6 +79,10 @@ const system = {
         },
         initWorker({ commit }, param) {
           commit('SET_WEBWORKER', param)
+        },
+        change_Theme({ commit }, param) {
+          commit('CHANGE_THEME', param)
+          changeTheme(param)
         }
 
     }

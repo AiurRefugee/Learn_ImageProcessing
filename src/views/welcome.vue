@@ -4,13 +4,14 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex'; 
 import { Sunny, Moon } from '@element-plus/icons-vue'
 
-import { useDark, useToggle } from '@vueuse/core' 
 
-const isDark = useDark()
-const toggleDark = useToggle(isDark) 
+// import { useDark, useToggle } from '@vueuse/core' 
+
+// const isDark = useDark()
+// const toggleDark = useToggle(isDark) 
 
 const store = useStore()
-const dark = ref(window.localStorage['vueuse-color-scheme'] == 'auto')
+// const dark = ref(window.localStorage['vueuse-color-scheme'] == 'auto')
 const pos = ref('left') 
 const showDialog = ref(false) 
 const iconWidth = ref(5)
@@ -37,6 +38,18 @@ const dialogContent = ref({
 const router = useRouter()
 
 const status = computed( () => store.getters.cameraStatus)
+const theme = computed( 
+  {
+    get() {
+      console.log(store.getters.theme)
+      return store.getters.theme
+    }, 
+    set(val) {
+      console.log('val', val)
+      store.dispatch('change_Theme', val)
+    }
+  }
+)
 
 const iconTextSize = computed( () => {
   if(window.innerWidth <= 1000 ) {
@@ -52,9 +65,11 @@ function openDialog(title) {
   showDialog.value = true
 }
 
-function changeTheme() {
-  toggleDark()
-}
+// function changeTheme(val) {
+//   console.log(val)
+//   store.dispatch('change_Theme', val)
+// }
+
 function navigateTo(option) {
   store.dispatch('set_currentOption', option)
   if(option != "camera") {
@@ -78,12 +93,12 @@ function navigateTo(option) {
 onMounted(() => {   
   console.log('onMounted') 
   store.dispatch('systemInit') 
-  console.log(dark.value) 
+  // console.log(dark.value) 
 })
 
 onActivated( () => {
     console.log('onActivated') 
-    console.log(dark.value)
+    // console.log(dark.value)
 })
 
 </script>
@@ -103,9 +118,7 @@ onActivated( () => {
     </el-drawer>
     <div class="topBar">
       <div class="title">
-        <el-text size="large">
-          <h1>Learn ImageProcessing</h1>
-        </el-text>
+        <h1>Learn ImageProcessing</h1>
       </div>
       <div class="topbarIcons">
         <el-row style="width:100%;" :gutter="2" justify="end" align="middle">
@@ -119,7 +132,7 @@ onActivated( () => {
             <el-link :underline="false" @click="openDialog('Element +')">Element +</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
-            <el-switch v-model="dark" :active-action-icon="Moon" :inactive-action-icon="Sunny" @change="changeTheme">
+            <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny" >
             </el-switch>
             <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>
@@ -219,6 +232,7 @@ p{
       padding-right: 1%;
       font-style: italic;
       letter-spacing: 3px;
+      color: var(--el-text-color-primary);
       @include center();
         padding-left: 2%;
         justify-content: flex-start;
@@ -275,6 +289,7 @@ p{
       flex-direction: column;
       flex-grow: 1;
       transition: all 0.5s ease;
+      color: var(--el-text-color-primary);
       @media (max-width: 1000px) {
         width: 90%;
         max-height: 30%;

@@ -22,10 +22,7 @@ const maxCollapseNum = ref(window.innerWidth >= 600 ? 5 : 2)
 const classNames = ref(classification)
 const drawerSwitch = computed( () => store.getters.drawerSwitch )
 const curOpt = computed( () => store.getters.currentOption )
-const configs = computed( () => store.getters.processConfigs)
-
-
-const dark = ref(localStorage['vueuse-color-scheme'] == 'dark')
+const configs = computed( () => store.getters.processConfigs) 
 
 
 function output() {  
@@ -40,6 +37,8 @@ function openDialog(list) {
 }
 
 function close() {
+  
+  console.log('close')
   infoVisible.value = false
 }
 
@@ -62,11 +61,7 @@ onMounted( async () => {
   console.log('onMounted')  
    
 })
-
-onActivated( () => {
-  console.log(activated)
-  dark.value = localStorage['vueuse-color-scheme'] == 'dark'
-})
+ 
 
 onUnmounted( () => {
   clearInterval()
@@ -76,11 +71,11 @@ onUnmounted( () => {
 
 </script>
 <template> 
-    <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close"></InfoDialog>
+    <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close" v-if="infoVisible"></InfoDialog>
      <transition name="drawer" >
         <el-row class="drawer" v-show="drawerSwitch" ref="el">
             <div class="filterBar">
-              <el-row justify="space-between" align="middle" :style="{color: curOpt == 'video' ? 'white': ''}">
+              <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel"> 
                     <h4>筛选：</h4> 
                 </el-col> 
@@ -111,7 +106,7 @@ onUnmounted( () => {
                         <el-collapse-item :name="process.title" :title="process.title">
                           <el-space :size="10" direction="vertical" fill>
                             
-                            <el-row align="middle" justify="start" :style="{color: curOpt == 'video' ? 'white': ''}"> 
+                            <el-row align="middle" justify="start" > 
                                 <el-col :span="5">
                                   <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
                                   <el-switch v-model="process.selected" @change="output"></el-switch>
@@ -125,7 +120,7 @@ onUnmounted( () => {
                             </el-row>
                             <el-row>
                               <el-col :span="24">
-                                <div class="switchGrid" :style="{color: curOpt == 'video' ? 'white': ''}">
+                                <div class="switchGrid" >
                                   <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
                                     justify="start" align="middle" :key="index">
                                     <el-col :span="8">{{ Switch.paramName }}</el-col>
@@ -137,7 +132,7 @@ onUnmounted( () => {
                               </el-col>
                             </el-row>
                             <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
-                              justify="center" :key="index" :style="{color: curOpt == 'video' ? 'white': ''}">
+                              justify="center" :key="index">
                               <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
                               <el-col :span="contentWidth">
                                 <el-slider v-model="slider.paramValue" show-input @change="output"
@@ -147,7 +142,7 @@ onUnmounted( () => {
                               </el-col>
                             </el-row>
                             <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
-                              justify="center" :key="index" :style="{color: curOpt == 'video' ? 'white': ''}">
+                              justify="center" :key="index">
                               <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
                               <el-col :span="contentWidth">
                                 <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output">
@@ -267,7 +262,7 @@ $controlZ: 50;
     align-items: center;
     left: 0;
     z-index: $controlZ - 1;
-    // background-color: darkgrey;
+    background-color: var(--el-bg-color);
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
@@ -282,7 +277,7 @@ $controlZ: 50;
       width: 90%;
       height: 60px;
       filter: contrast(1.2);
-      // color: gray;
+      color: var(--el-text-color-primary);
     } 
     .scrollerWrapper {
       width: 90%;
