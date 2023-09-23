@@ -24,6 +24,7 @@ export default defineConfig({
   },
   server: {
     host: ['127.0.0.1'],
+    hmr: true,
     // host: '127.0.0.1',
     port: 1146,
     // https: { 

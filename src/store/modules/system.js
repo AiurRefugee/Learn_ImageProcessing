@@ -19,7 +19,7 @@ const system = {
         },
         SET_WEBWORKER: (state, param) => {
           if(!state.worker) {
-            state.worker = new Worker('/src/opencv/worker.js')
+            state.worker = new Worker('/src/opencv/opencvworker.js')
             // state.worker.onmessage = function(event) {
             //   console.log(event.data);
             // };
