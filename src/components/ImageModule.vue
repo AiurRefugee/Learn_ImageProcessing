@@ -78,10 +78,12 @@ function outputImage() {
     }
 }
 
-const processImage = () =>  {
+const processImage = async () =>  {
     cv.imshow('imageOutput', src);
     loading.value = false 
-    imageOutSrc.value = imageOutput.value.toDataURL()
+    await nextTick()
+    let image = document.getElementById('imageOutput')
+    imageOutSrc.value = image.toDataURL()
     imageUrlList.value.push(imageOutSrc.value)
     for (const process of processConfigs.value) { 
         if(process.imageAvailable && process.selected) {
@@ -93,7 +95,8 @@ const processImage = () =>  {
             src = dst
 
             cv.imshow('imageOutput', src);
-            imageOutSrc.value = imageOutput.value.toDataURL()
+            await nextTick()
+            imageOutSrc.value = image.toDataURL()
             imageUrlList.value.push(imageOutSrc.value) 
         }
     }
