@@ -46,11 +46,7 @@ async function toggleMode () {
         await nextTick()
         await init()
 }
-
-// watch( vloading, () => {
-//     Message.close()
-// })
-
+ 
 async function init() {
     try {
         await nextTick()
@@ -107,7 +103,7 @@ function initWorker() {
         // console.log('onMessage')
         interval = setTimeout(processVideo,
         1000 / FPS)
-        Message.close()
+        // Message.close()
         if(event.data.msg == 'loading') {  
             return false
         }
@@ -167,6 +163,9 @@ function processVideo() {
 
 function release() {
     cameraVideoLoading = false
+    // if(Message) {
+    //     Message.close()
+    // }
     if (mediaStream) { 
         const tracks = mediaStream.getTracks();
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
@@ -180,7 +179,7 @@ function release() {
 async function cameraModuleInit() {
     Message = ElMessage({ 
         message: 'Module is loading.',
-        duration: 0
+        duration: 1000
     })
     console.log('orientation:', screen.orientation.type)
     screen.orientation.addEventListener('change' ,async function() {
@@ -199,6 +198,7 @@ async function cameraModuleInit() {
 
 onMounted( async () => { 
     console.log('camera onMounted')   
+    store.dispatch('set_currentOption', 'camera')
     if(!interval) { 
         await cameraModuleInit()
     }

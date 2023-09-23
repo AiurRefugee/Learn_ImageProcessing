@@ -137,17 +137,18 @@ function closeViewer() {
 }
  
 
-onMounted(() => {
+onMounted( async () => {
     console.log('image onMounted')
-})
-
-onActivated( async () => {
-    console.log('image Activated')
     store.dispatch('set_currentOption', 'image')
     await nextTick()
     let image = document.getElementById('imageInput')
     width = image.clientWidth
     height = image.clientHeight 
+})
+
+onActivated( async () => {
+    console.log('image Activated')
+    
 })
 onDeactivated( () => {
     console.log('image Deactivated')

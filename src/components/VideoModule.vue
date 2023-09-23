@@ -206,6 +206,7 @@ async function reSize() {
 
 onMounted( async () => {
     console.log('video onMounted') 
+    store.dispatch('set_currentOption', 'video')
     if(!interval) {
         await initWorker() 
         await init()

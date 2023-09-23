@@ -6,10 +6,10 @@ import ImageModule from '@/components/ImageModule.vue';
 import VideoModule from '@/components/VideoModule.vue';
 import Drawer from '@/components/Drawer.vue';
 import { ElMessage } from 'element-plus';  
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 const store = useStore() 
-const route = useRoute()  
+const router = useRouter()  
 
 // refs
 const image = ref(null)
@@ -23,9 +23,16 @@ const cameraStatus = computed( () => store.getters.cameraStatus )
 onMounted(() => { 
   store.dispatch('initWorker')  
   console.log(curOpt.value)
-  if(cameraStatus == null) {
-    store.dispatch('systemInit') 
-  }
+   
+  store.dispatch('systemInit')  
+  setTimeout( () => {
+    if(!curOpt.value) {
+      router.push({
+            path: `/imageProcessing/image`,
+            replace: true
+        })
+    }
+  }, 2000)
 })
 
 // functions
@@ -51,10 +58,8 @@ function toggleMode() {
   <div class="appContainer"> 
      
     <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
-    <transition mode="out-in">  
-      <keep-alive>
-        <router-view/>
-      </keep-alive>
+    <transition mode="out-in">   
+        <router-view/> 
     </transition>  
     <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>  
   </div>
