@@ -1,15 +1,15 @@
 <script setup>
 import { onMounted, ref, computed, watch, onDeactivated, onActivated, onUnmounted, nextTick, inject} from 'vue'
+import cv from 'opencv.js';
 import { ElMessage } from 'element-plus';
 import { useStore } from 'vuex';  
 
 const store = useStore()
- 
+
 //inject
 const $bus = inject('$bus')
 $bus.on('outputImage', outputImage)
 
-//ref
 const imageUrl = ref('/src/assets/imgs/gundam.jpeg')
 const imageUrlList = ref([])
 const loading = ref(true)
@@ -54,91 +54,50 @@ const srcList = ref(
             value: '/src/assets/imgs/car.webp'
         }
 ])
+let src
+let dst = new cv.Mat()
+let width, height
 
-let width, height, context
-
-// computed
-const curOpt = computed( () => store.getters.currentOption )
 const processConfigs = computed( () => store.getters.processConfigs )
-const worker = computed( () => store.getters.worker)
-const configs = computed( () => {
-    return processConfigs.value.map( (item, index) => {
-        return {
-            selected: item.selected,
-            imageAvailable: item.imageAvailable,
-            processIndex: index,
-            params: item.params.map( item => item.paramValue)
-        }
-    })  
-})
+  
 
-
-async function initWorker() {
-    await nextTick()
-    worker.value.onmessage = function(event) {  
-        loading.value = false 
-        console.log('da', event.data)
-        let contextDraw = imageOutput.value.getContext('2d')
-        contextDraw.clearRect(0, 0, width, height)  
-        contextDraw.putImageData(event.data.image, 0, 0)
-        imageOutSrc.value = imageOutput.value.toDataURL()
-        imageUrlList.value.push(imageOutSrc.value) 
-        
-        if(event.data.type == 'error') { 
-            console.log('error')
-            event.data.indexs.map(item => {
-                processConfigs.value[item].selected = false
-                ElMessage({
-                    message: `${processConfigs.value[item].title}参数错误.`,
-                    grouping: true,
-                    type: 'error',
-                })
-            }) 
-        } 
-        
-
-    };
-} 
-
-function outputImage() {   
+function outputImage() {  
+    let image = document.getElementById('imageInput')  
     imageUrlList.value.length = 0 
-    processImage()
-    // try { 
-    //     processImage()
-          
-    // } catch(error) {
-    //     console.log(error)
-    //     ElMessage({
-    //         message: error,
-    //         grouping: true,
-    //         type: 'error',
-    //     })
-    // }
-}
-
-const processImage = () =>  {  
     try {
-        context.clearRect(0, 0, width, height)
-        let image = document.getElementById('imageInput') 
-        context.drawImage(image, 0, 0); 
-        imageOutSrc.value = imageOutput.value.toDataURL()
-        imageUrlList.value.push(imageOutSrc.value)
-        // 获取图像数据
-        let imageData = context.getImageData(0, 0, width, height);   
-        worker.value.postMessage({
-            image: imageData,
-            paramsList: configs.value,
-            type: 'image'
-
-        }); // 发送图像数据给 Web Worker
+        src = cv.imread(image)  
+        processImage()
+          
     } catch(error) {
+        console.log(error)
         ElMessage({
             message: error,
             grouping: true,
-            type: 'error'
+            type: 'error',
         })
-        console.log(error)
     }
+}
+
+const processImage = () =>  {
+    cv.imshow('imageOutput', src);
+    loading.value = false 
+    imageOutSrc.value = imageOutput.value.toDataURL()
+    imageUrlList.value.push(imageOutSrc.value)
+    for (const process of processConfigs.value) { 
+        if(process.imageAvailable && process.selected) {
+            let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
+           
+            if(!res) {
+                process.selected = !process.selected
+            }
+            src = dst
+
+            cv.imshow('imageOutput', src);
+            imageOutSrc.value = imageOutput.value.toDataURL()
+            imageUrlList.value.push(imageOutSrc.value) 
+        }
+    }
+
 } 
 
 function selectChange() {
@@ -150,7 +109,7 @@ function upload() {
 }
 
 function inputChange(e) {
-    console.log('filechange')
+
     const file = e.target.files[0] 
     if(file) {
         let url = URL.createObjectURL(file)
@@ -160,19 +119,7 @@ function inputChange(e) {
         })
         imageUrl.value = url
         loading.value = true
-        initImage()
     } 
-}
-
-//初始化图片大小
-function initImage() {
-    let image = document.getElementById('imageInput')
-    width = image.width
-    height = image.height 
-    imageOutput.value.width = width
-    imageOutput.value.height = height
-    imageInput.value.width = width
-    imageInput.value.height = height 
 }
 
 function preview() {
@@ -189,23 +136,15 @@ function closeViewer() {
 
 onMounted(() => {
     console.log('image onMounted')
-    context = imageOutput.value.getContext('2d')
-    initWorker()
-    imageInput.value.addEventListener('loadedmetadata', async () => {
-        console.log('metaData Loaded')
-        initImage()
-    })  
-    if(!curOpt.value) {
-        store.dispatch('set_currentOption', 'image')
-    }
 })
 
 onActivated( async () => {
     console.log('image Activated')
-    if(!curOpt.value) {
-        store.dispatch('set_currentOption', 'image')
-    }
-    
+    store.dispatch('set_currentOption', 'image')
+    await nextTick()
+    let image = document.getElementById('imageInput')
+    width = image.clientWidth
+    height = image.clientHeight 
 })
 onDeactivated( () => {
     console.log('image Deactivated')
@@ -221,7 +160,7 @@ onUnmounted( () => {
 
         <div class="inoutput">
             <div class="imageArea"> 
-                <img id="imageInput" ref="imageInput" :src="imageUrl" style="display: none;" @load="initImage"/>
+                <img id="imageInput" ref="imageInput" :src="imageUrl" style="display: none;"/>
                 <img id="imageSrc" :src="imageUrl"
                     :style="{display: loading ? 'flex' : 'none'}" />
                 <el-image-viewer :src="imageOutSrc"

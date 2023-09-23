@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, inject} from 'vue'
+import { onMounted, ref, computed, nextTick} from 'vue'
 import ControlBar from '@/components/ControlBar.vue';
 import CameraModule from '@/components/CameraModule.vue';
 import ImageModule from '@/components/ImageModule.vue';
@@ -8,11 +8,8 @@ import Drawer from '@/components/Drawer.vue';
 import { ElMessage } from 'element-plus';  
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import router from '../../router'; 
 const store = useStore() 
 const route = useRoute()  
-
-
 
 // refs
 const image = ref(null)
@@ -23,26 +20,25 @@ const camera = ref(null)
 const curOpt = computed( () => store.getters.currentOption )
 const cameraStatus = computed( () => store.getters.cameraStatus ) 
 
-onMounted( async () => { 
-  store.dispatch('initWorker')   
-  store.dispatch('systemInit')  
-  setTimeout(async () => {
-    await nextTick()
-    console.log(curOpt.value)
-    if(!curOpt.value) {
-      store.dispatch('set_currentOption', 'image')
-      router.push({
-        path: `/imageProcessing/image`,
-        replace: true
-      })
-    }
-  }, 2000)
+onMounted(() => { 
+  store.dispatch('initWorker')  
+  console.log(curOpt.value)
+  if(cameraStatus == null) {
+    store.dispatch('systemInit') 
+  }
 })
 
+// functions
+
 function outputImage() { 
-  if (curOpt.value == 'image') {
-    image.value.outputImage()
-  } 
+  switch(curOpt.value) {
+    case 'image':  
+        image.value.outputImage()
+      break
+    case 'camera':
+        camera.value.outputImage()
+        break
+  }
 }
 
 function toggleMode() {
@@ -55,10 +51,11 @@ function toggleMode() {
   <div class="appContainer"> 
      
     <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
-    
-    <transition>
-      <router-view/>  
-    </transition> 
+    <transition mode="out-in">  
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
+    </transition>  
     <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>  
   </div>
  
