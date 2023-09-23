@@ -159,7 +159,8 @@ function processVideo() {
         // console.log('postMessage')
         worker.value.postMessage({
             image: imageData,
-            paramsList: configs.value
+            paramsList: configs.value,
+            type: 'camera'
         }); // 发送图像数据给 Web Worker
           
 }

@@ -94,11 +94,12 @@ function processVideo() {
         // 将图像绘制到 canvas 上
         contextRead.drawImage(videoInput.value, 0, 0); 
         // 获取图像数据
-        let imageData = contextRead.getImageData(0, 0, videoInput.value.width, videoInput.value.height);  
+        let imageData = contextRead.getImageData(0, 0, width, height);  
         // console.log(configs.value)
         worker.value.postMessage({
             image: imageData,
-            paramsList: configs.value
+            paramsList: configs.value,
+            type: 'video'
         }); // 发送图像数据给 Web Worker 
          
     }
@@ -138,31 +139,15 @@ async function fileChange() {
         })
         videoUrl.value = url
         videoInput.value.load()
-    }
-    await init() 
+    } 
 }
 
 async function init() {  
-    console.log('video Init')
-    
+    console.log('video Init') 
     await nextTick()  
-    store.dispatch('set_currentOption', 'video') 
-    let video = document.getElementById('videoInput') 
-    
-    width = video.videoWidth
-    height = video.videoHeight
-    videoInput.value.width = width
-    videoInput.value.height = height
-    canvasOutput.value.width = width
-    canvasOutput.value.height = height
-    canvasRead.value.width = width
-    canvasRead.value.height = height   
-    contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
-    contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
-    contextDraw.clearRect(0, 0, width, height)
-
-    
+    store.dispatch('set_currentOption', 'video')  
 }
+
 async function initWorker() {
     await nextTick()
     worker.value.onmessage = function(event) { 
@@ -198,6 +183,23 @@ async function initWorker() {
     };
 }  
 
+//初始化视频大小
+function initVideo() {
+    let video = document.getElementById('videoInput') 
+    duration = video.duration
+    width = video.videoWidth
+    height = video.videoHeight
+    videoInput.value.width = width
+    videoInput.value.height = height
+    canvasOutput.value.width = width
+    canvasOutput.value.height = height
+    canvasRead.value.width = width
+    canvasRead.value.height = height   
+    contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+    contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
+    contextDraw.clearRect(0, 0, width, height)
+}
+
 async function reSize() {
     console.log('resize') 
 }
@@ -209,8 +211,7 @@ onMounted( async () => {
         await init()
         videoInput.value.addEventListener('loadedmetadata', async () => {
             console.log('metaData Loaded')
-            duration = document.getElementById('videoInput').duration
-            await init()
+            initVideo()
         })  
         videoUpload.value.addEventListener( "change", fileChange)   
         // document.body.style.setProperty('--el-text-color-primary', 'white')
