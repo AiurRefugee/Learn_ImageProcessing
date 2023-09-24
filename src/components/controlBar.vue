@@ -309,7 +309,7 @@ onActivated( () => {
                 </div> 
                 <div v-else></div>
                 <div class="spaceItem" @click="toggleDrawer">
-                    <el-icon :color="'#5a5a5a'" :size="30"  ><MoreFilled /></el-icon>
+                    <el-icon :size="30"  ><MoreFilled /></el-icon>
                 </div>
             </div> 
     </el-row>
@@ -390,6 +390,7 @@ $controlZ: 50;
             justify-content: center;
             min-height: 3vh;
             font-weight: 900;
+            color: var(--el-text-color-primary);
             text-shadow: 2px 0px 2px rgb(70, 70, 70);
             cursor: pointer;
             @media (max-width: 1000px) {

@@ -8,7 +8,7 @@ import mkcert from 'vite-plugin-mkcert'
 export default defineConfig({
   plugins: [
     vue(),
-    // mkcert()
+    mkcert()
   ],
   // css: {
   //   preprocessorOptions: {
@@ -31,6 +31,6 @@ export default defineConfig({
     //   key: 'mydomain.key',
     //   cert: 'mydomain.crt',
     // } 
-    // https: true
+    https: true
   }
 })

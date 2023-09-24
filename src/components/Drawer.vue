@@ -246,11 +246,14 @@ $controlZ: 50;
   }
 }
 .drawer {
+  $outSize: 10px;
+    // width: calc(40vw - 2*$outSize);
+    // height: calc(95vh - 2*$outSize); 
+    // outline: $outSize solid color-mix(in srgb, var(--el-bg-color) 30%, rgba(128, 128, 128, 0.434) 70%);
     width: 40vw;
     height: 95vh;
-    //display: flex;
     border-radius: 15px;
-    box-shadow: 2px 0px 10px 2px rgba(205, 204, 204, 0.6); 
+    // box-shadow: -2px 2px 5px 2px color-mix(in srgb, var(--el-bg-color) 50%, rgba(153, 153, 153, 0.545)); 
     // border: 1px solid white;  
     -webkit-backdrop-filter: blur(10px); 
     backdrop-filter: blur(10px);
@@ -262,7 +265,19 @@ $controlZ: 50;
     align-items: center;
     left: 0;
     z-index: $controlZ - 1;
-    background-color: var(--el-bg-color);
+    // background: radial-gradient(
+    //   ellipse farthest-corner at 50% 50%, 
+    //   color-mix(in srgb, var(--el-bg-color) 10%, rgba(128, 128, 128, 0.131) 90%) 20%, 
+    //   color-mix(in srgb, var(--el-bg-color) 50%, rgba(128, 128, 128, 0.237) 90%) 50%, 
+    //   // red 40%,
+    //   var(--el-bg-color) 90%);
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--el-bg-color) 50%, rgba(153, 153, 153, 0.545)) 10%,
+      color-mix(in srgb, var(--el-bg-color) 10%, rgba(131, 131, 131, 0.205)) 90% 
+    );
+    
+    // background-color: color-mix(in srgb, var(--el-bg-color) 60%, rgba(128, 128, 128, 0.255) 20%);
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;

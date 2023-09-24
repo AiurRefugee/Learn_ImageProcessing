@@ -303,7 +303,7 @@ onUnmounted( () => {
             align-items: center;
             overflow: hidden;
             // border: 2px solid white;
-            border-radius: 12px;
+            border-radius: 15px;
             // z-index: 11; 
                 #imageSrc {
                     border-radius: 15px;
