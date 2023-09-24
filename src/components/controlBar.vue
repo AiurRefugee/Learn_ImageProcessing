@@ -4,8 +4,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus'; 
 import moment from 'moment';
-import { Sunny, Moon, VideoCamera, Picture} from '@element-plus/icons-vue'
-import { changeTheme } from '@/utils/theme.js';
+import { Sunny, Moon, VideoCamera, Picture} from '@element-plus/icons-vue' 
 
 let timeInterval
 
@@ -25,6 +24,7 @@ const store = useStore()
 const router = useRouter()
 const refresh = ref(null)
 const cameraMode = ref(false) // true 拍照 false 摄像 
+const videoDisabled = ref(false)
 const options = ref(['image', 'video', 'camera'])
 
 
@@ -55,6 +55,17 @@ const ctx = computed( () => {
     return res
 })
 
+watch( curOpt, () => {
+    console.log('watch')
+    if(curOpt.value == 'image') { 
+        cameraMode.value = true
+        videoDisabled.value = true
+
+    } else {
+        videoDisabled.value = false
+    }
+})
+
 
 // function changedark() {
 //   toggleDark()
@@ -79,13 +90,14 @@ async function control(option) {
     }
     if(option != curOpt.value) {
         store.dispatch('set_currentOption', option)
-        if(option == "camera") {
+        if(option == "camera") { 
             console.log('con', cameraStatus.value) 
             if(cameraStatus.value != 'Normal') {
                 router.push({
                     path: `/noCamera/${cameraStatus.value}`,
                     replace: true
                 })
+                return false
             }
         } 
         router.push({
@@ -114,7 +126,7 @@ function toggleDrawer() {
 
 function downloadVideo(data) {
     videoCaped.value.push(data)
-    const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/webm' }));
+    const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/mp4' }));
     var element = document.createElement('a');
     element.setAttribute('href', url);
     element.setAttribute('download', "output");
@@ -124,34 +136,37 @@ function downloadVideo(data) {
     document.body.removeChild(element);
 }
 
-function takePhoto() {
-    controller.value.animate([
-        { transform: 'scale(1)'},
-        { transform: 'scale(0.9)', filter: 'brightness(1.5)'},
-        { transform: 'scale(1)'}
+async function takePhoto() {
+    controller.value.animate([  
+        {transform: 'scale(1.0)'},
+        {transform: 'scale(0.9)', 
+         filter: 'brightness(1.0)'}, 
+        {transform: 'scale(1.0)'}
     ], {
         duration: 100,
         easing: 'ease-in',
         fill: 'forwards'
     })
-    try{
+    setTimeout( async () => {
+        try{
         // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
-        if(curOpt.value == 'image') {
-           $bus.emit('outputImage')
+            if(curOpt.value == 'image') {
+            $bus.emit('outputImage', false)
+                
+            }
+            await nextTick() 
+            const url = ctx.value.toDataURL()
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'output.png';
+            link.style.display = 'none'
+            document.body.appendChild(link);
+            link.click();
+        } catch(error) {
+            console.log(error)
+            ElMessage
         }
-        // cv.imshow(ctx.value.id)
-
-        const url = ctx.value.toDataURL()
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'output.png';
-        link.style.display = 'none'
-        document.body.appendChild(link);
-        link.click();
-    } catch(error) {
-        console.log(error)
-        ElMessage
-    }
+    }, 100)
 }
 
 function beginRecord() {
@@ -208,21 +223,9 @@ function endRecord() {
     // timeString.value = '00:00:00'
     if(recorder.value) {
         recorder.value.stop()
-    }
-    // controllerWrapper.value.animate([
-    //     { transform: 'rotate(0)'},
-    //     { transform: 'rotate(360deg)'}
-    // ],
-    // 400 )
-    // controller.value.animate([
-    //     { transform: 'scale(1.2)'},
-    //     { transform: 'scale(1)'}
-    // ],{
-    //     duration: 500,
-    //     fill: 'forwards'
-    // })
+    } 
 
-    videoCaped.value = []
+    videoCaped.value.length = 0
 
 }
 
@@ -230,6 +233,10 @@ onMounted( async () => {
     console.log('control mount')
     await nextTick()
     console.log(curOpt.value)
+    if(curOpt.value == 'image') {
+        cameraMode.value = true
+        videoDisabled.value = true
+    }
 })
 
 onActivated( () => {
@@ -274,12 +281,12 @@ onActivated( () => {
                     <el-Switch  
                         active-text="Photos"
                         size="large"
-                        inactive-text="Videos"
+                        inactive-text="Videos" 
                         :width="70"
                         :active-action-icon="Picture"
                         :inactive-action-icon="VideoCamera"
                         inline-prompt
-                        :disabled="recording"
+                        :disabled="recording || videoDisabled"
                         v-model="cameraMode"
                     />
 
@@ -301,8 +308,8 @@ onActivated( () => {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div> 
                 <div v-else></div>
-                <div class="spaceItem">
-                    <el-icon :color="'#5a5a5a'" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
+                <div class="spaceItem" @click="toggleDrawer">
+                    <el-icon :color="'#5a5a5a'" :size="30"  ><MoreFilled /></el-icon>
                 </div>
             </div> 
     </el-row>

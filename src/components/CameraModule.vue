@@ -51,7 +51,7 @@ async function init() {
     try {
         await nextTick()
         if(!curOpt.value) {
-            store.dispatch('set_currentOption', 'image')
+            store.dispatch('set_currentOption', 'camera')
         }
         release() 
         mediaStream = await navigator.mediaDevices.getUserMedia(

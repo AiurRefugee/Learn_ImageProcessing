@@ -369,7 +369,7 @@ onUnmounted( () => {
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            border-radius: 12px;
+            border-radius: 15px;
             @media(max-width: 1000px) {
                 width: calc(95vw - 50px);
                 height: 95%;
@@ -399,7 +399,7 @@ onUnmounted( () => {
                         height: 100%; 
                         position: absolute;
                         left: 0;
-                        z-index: 1;
+                        z-index: 1;display: none;
                     } 
                     #canvasOutput {
                         display: flex;  

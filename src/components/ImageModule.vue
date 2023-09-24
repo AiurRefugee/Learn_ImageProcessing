@@ -61,12 +61,21 @@ let width, height
 const processConfigs = computed( () => store.getters.processConfigs )
   
 
-function outputImage() {  
+async function outputImage(photo) {  
     let image = document.getElementById('imageInput')  
     imageUrlList.value.length = 0 
     try {
         src = cv.imread(image)  
-        processImage()
+        await processImage()
+        if(photo) {
+            const url = document.getElementById('imageOutput').toDataURL()
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'output.png';
+            link.style.display = 'none'
+            document.body.appendChild(link);
+            link.click();
+        }
           
     } catch(error) {
         console.log(error)
@@ -194,7 +203,7 @@ onUnmounted( () => {
                         <input type="file" ref="fileInput" style="display: none;" @change="inputChange">
                     </el-col>
                     <el-col :span="12" class="labelItem">
-                        <el-button size="large" @click="outputImage"> Image Output</el-button>
+                        <el-button size="large" @click="outputImage(false)"> Image Output</el-button>
                     </el-col>
                 </el-row>
             </div>
