@@ -7,6 +7,6 @@ const store = new Vuex.Store({
         system,
         options
     },
-    getters
+    getters,
 })
 export default store

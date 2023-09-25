@@ -1,8 +1,7 @@
 <script setup>
-import { onMounted, ref, computed, nextTick, onActivated, onDeactivated} from 'vue'
-import cv from 'opencv.js';
+import { onMounted, ref, computed, nextTick, onActivated, onDeactivated, onUnmounted} from 'vue' 
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex';
+import { useStore } from 'vuex';  
 
 const store = useStore()
 
@@ -20,46 +19,42 @@ const playing = ref(false)
 const videoInput = ref(null)
 const size = ref(Object)
 const canvasOutput = ref(null)
-const FPS = 60;
-const camerSwitch = ref(false)
-const videoModuleWrapper = ref(null)
-const tvHead = ref(null)
-const videoWitdth = ref(0)
-const videoHeight = ref(0)
-const displayPointer = ref(50)
-let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
-
+const canvasRead = ref(null)
+const FPS = 30; 
+const videoModuleWrapper = ref(null) 
+const displayPointer = ref(50) 
+let videoLoading = false 
+let contextRead, contextDraw
 
 
 const curOpt = computed( () => store.getters.currentOption )
-const filtredConfigs = computed( () => store.getters.filteredProcesses ) 
+const processConfigs = computed( () => store.getters.processConfigs ) 
+const worker = computed( () => store.getters.worker)
+const configs = computed( () => {
+    return processConfigs.value.map( (item, index) => {
+        return {
+            selected: item.selected,
+            videoAvailable: item.videoAvailable,
+            processIndex: index,
+            params: item.params.map( item => item.paramValue)
+        }
+    })  
+})
 
-let width, height, src, dst, cap, fgmask, interval, duration
+let width, height, duration 
+let interval = null
 
-async function play() {
+async function play() { 
     if(!playing.value && videoInput.value.src != ''){
         try {
             await videoInput.value.play()
             playing.value = !playing.value
-            if(!interval) {
-                interval = setInterval( () => {
-                    try {
-                        if(canvasOutput.value) {
-                            canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-                        }
-
-                        cap.read(src);
-                        // cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
-                        processVideo()
-                        // if(filtredConfigs.value.filter( (item) => item.selected).length == 0 ) {
-                        //     dst = src.clone()
-                        // }
-                        cv.imshow('canvasOutput', dst);
-                    } catch(error) {
-                        console.log(error)
-                    }
-                }, 1000 / FPS)
-            }
+             
+            try {  
+                processVideo() 
+            } catch(error) {
+                console.log(error)
+            } 
         } catch(error) {
             playing.value = false
 
@@ -75,7 +70,7 @@ async function play() {
         try {
             await videoInput.value.pause()
             playing.value = !playing.value
-            clearInterval(interval)
+            clearTimeout(interval)
             interval = null
         } catch(error) {
             playing.value = true
@@ -90,33 +85,25 @@ async function play() {
 
 
 }
+ 
 
-function processVideo() {
-
-
+function processVideo() {   
     if(playing.value) {
-        console.log('processing')
-        src.copyTo(dst)
-        filtredConfigs.value.map( (process, index) => {
-            try {
-                if(process.selected && process.videoAvaliable !== false) {
-                    let res = process.f(process.title, dst, dst, process.params.map( item => item.paramValue ))
-
-                }
-                if(process.videoAvaliable === false) {
-                    process.selected = false
-                }
-            } catch (error) {
-                // clearInterval(interval)
-
-                console.log(error)
-
-            }
-        })
+        console.log('processing Video')   
+        contextRead.clearRect(0, 0, width, height) 
+        // 将图像绘制到 canvas 上
+        contextRead.drawImage(videoInput.value, 0, 0); 
+        // 获取图像数据
+        let imageData = contextRead.getImageData(0, 0, width, height);  
+        // console.log(configs.value)
+        worker.value.postMessage({
+            image: imageData,
+            paramsList: configs.value,
+            type: 'video'
+        }); // 发送图像数据给 Web Worker 
+         
     }
-
-};
-
+}
 
 function zoom() {
     console.log('zoom', duration)
@@ -140,6 +127,7 @@ function upload() {
 }
 
 async function fileChange() {
+    console.log('fileChange')
     const file = videoUpload.value.files[0]
     if(file) {
         const fileName = file.name
@@ -151,101 +139,153 @@ async function fileChange() {
         })
         videoUrl.value = url
         videoInput.value.load()
-    }
-    await init()
-    play()
+    } 
 }
 
-async function init() {
-    // videoWitdth.value = tvHead.value.clientWidth * 0.8
-    // videoHeight.value = tvHead.value.clientHeight * 0.8
+async function init() {  
+    console.log('video Init') 
+    await nextTick()  
+    store.dispatch('set_currentOption', 'video')  
+}
+
+async function initWorker() {
     await nextTick()
-    await nextTick()
-    let video = document.getElementsByTagName('video')[0]
+    worker.value.onmessage = function(event) { 
+        // console.log('message')
+        videoLoading = false
+        interval = setTimeout(processVideo,
+        1000 / FPS)
+        if(event.data.msg == 'loading') { 
+            // videoLoading = false
+            return false
+        }
+ 
+        contextDraw.clearRect(0, 0, width, height) 
+        contextDraw.putImageData(event.data.image, 0, 0)
+        
+        if(event.data.type == 'error') { 
+            event.data.indexs.map(item => {
+                processConfigs.value[item].selected = false
+                ElMessage({
+                    message: `${processConfigs.value[item].title}参数错误或不支持视频处理.`,
+                    grouping: true,
+                    type: 'error',
+                })
+            })
+            // ElMessage({
+            //     message: `${item.title}参数错误.`,
+            //     grouping: true,
+            //     type: 'error',
+            // })
+        } 
+        
+
+    };
+}  
+
+//初始化视频大小
+function initVideo() {
+    let video = document.getElementById('videoInput') 
     duration = video.duration
     width = video.videoWidth
     height = video.videoHeight
     videoInput.value.width = width
     videoInput.value.height = height
-    
-    console.log(width)
-    canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-
-    videoInput.value.addEventListener('loadedmetadata', init)
-    console.log('videoInput', videoInput.value)
-    src = new cv.Mat(height, width, cv.CV_8UC4);
-    dst = new cv.Mat(height, width, cv.CV_8UC1);
-    // srcTemp = new cv.Mat()
-    cap = new cv.VideoCapture(videoInput.value);
-    console.log(cap)
-    await nextTick()
-    videoUpload.value.addEventListener( "change", fileChange)
-    // worker.value.onmessage = function(event) { 
-    //     canvasOutput.value.getContext('2d').putImageData(event.data)
-    // };
+    canvasOutput.value.width = width
+    canvasOutput.value.height = height
+    canvasRead.value.width = width
+    canvasRead.value.height = height   
+    contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+    contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
+    contextDraw.clearRect(0, 0, width, height)
 }
-
-// onMounted( async () => {
-//     console.log('video Mounted')
-//     await init()
-// })
 
 async function reSize() {
-    console.log('resize')
-    // if(curOpt.value == 'video') {
-    //     playing.value = false
-    //    await init()
-       
-    // }
+    console.log('resize') 
 }
+
+onMounted( async () => {
+    console.log('video onMounted') 
+    store.dispatch('set_currentOption', 'video')
+    if(!interval) {
+        await initWorker() 
+        await init()
+        videoInput.value.addEventListener('loadedmetadata', async () => {
+            console.log('metaData Loaded')
+            initVideo()
+        })  
+        videoUpload.value.addEventListener( "change", fileChange)   
+        // document.body.style.setProperty('--el-text-color-primary', 'white')
+        window.addEventListener('resize', reSize)
+    }
+})
 
 onActivated(  async () => {
     console.log('video Activated') 
-    await init()
-    document.body.style.setProperty('--el-text-color-primary', 'white')
-    window.addEventListener('resize', reSize)
+    // if(!interval) {
+    //     await initWorker() 
+    //     await init()
+    //     videoInput.value.addEventListener('loadedmetadata', init)  
+    //     videoUpload.value.addEventListener( "change", fileChange)   
+    //     // document.body.style.setProperty('--el-text-color-primary', 'white')
+    //     window.addEventListener('resize', reSize)
+    // }
+    
 })
 
 onDeactivated( () => {
-    console.log('video deactive')
-    document.body.style.setProperty('--el-text-color-primary', 'black')
+    console.log('video onDeactivated')
+    // document.body.style.setProperty('--el-text-color-primary', 'black')
     playing.value = false
+    videoLoading = false
+    try{
+        contextDraw.clearRect(0, 0, width, height)
+    } catch {
+        
+    }
     if(interval) {
-        clearInterval(interval)
+        clearTimeout(interval)
         interval = null
+    } 
+})
+
+onUnmounted( () => {
+    console.log('video onUnmounted') 
+    playing.value = false
+    videoLoading = false
+    try{
+        contextDraw.clearRect(0, 0, width, height)
+    } catch {
+        
     }
-    if(videoInput.value) {
-        canvasOutput.value.getContext('2d').clearRect(0, 0, width, height)
-    }
+    if(interval) {
+        clearTimeout(interval)
+        interval = null
+    } 
 })
 
 </script>
 <template>
-    <div ref="videoModuleWrapper" class="videoModuleWrapper">
-        <!-- <video ref="videoInput" id="videoInput" >
-
-        </video>  -->
-        <!-- <canvas ref="canvasOutput" id="canvasOutput">
-
-        </canvas> -->
+    <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <div class="videoArea" >
-            <div class="tvHead" ref="tvHead">
+            <div class="tvHead">
                 <div class="playerWrapper" @click="play">
-                    <div class="videoCanvasWrapper">
-                        <div class="videoWrapper" :style="{'display': 'none',
+                    <div class="videoCanvasWrapper" v-if="curOpt == 'video'">
+                        <!-- <div class="videoWrapper" :style="{ 
                             'width': `${displayPointer}%`,
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
-                            }">
-                            <video ref="videoInput" :src="videoUrl" id="videoInput"
+                            }"> -->
+                            <video ref="videoInput" :src="videoUrl" id="videoInput" poster
                                 loop crossorigin="true" muted>
                             </video>
 
-                        </div>
+                        <!-- </div> -->
                         <canvas id="canvasOutput" ref="canvasOutput"  ></canvas>
+                        <canvas id="canvasRead" ref="canvasRead" style="display: none;"></canvas>
                     </div>
 
                 </div>
-                <div class="videoController" :style="{'max-height': videoHeight,'overflow': 'hidden'}">
+                <div class="videoController" >
                     <el-row justify="center" align="middle" style="width: 80%;">
                         <el-col :span="3">
                             <text>Input Source</text>
@@ -296,15 +336,14 @@ onDeactivated( () => {
     align-items: center;
     position: absolute;
     margin-left: 4vw;
-    left: 0;
-    //border: 5px solid gray;
+    left: 0; 
+    background-color: var(--el-bg-color);
     @media (max-width: 1000px) {
         width: 100vw;
         height: 90vh;
         padding: 0;
         margin: 0;
-        flex-direction: column;
-        // background-color: white;
+        flex-direction: column; 
         justify-content: center;
 
     }
@@ -320,30 +359,29 @@ onDeactivated( () => {
         .tvHead {
             $boderSize: 15px;
             width: calc(85vw - $boderSize * 2);
-            height: 90%;
+            height: calc(100% - 70px);
             margin-top: $boderSize;
+            position: relative;
             outline: $boderSize solid gray;
-            background-color: black;
-            // background: linear-gradient(to top, gray 1px, black);
+            background-color: black; 
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            border-radius: 12px;
+            border-radius: 15px;
             @media(max-width: 1000px) {
-                width: calc(100vw - 50px);
+                width: calc(95vw - 50px);
                 height: 95%;
+                margin-top: 5%;
             }
             .playerWrapper {
                 $videoMinW: 60vw;
                 $videoMinH: 30vh;
                 justify-content: center;
                 align-items: center;
-                position: relative;
-                // background-color: white;
-                display: flex;
-                // min-width: 80%;
+                position: relative; 
+                display: flex; 
                 height: 100%;
                 width: 100%;
                 overflow: hidden;
@@ -354,47 +392,38 @@ onDeactivated( () => {
                     height: 100%;
                     position: relative;
                     justify-content: center;
-                    align-items: center; 
-                    .videoWrapper {
-                        overflow: hidden;
-                        display: flex;
-                        align-items: center; 
+                    align-items: center;  
+                    // border-right: 2px solid white;
+                    video {  
+                        width: 100%;
                         height: 100%; 
-                        z-index: 1;
-                        // border-right: 2px solid white;
-                        video { 
-                            position: absolute;
-                            left: 0;
-                            max-height: 100%;
-                        }
-                    }
+                        position: absolute;
+                        left: 0;
+                        z-index: 1;display: none;
+                    } 
                     #canvasOutput {
                         display: flex;  
                         max-width: 100%;
                         max-height: 100%;
                         object-fit: contain; 
-                        z-index: 0;
-                    }
-                }
-
-
-
+                        z-index: 1;
+                    } 
+                } 
             }
             .videoController {
                 width: 100%;
                 min-height: 10%;
                 max-height: 80px;
                 display: flex;
-                justify-content: space-around;
-                color: white;
-                background: linear-gradient(to bottom, gray 1px, black);
-                opacity: 0.8;
+                justify-content: space-around; 
+                z-index: 2;
+                bottom: 0;
                 padding-bottom: 5px;
-                // position: absolute;
-                // bottom: 0;
-                // z-index: 2;
-                // transform: translateY(-100%);
-                // background-color: white;
+                color: white;
+                transition: all 0.5s ease;
+                background: linear-gradient(to bottom, gray 1px, black);
+                // opacity: 0.8;
+                // padding-bottom: 5px; 
                 .el-col {
                     display: flex;
                     justify-content: space-around;
@@ -417,19 +446,12 @@ onDeactivated( () => {
 
         }
         .saucer {
-            width: 50vw;
+            width: 70vw;
             height: 10px;
             border: 5px solid gray;
             background-color: gray;
             border-radius: 10px;
-            @media(max-width: 1000px) {
-                // position: absolute;
-                // bottom: 0;
-                // height: 5px;
-                // border-color: #dddddd;
-                // border: 1px solid #dddddd;
-                // transform: translateY(-30px);
-                // background-color: #dddddd;
+            @media(max-width: 1000px) { 
                 display: none;
             }
         }

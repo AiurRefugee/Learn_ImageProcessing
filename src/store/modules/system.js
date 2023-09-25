@@ -1,11 +1,13 @@
 import { ElMessage } from "element-plus"
+import { changeTheme } from '@/utils/theme.js'
 
 const system = {
     state: {
       currentOption: '',
       cameraNum: 0,
       deviceStatus: 'Normal',
-      // worker: null
+      worker: null,
+      theme: false, //false light true dark
     },
     mutations: {
         UPDATE_CURRENTOPTION: (state, param) => {
@@ -17,18 +19,21 @@ const system = {
         UPDATE_DEVICESTATUS: (state, param) => {
             state.deviceStatus = param
         },
-        // SET_WEBWORKER: (state, param) => {
-        //   if(!state.worker) {
-        //     state.worker = new Worker('/src/opencv/worker.js')
-        //     // state.worker.onmessage = function(event) {
-        //     //   console.log(event.data);
-        //     // };
-        //   }
-        // }
+        SET_WEBWORKER: (state, param) => {
+          if(!state.worker) {
+            state.worker = new Worker('/src/opencv/worker.js')
+            // state.worker.onmessage = function(event) {
+            //   console.log(event.data);
+            // };
+          }
+        },
+        CHANGE_THEME: (state, param) => {
+          console.log('param', param)
+          state.theme = param
+        }
     },
     actions: {
-        set_currentOption({ commit }, param) {
-          console.log(param)
+        set_currentOption({ commit }, param) { 
             commit("UPDATE_CURRENTOPTION", param)
         },
         set_cameraNum({ commit }, param) {
@@ -72,9 +77,13 @@ const system = {
                 ElMessage.error('Browser does not support mediaDevices API')
               }
         },
-        // initWorker({ commit }, param) {
-        //   commit('SET_WEBWORKER', param)
-        // }
+        initWorker({ commit }, param) {
+          commit('SET_WEBWORKER', param)
+        },
+        change_Theme({ commit }, param) {
+          commit('CHANGE_THEME', param)
+          changeTheme(param)
+        }
 
     }
 }

@@ -1,5 +1,5 @@
 import cv from 'opencv.js'
-import { ElMessage } from 'element-plus'  
+import { ElMessage } from 'element-plus'   
 export const classification = [
 {
   primaryClass: '图像变换',
@@ -28,7 +28,7 @@ export const classification = [
   primaryClass: 'example',
   secondrayClass: 'example',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 
@@ -49,7 +49,7 @@ export const classification = [
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -61,6 +61,24 @@ export const classification = [
 
   } 
 */
+
+function switchToRGBA(src) { 
+  switch (src.type()) {
+    case cv.CV_8UC1, cv.CV_32F, 0:
+        cv.cvtColor(src, src, cv.COLOR_GRAY2RGBA)
+        break
+      case cv.CV_8UC3:
+        cv.cvtColor(src, src, cv.COLOR_RGB2RGBA)
+        break
+      case cv.CV_8UC4:
+        break
+    default:
+      throw new Error(
+        'srcMat Cannot convert to RGBA'
+      )
+  }
+}
+
 export  const configs =  [
 {
   title: 'cvtColorSpace',
@@ -70,8 +88,8 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   steps: [],
   primaryClass: '图像变换',
   secondrayClass: '颜色空间变换',
-  selected: false,
-  imageAvaliable: true,
+  selected: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 'code',
@@ -110,15 +128,15 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       
     }
   ],
-  f: (title, src, dst, params) => {
+  f: (title, src, dst, params) => { 
     try {
-      console.log(`${title} params:`,src, dst, ...params)
+      // console.log(`${title} params:`,src, dst, ...params)
       let [code, dstCn] = [...params] 
-      cv.cvtColor(src, dst, code, dstCn);
+      cv.cvtColor(src, dst, code, dstCn); 
       return true
     } catch(error) {
       ElMessage({
-        message: `${title}: 之前的操作换个参数试试。`+ error,
+        message: `${title}: params error, `+ error,
         grouping: true,
         type: 'error',
       })
@@ -133,7 +151,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: '图像变换',
   secondrayClass: '形态学变换',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 'kernelSize',
@@ -189,7 +207,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -205,7 +223,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: '图像变换',
   secondrayClass: '形态学变换',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 'kernelSize',
@@ -261,7 +279,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -277,7 +295,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: '图像增强',
   secondrayClass: '降噪',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [{
     paramName: "depth",
     paramDesc: "desired depth of the destination image.",
@@ -337,7 +355,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -352,7 +370,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: '图像分割',
   secondrayClass: '边界分割',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [{
     paramName: "rho",
     paramDesc: "distance resolution of the accumulator in pixels.",
@@ -383,11 +401,13 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       max: 60
     }
   }],
-  f: (title, src, dst, params) => {
+  f: (title, src, dst, params) => { 
     try {
+      
       // console.log(`${title} params:`,src, dst, ...params)
       let [rho, theta, threshold] = [...params]
       let lines = new cv.Mat();
+      switchToRGBA(src)
       cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
       cv.Canny(src, src, 50, 200, 3);
       // You can try more different parameters
@@ -405,10 +425,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
           let endPoint = {x: x0 + 1000 * b, y: y0 - 1000 * a};
           cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
       }
+      lines.delete()
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -422,7 +443,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   theory: `Here, the matter is straight forward. If pixel value is greater than a threshold value, it is assigned one value (may be white), else it is assigned another value (may be black).`,
   primaryClass: '图像分割',
   secondrayClass: '阈值分割',
-  selected: true,
+  selected: false,
   imageAvaliable: true,
   params: [{
     paramName: "thresh",
@@ -479,7 +500,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
         return true
       } catch(error) {
         ElMessage({
-          message: `${title}: 之前的操作换个参数试试。`+ error,
+          message: `${title}: params error,`+ error,
           grouping: true,
           type: 'error',
         })
@@ -494,7 +515,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: "图像分割",
   secondrayClass: "阈值分割",
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 'maxValue',
@@ -560,12 +581,13 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   f: (title, src, dst, params) => { 
     // console.log(`${title} params:`,src, dst, ...params) 
     try {
+      switchToRGBA(src)
       cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
       cv.adaptiveThreshold(dst, dst, ...params);
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -601,7 +623,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: "图像分割",
   secondrayClass: "边界分割",
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 'threshold1',
@@ -642,13 +664,13 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   ],
   f: (title, src, dst, params) => {
     try {
-      // console.log(`${title} params:`,src, dst, ...params)
+      switchToRGBA(src)
       cv.cvtColor(src, dst, cv.COLOR_RGB2GRAY, 0);
       cv.Canny(dst, dst, ...params); 
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -663,7 +685,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: '图像变换',
   secondrayClass: '几何变换',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 'center x',
@@ -716,7 +738,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -731,7 +753,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: '图像变换',
   secondrayClass: '频域变换',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
   //   {
   //     paramName: 'flags',
@@ -775,6 +797,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   ],
   f: (title, src, dst, params) => {
     try {
+      switchToRGBA(src)
       cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
 
       // get optimal size of DFT
@@ -839,10 +862,11 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       // The pixel value of cv.CV_32S type image ranges from 0 to 1.
       cv.normalize(mag, mag, 0, 1, cv.NORM_MINMAX);
       mag.copyTo(dst)
+      padded.delete(); planes.delete(); complexI.delete(); m1.delete(); tmp.delete(); 
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -857,7 +881,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   secondrayClass: '锐化',
   theory: 'OpenCV provides three types of gradient filters or High-pass filters, Sobel, Scharr and Laplacian. We will see each one of them.',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [
     {
       paramName: 'xyOrder',
@@ -891,7 +915,8 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   f: (title, src, dst, params) => {
     try {
       let [dx, ksize, delta] = [...params]
-      cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
+      switchToRGBA(src)
+      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
       if(dx) {
         cv.Sobel(src, dst, cv.CV_8U, 1, 0, ksize, 1,delta , cv.BORDER_DEFAULT);
       } else {
@@ -899,8 +924,9 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
       }
       return true
     } catch(error) {
+      console.log(error)
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -919,7 +945,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
   primaryClass: '图像增强',
   secondrayClass: '锐化',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [ 
     {
       paramName: 'kernelSize',
@@ -945,12 +971,13 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
   f: (title, src, dst, params) => {
     try {
       let [ksize, delta] = [...params]
-      cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0); 
+      switchToRGBA(src)
+      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0); 
         cv.Laplacian(src, dst, cv.CV_8U, ksize, 1, delta, cv.BORDER_DEFAULT); 
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -968,8 +995,8 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
   primaryClass: '图像分割',
   secondrayClass: '区域分割',
   selected: false,
-  imageAvaliable: true,
-  videoAvaliable: false,
+  imageAvailable: true,
+  videoAvailable: false,
   params: [
     {
       paramName: 'rect start x',
@@ -1032,8 +1059,8 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
       paramValue: cv.GC_INIT_WITH_RECT,
       widget:{
         type: "selecter",
-        selectLabels: ['cv.GC_INIT_WITH_RECT', 'cv.GC_INIT_WITH_MASK', 'cv.GC_EVAL', 'cv.GC_EVAL_FREEZE_MODEL'],
-        selectValues: [cv.GC_INIT_WITH_RECT, cv.GC_INIT_WITH_MASK, cv.GC_EVAL, cv.GC_EVAL_FREEZE_MODEL]
+        selectLabels: ['cv.GC_INIT_WITH_RECT', 'cv.GC_INIT_WITH_MASK', 'cv.GC_EVAL'],
+        selectValues: [cv.GC_INIT_WITH_RECT, cv.GC_INIT_WITH_MASK, cv.GC_EVAL]
       } 
     }
   ],
@@ -1041,6 +1068,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
     let [startX, startY, endX, endY, iterCount, mode] = [...params]
     try {
       src.copyTo(dst)
+      switchToRGBA(src)
       cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
       let mask = new cv.Mat();
       let bgdModel = new cv.Mat();
@@ -1062,10 +1090,13 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
       let point1 = new cv.Point(rect.x, rect.y);
       let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
       cv.rectangle(dst, point1, point2, color);
+      mask.delete()
+      bgdModel.delete()
+      fgdModel.delete()
       return true
     } catch(error) {
       ElMessage({
-    message: `${title}: 之前的操作换个参数试试。`+ error,
+    message: `${title}: params error,`+ error,
     grouping: true,
     type: 'error',
   })
@@ -1080,7 +1111,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
 //   primaryClass: '图像识别',
 //   secondrayClass: '物体检测',
 //   selected: false,
-//   imageAvaliable: true,
+//   imageAvailable: true,
 //   params: [
 //     {
 //       paramName: 'faces',

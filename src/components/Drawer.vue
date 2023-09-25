@@ -1,57 +1,33 @@
 <script setup>
-import { onMounted, ref, computed, onActivated, onUnmounted, nextTick, watch} from 'vue' 
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-import { classification, configs } from '@/opencv/configs.js'
-import cv from 'opencv.js' 
-import { ElMessage } from 'element-plus';  
-import { useDark, useToggle } from '@vueuse/core' 
-import InfoDialog from '@/components/InfoDialog.vue'
-const emit = defineEmits(['outputImage']) 
+import { onMounted, ref, computed, onActivated, onUnmounted, nextTick, watch, inject} from 'vue' 
+import { useStore } from 'vuex'; 
+import { classification } from '@/opencv/configs.js' 
+import InfoDialog from '@/components/InfoDialog.vue' 
+ 
+const store = useStore() 
 
-const isDark = useDark()
-const toggleDark = useToggle(isDark) 
-const store = useStore()
-const router = useRouter()
+//inject
+const $bus = inject('$bus')
 
+//ref
 const infoList = ref([])
-const infoVisible = ref(false)
-const refresh = ref(null) 
-const direction = ref("ltr")
+const infoVisible = ref(false) 
 const labelWidth = ref(5)
 const filterBarLabel = ref(4)
 
-const contentWidth = ref(24 - labelWidth.value)
-const maxCollapseNum = ref(2)
-let imgInput, videoInput, canvasOutput, src, cap, videoWitdth, videoHeight, begin, delay
-const FPS = 30
-let interval
-let dst = new cv.Mat()
-const selectedProcessions = ref([])
-const primaryClassnameList = classification.map( item => item.primaryClass)
- 
-const drawerConfigs = ref(configs)
+const contentWidth = ref(24 - labelWidth.value) 
+const selectedProcessions = ref([]) 
+
+const maxCollapseNum = ref(window.innerWidth >= 600 ? 5 : 2)
 const classNames = ref(classification)
 const drawerSwitch = computed( () => store.getters.drawerSwitch )
 const curOpt = computed( () => store.getters.currentOption )
-const filtredConfigs = computed( () => { 
-  if( selectedProcessions.value && selectedProcessions.value.length ) {
-    return   drawerConfigs.value.filter( (item) => selectedProcessions.value.includes(item.secondrayClass) )
-  } else {
-    return   drawerConfigs.value
-  } 
-}) 
+const configs = computed( () => store.getters.processConfigs) 
 
-const dark = ref(localStorage['vueuse-color-scheme'] == 'dark')
-
-watch(filtredConfigs.value, (val) => { 
-  store.dispatch('set_filteredProcesses', val)
-  // console.log(store.getters.filteredProcesses.map( item => item.selected ))
-})
 
 function output() {  
   if(curOpt.value == 'image') {  
-    emit('outputImage')
+    $bus.emit('outputImage')
   }  
 }
 
@@ -61,6 +37,8 @@ function openDialog(list) {
 }
 
 function close() {
+  
+  console.log('close')
   infoVisible.value = false
 }
 
@@ -68,24 +46,22 @@ function toggle() {
   store.dispatch('toggle_currentOption')
 }
 
+async function reSize() {
+    console.log('resize')
+    maxCollapseNum.value = window.innerWidth >= 600 ? 5 : 2
+    // if(curOpt.value == 'video') {
+    //     playing.value = false
+    //    await init()
+       
+    // }
+}
+
 onMounted( async () => { 
   // console.log('test'. filtredConfigs.value)
-  console.log('onMounted')
-  store.dispatch('set_filteredProcesses', filtredConfigs.value)
-  window.addEventListener('resize', () => {
-    console.log('resiae')
-    output()
-  }) 
-  window.addEventListener('storage', (e) => {
-    console.log("storage值发生变化后触发:", e)
-  }); 
+  console.log('onMounted')  
    
 })
-
-onActivated( () => {
-  console.log(activated)
-  dark.value = localStorage['vueuse-color-scheme'] == 'dark'
-})
+ 
 
 onUnmounted( () => {
   clearInterval()
@@ -95,16 +71,16 @@ onUnmounted( () => {
 
 </script>
 <template> 
-    <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close"></InfoDialog>
+    <InfoDialog :infoVisible="infoVisible" :infoList="infoList" @close="close" v-if="infoVisible"></InfoDialog>
      <transition name="drawer" >
         <el-row class="drawer" v-show="drawerSwitch" ref="el">
             <div class="filterBar">
-              <el-row justify="space-between" align="middle" :style="{color: curOpt == 'video' ? 'white': ''}">
+              <el-row justify="space-between" align="middle">
                 <el-col :span="filterBarLabel"> 
                     <h4>筛选：</h4> 
                 </el-col> 
                 <el-col :span="24 - filterBarLabel" s>
-                  <el-select v-model="selectedProcessions" filterable @change="show"
+                  <el-select v-model="selectedProcessions" filterable
                     placeholder="请选择条件" multiple collapse-tags :max-collapse-tags="maxCollapseNum">
                     <el-option-group
                       v-for="group in classNames"
@@ -124,59 +100,60 @@ onUnmounted( () => {
             </div> 
             <div class="scrollerWrapper">
               <el-scrollbar> 
-                <el-collapse v-model="activeNames" @change="handleChange">
-                  <el-space direction="vertical" :size="15" fill="fill">
-                    <el-collapse-item :name="process.title" :title="process.title"  
-                      v-for="(process, index) in filtredConfigs" :key="index">
-                      <el-space :size="10" direction="vertical" fill>
-                        
-                        <el-row align="middle" justify="start" :style="{color: curOpt == 'video' ? 'white': ''}"> 
-                            <el-col :span="5">
-                              <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
-                              <el-switch v-model="process.selected" @change="output"></el-switch>
-                            </el-col>
+                <el-collapse> 
+                    <div  v-for="(process, index) in configs" :key="index" > 
+                      <div style="padding: 5px;" v-if="selectedProcessions.length == 0 || selectedProcessions.indexOf(process.secondrayClass) != -1">
+                        <el-collapse-item :name="process.title" :title="process.title">
+                          <el-space :size="10" direction="vertical" fill>
                             
-                            <el-col :span="19" style="display: flex;justify-content: flex-end;">
-                              <el-link :underline="false" @click="openDialog(process)">
-                                <el-icon><View /></el-icon>Learn More
-                              </el-link> 
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                          <el-col :span="24">
-                            <div class="switchGrid" :style="{color: curOpt == 'video' ? 'white': ''}">
-                              <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
-                                justify="start" align="middle" :key="index">
-                                <el-col :span="8">{{ Switch.paramName }}</el-col>
-                                <el-col :span="8">
-                                  <el-switch v-model="Switch.paramValue" @change="output"></el-switch>
+                            <el-row align="middle" justify="start" > 
+                                <el-col :span="5">
+                                  <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
+                                  <el-switch v-model="process.selected" @change="output"></el-switch>
                                 </el-col>
-                              </el-row>
-                            </div>
-                          </el-col>
-                        </el-row>
-                        <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
-                          justify="center" :key="index" :style="{color: curOpt == 'video' ? 'white': ''}">
-                          <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
-                          <el-col :span="contentWidth">
-                            <el-slider v-model="slider.paramValue" show-input @change="output"
-                              show-stop="true" input-size="small" :step="slider.widget.step"
-                              :min="slider.widget.min" :max="slider.widget.max">
-                            </el-slider>
-                          </el-col>
-                        </el-row>
-                        <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
-                          justify="center" :key="index" :style="{color: curOpt == 'video' ? 'white': ''}">
-                          <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
-                          <el-col :span="contentWidth">
-                            <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output">
-                              <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
-                            </el-select>
-                          </el-col>
-                        </el-row>
-                      </el-space>
-                    </el-collapse-item>
-                  </el-space>
+                                
+                                <el-col :span="19" style="display: flex;justify-content: flex-end;">
+                                  <el-link :underline="false" @click="openDialog(process)">
+                                    <el-icon><View /></el-icon>Learn More
+                                  </el-link> 
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                              <el-col :span="24">
+                                <div class="switchGrid" >
+                                  <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
+                                    justify="start" align="middle" :key="index">
+                                    <el-col :span="8">{{ Switch.paramName }}</el-col>
+                                    <el-col :span="8">
+                                      <el-switch v-model="Switch.paramValue" @change="output"></el-switch>
+                                    </el-col>
+                                  </el-row>
+                                </div>
+                              </el-col>
+                            </el-row>
+                            <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
+                              justify="center" :key="index">
+                              <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
+                              <el-col :span="contentWidth">
+                                <el-slider v-model="slider.paramValue" show-input @change="output"
+                                  show-stop="true" input-size="small" :step="slider.widget.step"
+                                  :min="slider.widget.min" :max="slider.widget.max">
+                                </el-slider>
+                              </el-col>
+                            </el-row>
+                            <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
+                              justify="center" :key="index">
+                              <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
+                              <el-col :span="contentWidth">
+                                <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output">
+                                  <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
+                                </el-select>
+                              </el-col>
+                            </el-row>
+                          </el-space>
+                        </el-collapse-item>
+                      </div>
+                    </div> 
                 </el-collapse>
               </el-scrollbar>
               
@@ -212,6 +189,10 @@ div::-webkit-scrollbar-track {
 .el-slider {
   width: calc(100% - 20px);
   padding-left: 10px;
+}
+.el-select-dropdown__item {
+  width: 100%;
+  max-width: 100%;
 }
 .drawer-enter-from,
 .drawer-leave-to {
@@ -265,23 +246,38 @@ $controlZ: 50;
   }
 }
 .drawer {
+  $outSize: 10px;
+    // width: calc(40vw - 2*$outSize);
+    // height: calc(95vh - 2*$outSize); 
+    // outline: $outSize solid color-mix(in srgb, var(--el-bg-color) 30%, rgba(128, 128, 128, 0.434) 70%);
     width: 40vw;
     height: 95vh;
-    //display: flex;
-    border-radius: 12px;
-    box-shadow: 2px 0px 10px 2px rgba(205, 204, 204, 0.6); 
-    // border: 1px solid white;
+    border-radius: 15px;
+    // box-shadow: -2px 2px 5px 2px color-mix(in srgb, var(--el-bg-color) 50%, rgba(153, 153, 153, 0.545)); 
+    // border: 1px solid white;  
     -webkit-backdrop-filter: blur(10px); 
     backdrop-filter: blur(10px);
     position: absolute;
     display: flex;
     flex-direction: column;
-    transition: all 1s ease;
+    transition: all 0.5s ease;
     justify-content: flex-start;
     align-items: center;
     left: 0;
     z-index: $controlZ - 1;
-    // background-color: darkgrey;
+    // background: radial-gradient(
+    //   ellipse farthest-corner at 50% 50%, 
+    //   color-mix(in srgb, var(--el-bg-color) 10%, rgba(128, 128, 128, 0.131) 90%) 20%, 
+    //   color-mix(in srgb, var(--el-bg-color) 50%, rgba(128, 128, 128, 0.237) 90%) 50%, 
+    //   // red 40%,
+    //   var(--el-bg-color) 90%);
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--el-bg-color) 50%, rgba(153, 153, 153, 0.545)) 10%,
+      color-mix(in srgb, var(--el-bg-color) 10%, rgba(131, 131, 131, 0.205)) 90% 
+    );
+    
+    // background-color: color-mix(in srgb, var(--el-bg-color) 60%, rgba(128, 128, 128, 0.255) 20%);
     margin-left: 4vw;
     // padding-left: 1%;
     // padding-right: 1%;
@@ -296,7 +292,7 @@ $controlZ: 50;
       width: 90%;
       height: 60px;
       filter: contrast(1.2);
-      // color: gray;
+      color: var(--el-text-color-primary);
     } 
     .scrollerWrapper {
       width: 90%;
@@ -311,11 +307,11 @@ $controlZ: 50;
         
     }
     .space {
-          // background-color: #ffb444;
-          width: 100%;
-          display: flex;
-          flex-grow: 1;
-        }
+      // background-color: #ffb444;
+      width: 100%;
+      display: flex;
+      flex-grow: 1;
+    }
     .switchGrid {
       width: 100%;
       display: grid;

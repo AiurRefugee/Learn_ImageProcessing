@@ -1,47 +1,49 @@
 <script setup>
-import { onMounted, onActivated, ref, computed, nextTick, watch} from 'vue'
+import { onMounted, onActivated, ref, computed, nextTick, watch, inject} from 'vue'
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import { useDark, useToggle } from '@vueuse/core'
+import { ElMessage } from 'element-plus'; 
 import moment from 'moment';
-import { Sunny, Moon, VideoCamera, Picture} from '@element-plus/icons-vue'
+import { Sunny, Moon, VideoCamera, Picture} from '@element-plus/icons-vue' 
 
 let timeInterval
 
+//inject
+const $bus = inject('$bus')
 
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
-
-const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
+//ref 
 const recording = ref(false)
 const videoCaped = ref([])
 const timeCount = ref(0)
 const timeString = ref('00:00:00')
 const controllerWrapper = ref(null)
-const controller = ref(null)
-const lightColor = ref('black')
-const darkColor = ref('white')
+const controller = ref(null) 
 const recorder = ref(null)
 
 const store = useStore()
 const router = useRouter()
 const refresh = ref(null)
-const cameraMode = ref(false) // true 拍照 false 摄像
-const direction = ref("ltr")
+const cameraMode = ref(false) // true 拍照 false 摄像 
+const videoDisabled = ref(false)
+const options = ref(['image', 'video', 'camera'])
 
 
 const curOpt = computed( () => store.getters.currentOption )
 const cameraCount = computed(() => store.getters.cameraNum)
-const cameraStatus = computed( () => store.getters.cameraStatus )
-const drawerSwitch = computed( () => store.getters.drawerSwitch)
-
-const emit = defineEmits(['outputImage', 'toggleMode'])
-
-const options = computed(() => {
-   return ['image', 'video', 'camera']
-})
-
+const cameraStatus = computed( () => store.getters.cameraStatus) 
+const theme = computed( 
+  {
+    get() {
+      console.log(store.getters.theme)
+      return store.getters.theme
+    }, 
+    set(val) {
+      console.log('val', val)
+      store.dispatch('change_Theme', val)
+    }
+  }
+) 
+ 
 const ctx = computed( () => {
     let res
     switch(curOpt.value) {
@@ -53,11 +55,22 @@ const ctx = computed( () => {
     return res
 })
 
+watch( curOpt, () => {
+    console.log('watch')
+    if(curOpt.value == 'image') { 
+        cameraMode.value = true
+        videoDisabled.value = true
 
-function changedark() {
-  toggleDark()
-  window.localStorage.setItem("vueuse-color-scheme", 'dark');
-}
+    } else {
+        videoDisabled.value = false
+    }
+})
+
+
+// function changedark() {
+//   toggleDark()
+//   window.localStorage.setItem("vueuse-color-scheme", 'dark');
+// }
 
 function outputImage() {
     if(cameraMode.value) {
@@ -71,18 +84,29 @@ function outputImage() {
     }
 }
 
-async function control(option) {
-
-    if(option == 'camera' && cameraStatus.value != 'Normal') {
-        console.log('cameraStatus', cameraStatus)
-        router.push(`/noCamera/${cameraStatus}`)
-    }
-    store.dispatch('set_currentOption', option)
-    ctx.value = null
+async function control(option) {   
     if(timeCount.value > 0) {
         endRecord()
     }
-    await nextTick()
+    if(option != curOpt.value) {
+        store.dispatch('set_currentOption', option)
+        if(option == "camera") { 
+            console.log('con', cameraStatus.value) 
+            if(cameraStatus.value != 'Normal') {
+                router.push({
+                    path: `/noCamera/${cameraStatus.value}`,
+                    replace: true
+                })
+                return false
+            }
+        } 
+        router.push({
+            path: `/imageProcessing/${option}`,
+            replace: true
+        })
+        
+        
+    }
 }
 
 function toggleMode() {
@@ -91,9 +115,8 @@ function toggleMode() {
         { transform: 'rotate(360deg)'}
     ],
     500
-    )
-    console.log(refresh.value)
-    emit('toggleMode')
+    ) 
+    $bus.emit('toggleMode')
 }
 
 function toggleDrawer() {
@@ -103,7 +126,7 @@ function toggleDrawer() {
 
 function downloadVideo(data) {
     videoCaped.value.push(data)
-    const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/webm' }));
+    const url = URL.createObjectURL(new Blob(videoCaped.value, { type: 'video/mp4' }));
     var element = document.createElement('a');
     element.setAttribute('href', url);
     element.setAttribute('download', "output");
@@ -113,40 +136,42 @@ function downloadVideo(data) {
     document.body.removeChild(element);
 }
 
-function takePhoto() {
-    controller.value.animate([
-        { transform: 'scale(1)'},
-        { transform: 'scale(0.7)'},
-        { transform: 'scale(1)'}
+async function takePhoto() {
+    controller.value.animate([  
+        {transform: 'scale(1.0)'},
+        {transform: 'scale(0.9)', 
+         filter: 'brightness(1.0)'}, 
+        {transform: 'scale(1.0)'}
     ], {
-        duration: 200,
+        duration: 100,
         easing: 'ease-in',
         fill: 'forwards'
     })
-    try{
+    setTimeout( async () => {
+        try{
         // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
-        if(curOpt.value == 'image') {
-            emit('outputImage')
+            if(curOpt.value == 'image') {
+            $bus.emit('outputImage', false)
+                
+            }
+            await nextTick() 
+            const url = ctx.value.toDataURL()
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'output.png';
+            link.style.display = 'none'
+            document.body.appendChild(link);
+            link.click();
+        } catch(error) {
+            console.log(error)
+            ElMessage
         }
-        // cv.imshow(ctx.value.id)
-
-        const url = ctx.value.toDataURL()
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'output.png';
-        link.style.display = 'none'
-        document.body.appendChild(link);
-        link.click();
-    } catch(error) {
-        console.log(error)
-        ElMessage
-    }
+    }, 100)
 }
 
 function beginRecord() {
     timeCount.value = 0
-    timeString.value = '00:00:00'
-    console.log('record', ctx.value)
+    timeString.value = '00:00:00' 
     recording.value = true
     if(curOpt.value == 'image') {
         emit('outputImage')
@@ -198,31 +223,25 @@ function endRecord() {
     // timeString.value = '00:00:00'
     if(recorder.value) {
         recorder.value.stop()
-    }
-    // controllerWrapper.value.animate([
-    //     { transform: 'rotate(0)'},
-    //     { transform: 'rotate(360deg)'}
-    // ],
-    // 400 )
-    // controller.value.animate([
-    //     { transform: 'scale(1.2)'},
-    //     { transform: 'scale(1)'}
-    // ],{
-    //     duration: 500,
-    //     fill: 'forwards'
-    // })
+    } 
 
-    videoCaped.value = []
+    videoCaped.value.length = 0
 
 }
 
 onMounted( async () => {
     console.log('control mount')
-
+    await nextTick()
+    console.log(curOpt.value)
+    if(curOpt.value == 'image') {
+        cameraMode.value = true
+        videoDisabled.value = true
+    }
 })
 
 onActivated( () => {
-    console.log('onActivated') 
+    console.log('onActivated')
+    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
     console.log(dark.value)
 })
 
@@ -249,8 +268,8 @@ onActivated( () => {
                 <div class="controller" ref="controller"
                     :style="{
                         'background-color': cameraMode? 'rgb(208 208 208)' : 'red',
-                        'border-radius': recording ? '5px' : '50%',
-                        'width': recording ? '50%' : '85%'
+                        'border-radius': recording ? '10px' : '50%',
+                        'width': recording ? '60%' : '80%'
                         }">
                     </div>
             </div>
@@ -262,24 +281,22 @@ onActivated( () => {
                     <el-Switch  
                         active-text="Photos"
                         size="large"
-                        inactive-text="Videos"
+                        inactive-text="Videos" 
                         :width="70"
                         :active-action-icon="Picture"
                         :inactive-action-icon="VideoCamera"
                         inline-prompt
-                        :disabled="recording"
+                        :disabled="recording || videoDisabled"
                         v-model="cameraMode"
                     />
 
                 </div>
                 <div class="spaceItem">
-                    <el-switch v-model="dark" size="large" :width="50"
-                    :active-action-icon="Moon" :inactive-action-icon="Sunny"
-                    @change="changedark"/>
+                    <el-switch v-model="theme" size="large" :width="50"
+                    :active-action-icon="Moon" :inactive-action-icon="Sunny" />
                 </div> 
-                <div class="spaceItem" v-if="curOpt == 'camera' && cameraCount > 0 && cameraStatus == 'Normal'" ref="refresh">
-                    <el-icon class="spaceItem"
-
+                <div class="spaceItem" v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'" ref="refresh">
+                    <el-icon class="spaceItem" 
                         color="white"
                         @click="toggleMode" :size="30" >
                         <Refresh />
@@ -291,8 +308,8 @@ onActivated( () => {
                     <!-- {{ 'cameraStatus:' + cameraStatus }} -->
                 </div> 
                 <div v-else></div>
-                <div class="spaceItem">
-                    <el-icon :color="'#5a5a5a'" :size="30" @click="toggleDrawer" ><MoreFilled /></el-icon>
+                <div class="spaceItem" @click="toggleDrawer">
+                    <el-icon :size="30"  ><MoreFilled /></el-icon>
                 </div>
             </div> 
     </el-row>
@@ -340,13 +357,14 @@ $controlZ: 50;
     position: absolute;
     right: 0;
     z-index: $controlZ;
-    // background-color: green;
+    overflow: hidden; 
     flex-direction: column;
     @media (max-width: 1000px) {
         width: 100vw;
         height: 10vh;
         flex-direction: row;
         align-content: center;
+        padding-top: 10px;
         padding-bottom: 15px;
         top: null;
         bottom: 0;
@@ -368,10 +386,11 @@ $controlZ: 50;
             width: 100%;
             flex-grow: 1;
             font-size: 2vh;
-            min-height: calc(2vh + 10px);
             display: flex;
             justify-content: center;
+            min-height: 3vh;
             font-weight: 900;
+            color: var(--el-text-color-primary);
             text-shadow: 2px 0px 2px rgb(70, 70, 70);
             cursor: pointer;
             @media (max-width: 1000px) {
@@ -392,6 +411,7 @@ $controlZ: 50;
                 
     }
     .spacer:last-child {
+        flex-wrap: nowrap;
         @media(max-width: 600px) {
             display: grid;
             grid-template-columns: 1fr 1fr;

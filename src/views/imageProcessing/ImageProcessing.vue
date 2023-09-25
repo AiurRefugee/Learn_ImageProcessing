@@ -6,11 +6,10 @@ import ImageModule from '@/components/ImageModule.vue';
 import VideoModule from '@/components/VideoModule.vue';
 import Drawer from '@/components/Drawer.vue';
 import { ElMessage } from 'element-plus';  
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 const store = useStore() 
-const route = useRoute() 
-const option = route.params.option
+const router = useRouter()  
 
 // refs
 const image = ref(null)
@@ -19,16 +18,21 @@ const camera = ref(null)
 
 // computed
 const curOpt = computed( () => store.getters.currentOption )
-const cameraStatus = computed( () => store.getters.cameraStatus )
-// const worker = computed( () => store.getters.worker)
+const cameraStatus = computed( () => store.getters.cameraStatus ) 
 
-onMounted(() => {
-  // store.dispatch('systemInit')
-  console.log('aaa', cameraStatus.value)
-  store.dispatch('set_currentOption', option)
-  store.dispatch('systemInit') 
-  // store.dispatch('initWorker') 
-
+onMounted(() => { 
+  store.dispatch('initWorker')  
+  console.log(curOpt.value)
+   
+  store.dispatch('systemInit')  
+  setTimeout( () => {
+    if(!curOpt.value) {
+      router.push({
+            path: `/imageProcessing/image`,
+            replace: true
+        })
+    }
+  }, 2000)
 })
 
 // functions
@@ -54,23 +58,10 @@ function toggleMode() {
   <div class="appContainer"> 
      
     <Drawer ref="drawer" @outputImage="outputImage"></Drawer> 
-      
-    <transition mode="out-in">  
-      <keep-alive>
-        <ImageModule  ref="image" v-if="curOpt == 'image'"></ImageModule>   
-      </keep-alive>
-    </transition> 
-    <transition mode="out-in"> 
-      <keep-alive>
-        <VideoModule ref="video" v-if="curOpt == 'video'"></VideoModule> 
-      </keep-alive>
-    </transition>
-    <transition mode="out-in">
-      <CameraModule ref="camera" v-if="curOpt == 'camera' && cameraStatus == 'Normal'"></CameraModule>
-    </transition> 
-      <keep-alive>
-        <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/> 
-      </keep-alive>
+    <transition mode="out-in">   
+        <router-view/> 
+    </transition>  
+    <ControlBar @outputImage="outputImage" @toggleMode="toggleMode"/>  
   </div>
  
 </template>

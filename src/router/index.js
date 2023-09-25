@@ -3,7 +3,7 @@ import { useStore } from 'vuex';
 const store = useStore()
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
@@ -12,14 +12,40 @@ const router = createRouter({
       meta: {
         title: 'Learn ImageProcessing'
       }
-    },
+    }, 
     {
-      path: '/imageProcessing/:option',
+      path: '/imageProcessing',
       name: 'imageProcessing',  
       component: () => import('@/views/imageProcessing/ImageProcessing.vue'),
       meta: {
         title: 'Learn ImageProcessing'
-      }
+      },
+      children: [
+        {
+          path: '/imageProcessing/image',
+          name: 'image',
+          component: () => import('@/components/ImageModule.vue'),
+          meta: {
+            title: 'Learn ImageProcessing'
+          }
+        }, 
+        {
+          path: '/imageProcessing/video',
+          name: 'video',
+          component: () => import('@/components/VideoModule.vue'),
+          meta: {
+            title: 'Learn ImageProcessing'
+          }
+        }, 
+        {
+          path: '/imageProcessing/camera',
+          name: 'camera',
+          component: () => import('@/components/CameraModule.vue'),
+          meta: {
+            title: 'Learn ImageProcessing'
+          }
+        }, 
+      ]
     },
     {
       path: '/noCamera/:info',

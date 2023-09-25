@@ -4,13 +4,14 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex'; 
 import { Sunny, Moon } from '@element-plus/icons-vue'
 
-import { useDark, useToggle } from '@vueuse/core' 
 
-const isDark = useDark()
-const toggleDark = useToggle(isDark) 
+// import { useDark, useToggle } from '@vueuse/core' 
+
+// const isDark = useDark()
+// const toggleDark = useToggle(isDark) 
 
 const store = useStore()
-const dark = ref(window.localStorage['vueuse-color-scheme'] == 'dark')
+// const dark = ref(window.localStorage['vueuse-color-scheme'] == 'auto')
 const pos = ref('left') 
 const showDialog = ref(false) 
 const iconWidth = ref(5)
@@ -37,6 +38,18 @@ const dialogContent = ref({
 const router = useRouter()
 
 const status = computed( () => store.getters.cameraStatus)
+const theme = computed( 
+  {
+    get() {
+      console.log(store.getters.theme)
+      return store.getters.theme
+    }, 
+    set(val) {
+      console.log('val', val)
+      store.dispatch('change_Theme', val)
+    }
+  }
+)
 
 const iconTextSize = computed( () => {
   if(window.innerWidth <= 1000 ) {
@@ -52,9 +65,11 @@ function openDialog(title) {
   showDialog.value = true
 }
 
-function changeTheme() {
-  toggleDark()
-}
+// function changeTheme(val) {
+//   console.log(val)
+//   store.dispatch('change_Theme', val)
+// }
+
 function navigateTo(option) {
   store.dispatch('set_currentOption', option)
   if(option != "camera") {
@@ -62,6 +77,7 @@ function navigateTo(option) {
         path: `/imageProcessing/${option}`
       })
   } else { 
+    console.log(status.value)
      if(status.value == 'Normal') {
       router.push({
         path: `/imageProcessing/${option}`
@@ -75,6 +91,7 @@ function navigateTo(option) {
 }
 
 onMounted(() => {   
+<<<<<<< HEAD
   console.log('onMounted')
     dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
     console.log(dark.value)
@@ -86,12 +103,16 @@ onMounted(() => {
   //     size.value = '40%'
   //   }
   // }; 
+=======
+  console.log('onMounted') 
+  store.dispatch('systemInit') 
+  // console.log(dark.value) 
+>>>>>>> image-worker
 })
 
 onActivated( () => {
-    console.log('onActivated')
-    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
-    console.log(dark.value)
+    console.log('onActivated') 
+    // console.log(dark.value)
 })
 
 </script>
@@ -111,9 +132,7 @@ onActivated( () => {
     </el-drawer>
     <div class="topBar">
       <div class="title">
-        <el-text size="large">
-          <h1>Learn ImageProcessing</h1>
-        </el-text>
+        <h1>Learn ImageProcessing</h1>
       </div>
       <div class="topbarIcons">
         <el-row style="width:100%;" :gutter="2" justify="end" align="middle">
@@ -127,7 +146,7 @@ onActivated( () => {
             <el-link :underline="false" @click="openDialog('Element +')">Element +</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
-            <el-switch v-model="dark" :active-action-icon="Moon" :inactive-action-icon="Sunny"  style="--el-switch-on-color: gray" @change="changeTheme">
+            <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny" >
             </el-switch>
             <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
           </el-col>
@@ -142,19 +161,19 @@ onActivated( () => {
         <div class="centerItem" @click="navigateTo('image')">
           <PictureFilled class="centerIcon"/>
           <div class="text">
-            <div>从图片输入</div> 
+            <div>Image</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('video')">
           <VideoPlay class="centerIcon"/>
           <div class="text">
-            <div>从视频输入</div> 
+            <div>Video</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('camera')">
           <CameraFilled class="centerIcon"/>
           <div class="text">
-            <div>从摄像头输入</div> 
+            <div>Camera</div> 
           </div> 
       </div>
     </div>
@@ -227,6 +246,7 @@ p{
       padding-right: 1%;
       font-style: italic;
       letter-spacing: 3px;
+      color: var(--el-text-color-primary);
       @include center();
         padding-left: 2%;
         justify-content: flex-start;
@@ -265,14 +285,15 @@ p{
     display: flex;
     // background-color: blue;
     width: 100vw;
-    flex-grow: 1;
-    padding: 5%;
+    flex-grow: 1; 
     justify-content: center;
+    padding-top: 5%;
     align-items: flex-start;
     @media(max-width: 1000px) {
       flex-direction: column;  
       justify-content: flex-start;
       align-items: center;
+      padding-top: 0;
     }
     .centerItem {
       @include center();
@@ -280,14 +301,18 @@ p{
       height: 50%;
       font-size: 20px;
       flex-direction: column;
-      
+      flex-grow: 1;
+      transition: all 0.5s ease;
+      color: var(--el-text-color-primary);
       @media (max-width: 1000px) {
         width: 90%;
+        max-height: 30%;
       }
       .centerIcon {
         width: 50%;
         @media (max-width: 1000px) {
           width: 30%;
+          
         }
       }
       .text{
