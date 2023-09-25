@@ -239,7 +239,7 @@ p{
         font-weight: 900;
         font-family: math;
       h1 {
-        font-size: 50px;
+        font-size: 4.5vw;
       }
       @media (max-width: 1000px) {
         font-size: 20px;
@@ -290,22 +290,24 @@ p{
       font-size: 20px;
       flex-direction: column;
       justify-content: center;
-      overflow: hidden;
+      // overflow: hidden;
       flex-grow: 1;
       transition: all 0.5s ease;
       color: var(--el-text-color-primary);
       @media (max-width: 1000px) {
-        // width: 60vw;
-        // max-height: 30%;
+        width: 60vw;
+        max-height: 30%;
       }
       .centerIcon {
-        max-width: 50%;
-        max-height: 50%;
+        // max-width: 50%;
+        max-width: 15vw;
+        aspect-ratio: 1/1;
         // width: 70%;
         // background: blue;
-        @media (max-width: 1000px) { 
-          max-height: 80%;
-          aspect-ratio: 1/1;
+        @media (max-width: 1000px) {  
+          max-height: 20vh;
+          max-width: 30vw;
+          
           // height: calc(100% - 60px);
           // aspect-ratio: 1/1;
           // flex-grow: 1;
