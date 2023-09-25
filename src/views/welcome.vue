@@ -91,23 +91,9 @@ function navigateTo(option) {
 }
 
 onMounted(() => {   
-<<<<<<< HEAD
-  console.log('onMounted')
-    dark.value = window.localStorage['vueuse-color-scheme'] == 'dark'
-    console.log(dark.value)
-  
-  // window.onresize =() =>{
-  //   if(window.innerWidth < 1000) {
-  //     size.value = '70%'
-  //   } else {
-  //     size.value = '40%'
-  //   }
-  // }; 
-=======
   console.log('onMounted') 
   store.dispatch('systemInit') 
   // console.log(dark.value) 
->>>>>>> image-worker
 })
 
 onActivated( () => {
