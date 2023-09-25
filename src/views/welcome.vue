@@ -224,7 +224,7 @@ p{
     align-items: center;
     @media (max-width: 1000px) {
       flex-direction: column;
-      max-height: 150px;
+      max-height: 15%;
     }
     .title{ 
       min-height: 8vh;
@@ -258,6 +258,8 @@ p{
         @include center();
         a {
           font-size: 20px;
+          // font-family: monospace;
+          font-weight: 600;
         }
       }
       @media (max-width: 1000px) {
@@ -274,30 +276,39 @@ p{
     flex-grow: 1; 
     justify-content: center;
     padding-top: 5%;
+    overflow: auto;
     align-items: flex-start;
     @media(max-width: 1000px) {
       flex-direction: column;  
-      justify-content: flex-start;
-      align-items: center;
-      padding-top: 0;
+      justify-content: space-around;
+      align-items: center; 
+      padding: 2% 0;
     }
     .centerItem {
       @include center();
-      width: 33%; 
-      height: 50%;
+      width: 33%;  
       font-size: 20px;
       flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
       flex-grow: 1;
       transition: all 0.5s ease;
       color: var(--el-text-color-primary);
       @media (max-width: 1000px) {
-        width: 90%;
-        max-height: 30%;
+        // width: 60vw;
+        // max-height: 30%;
       }
       .centerIcon {
-        width: 50%;
-        @media (max-width: 1000px) {
-          width: 30%;
+        max-width: 50%;
+        max-height: 50%;
+        // width: 70%;
+        // background: blue;
+        @media (max-width: 1000px) { 
+          max-height: 80%;
+          aspect-ratio: 1/1;
+          // height: calc(100% - 60px);
+          // aspect-ratio: 1/1;
+          // flex-grow: 1;
           
         }
       }
@@ -307,8 +318,9 @@ p{
         height: 50px;
         font-size: 40px;
         @media (max-width: 1000px) {
-            font-size: 2vh;
+            font-size: 3vh;
             align-items: center;
+            word-spacing: 5px;
         }
       }
     }

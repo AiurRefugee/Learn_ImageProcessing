@@ -83,7 +83,8 @@ $paddingLR: 5%;
 ::v-deep(.el-descriptions__title) {
     font-size: 40px;
     letter-spacing: 2px; 
-    max-width: 60vw;
+    max-width: 60%;
+    word-wrap: break-word;
     margin-right: 2%;
 }
 :deep(.el-descriptions__label) {

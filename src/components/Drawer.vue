@@ -271,9 +271,9 @@ $controlZ: 50;
     //   color-mix(in srgb, var(--el-bg-color) 50%, rgba(128, 128, 128, 0.237) 90%) 50%, 
     //   // red 40%,
     //   var(--el-bg-color) 90%);
-    background: linear-gradient(
+    background-image: linear-gradient(
       to right,
-      color-mix(in srgb, var(--el-bg-color) 50%, rgba(153, 153, 153, 0.545)) 10%,
+      color-mix(in srgb, var(--el-bg-color) 90%, rgba(125, 125, 125, 0.675)) 10%,
       color-mix(in srgb, var(--el-bg-color) 10%, rgba(131, 131, 131, 0.205)) 90% 
     );
     

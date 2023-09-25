@@ -31,9 +31,10 @@
     border-bottom: 0;
 }
 .el-collapse-item__header {
-    border-radius: 5px;
-    background-color: #e1e1e185; 
+    border-radius: 10px;
+    background-color: #cdcdcd67; 
     opacity: 0.6;
+    font-size: 15px; 
     border-bottom: 0;
     padding-left: 2%; 
 }
@@ -47,7 +48,7 @@
 .el-collapse-item__wrap {
     // background-image: linear-gradient(transparent 0%, #e7e7e7ce 50%, transparent 80%);
     background-color: transparent;
-    padding: 2%; 
+    padding: 1% 4%; 
     border: 0;
 }
 .el-space--vertical {
