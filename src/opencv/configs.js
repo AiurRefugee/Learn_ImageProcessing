@@ -444,7 +444,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   primaryClass: '图像分割',
   secondrayClass: '阈值分割',
   selected: false,
-  imageAvaliable: true,
+  imageAvailable: true,
   params: [{
     paramName: "thresh",
     paramDesc: "threshold value",
