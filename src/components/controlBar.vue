@@ -151,8 +151,8 @@ async function takePhoto() {
         try{
         // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
             if(curOpt.value == 'image') {
-            $bus.emit('outputImage', false)
-                
+                $bus.emit('outputImage', true)
+                return true
             }
             await nextTick() 
             const url = ctx.value.toDataURL()

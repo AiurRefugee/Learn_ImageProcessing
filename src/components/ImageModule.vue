@@ -96,6 +96,7 @@ const processImage = async () =>  {
     imageUrlList.value.push(imageOutSrc.value)
     for (const process of processConfigs.value) { 
         if(process.imageAvailable && process.selected) {
+            console.log('processing image')
             let res = process.f(process.title, src, dst, process.params.map( item => item.paramValue ))
            
             if(!res) {

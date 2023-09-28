@@ -25,9 +25,12 @@ const curOpt = computed( () => store.getters.currentOption )
 const configs = computed( () => store.getters.processConfigs) 
 
 
-function output(isSwitch) {   
-  if( curOpt.value == 'image' && isSwitch) {  
-    $bus.emit('outputImage')
+function output(isSwitch, processIndex) {  
+  if( curOpt.value == 'image') { 
+    if(isSwitch || configs.value[processIndex].selected) {
+      $bus.emit('outputImage')
+    } 
+    
   }  
 }
 
@@ -108,7 +111,7 @@ onUnmounted( () => {
                           <el-row align="middle" justify="start" > 
                               <el-col :span="5">
                                 <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
-                                <el-switch v-model="process.selected" @change="output(true)"></el-switch>
+                                <el-switch v-model="process.selected" @change="output(true, processIndex)"></el-switch>
                               </el-col>
                               
                               <el-col :span="19" style="display: flex;justify-content: flex-end;">
@@ -124,7 +127,7 @@ onUnmounted( () => {
                                   justify="start" align="middle" :key="index">
                                   <el-col :span="8">{{ Switch.paramName }}</el-col>
                                   <el-col :span="8">
-                                    <el-switch v-model="Switch.paramValue" @change="output(false)"></el-switch>
+                                    <el-switch v-model="Switch.paramValue" @change="output(false, processIndex)"></el-switch>
                                   </el-col>
                                 </el-row>
                               </div>
@@ -134,7 +137,7 @@ onUnmounted( () => {
                             justify="center" :key="index">
                             <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
                             <el-col :span="contentWidth">
-                              <el-slider v-model="slider.paramValue" show-input @change="output(false)"
+                              <el-slider v-model="slider.paramValue" show-input @change="output(false, processIndex)"
                                 show-stop="true" input-size="small" :step="slider.widget.step"
                                 :min="slider.widget.min" :max="slider.widget.max">
                               </el-slider>
@@ -144,7 +147,7 @@ onUnmounted( () => {
                             justify="center" :key="index">
                             <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
                             <el-col :span="contentWidth">
-                              <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output(false)">
+                              <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output(false, processIndex)">
                                 <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
                               </el-select>
                             </el-col>
