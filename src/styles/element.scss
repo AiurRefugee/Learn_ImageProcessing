@@ -56,11 +56,7 @@
 }
 .el-slider__input {
     width: 100px;
-}
-.el-scrollbar__thumb {
-//可设置滚动条颜色
-    background: transparent;//这里我设置成了透明色,可以根据需求添加自己想要的颜色
-}
+} 
 .el-image {
     // z-index: 121;
 }
@@ -89,14 +85,7 @@
     justify-content: center;
     align-items: center;
     text-shadow: none;
-}
-// .el-input__wrapper {
-//     box-shadow: 0 0 0 1px rgba(205, 204, 204, 0.6); 
-// }
-.el-scrollbar__bar.is-vertical>div {
-    width: 0;
-    height: 0;
-}
+} 
 .el-image {
     border-radius: 15px;
     cursor: pointer;

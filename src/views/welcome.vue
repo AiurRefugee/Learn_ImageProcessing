@@ -129,7 +129,7 @@ onActivated( () => {
             <el-link :underline="false" @click="openDialog('Vue')">Vue</el-link>
           </el-col>
           <el-col :span="iconWidth + 2" class="topItem">
-            <el-link :underline="false" @click="openDialog('Element +')">Element +</el-link>
+            <el-link :underline="false" @click="openDialog('Element +')">Element+</el-link>
           </el-col>
           <el-col :span="iconWidth" class="topItem">
             <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny" >
@@ -239,7 +239,7 @@ p{
         font-weight: 900;
         font-family: math;
       h1 {
-        font-size: 4.5vw;
+        font-size: 60px;
       }
       @media (max-width: 1000px) {
         font-size: 20px;
@@ -289,8 +289,7 @@ p{
       width: 33%;  
       font-size: 20px;
       flex-direction: column;
-      justify-content: center;
-      // overflow: hidden;
+      justify-content: center; 
       flex-grow: 1;
       transition: all 0.5s ease;
       color: var(--el-text-color-primary);
@@ -298,20 +297,12 @@ p{
         width: 60vw;
         max-height: 30%;
       }
-      .centerIcon {
-        // max-width: 50%;
-        max-width: 15vw;
-        aspect-ratio: 1/1;
-        // width: 70%;
-        // background: blue;
+      .centerIcon { 
+        max-width: 14vw;
+        aspect-ratio: 1/1; 
         @media (max-width: 1000px) {  
-          max-height: 20vh;
-          max-width: 30vw;
-          
-          // height: calc(100% - 60px);
-          // aspect-ratio: 1/1;
-          // flex-grow: 1;
-          
+          max-height: 15vh;
+          max-width: 30vw;  
         }
       }
       .text{

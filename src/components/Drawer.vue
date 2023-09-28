@@ -25,8 +25,8 @@ const curOpt = computed( () => store.getters.currentOption )
 const configs = computed( () => store.getters.processConfigs) 
 
 
-function output() {  
-  if(curOpt.value == 'image') {  
+function output(isSwitch) {   
+  if( curOpt.value == 'image' && isSwitch) {  
     $bus.emit('outputImage')
   }  
 }
@@ -99,63 +99,61 @@ onUnmounted( () => {
               </el-row>
             </div> 
             <div class="scrollerWrapper">
-              <el-scrollbar> 
-                <el-collapse> 
-                    <div  v-for="(process, index) in configs" :key="index" > 
-                      <div style="padding: 5px;" v-if="selectedProcessions.length == 0 || selectedProcessions.indexOf(process.secondrayClass) != -1">
-                        <el-collapse-item :name="process.title" :title="process.title">
-                          <el-space :size="10" direction="vertical" fill>
-                            
-                            <el-row align="middle" justify="start" > 
-                                <el-col :span="5">
-                                  <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
-                                  <el-switch v-model="process.selected" @change="output"></el-switch>
-                                </el-col>
-                                
-                                <el-col :span="19" style="display: flex;justify-content: flex-end;">
-                                  <el-link :underline="false" @click="openDialog(process)">
-                                    <el-icon><View /></el-icon>Learn More
-                                  </el-link> 
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                              <el-col :span="24">
-                                <div class="switchGrid" >
-                                  <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
-                                    justify="start" align="middle" :key="index">
-                                    <el-col :span="8">{{ Switch.paramName }}</el-col>
-                                    <el-col :span="8">
-                                      <el-switch v-model="Switch.paramValue" @change="output"></el-switch>
-                                    </el-col>
-                                  </el-row>
-                                </div>
+              <el-collapse> 
+                  <div  v-for="(process, processIndex) in configs" :key="processIndex" > 
+                    <div style="padding: 5px;" v-if="selectedProcessions.length == 0 || selectedProcessions.indexOf(process.secondrayClass) != -1">
+                      <el-collapse-item :name="process.title" :title="process.title">
+                        <el-space :size="10" direction="vertical" fill>
+                          
+                          <el-row align="middle" justify="start" > 
+                              <el-col :span="5">
+                                <text style="width: 50px;">{{ process.selected ? 'On' : 'Off' }}</text>
+                                <el-switch v-model="process.selected" @change="output(true)"></el-switch>
                               </el-col>
-                            </el-row>
-                            <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
-                              justify="center" :key="index">
-                              <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
-                              <el-col :span="contentWidth">
-                                <el-slider v-model="slider.paramValue" show-input @change="output"
-                                  show-stop="true" input-size="small" :step="slider.widget.step"
-                                  :min="slider.widget.min" :max="slider.widget.max">
-                                </el-slider>
+                              
+                              <el-col :span="19" style="display: flex;justify-content: flex-end;">
+                                <el-link :underline="false" @click="openDialog(process)">
+                                  <el-icon><View /></el-icon>Learn More
+                                </el-link> 
                               </el-col>
-                            </el-row>
-                            <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
-                              justify="center" :key="index">
-                              <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
-                              <el-col :span="contentWidth">
-                                <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output">
-                                  <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
-                                </el-select>
-                              </el-col>
-                            </el-row>
-                          </el-space>
-                        </el-collapse-item>
-                      </div>
-                    </div> 
-                </el-collapse>
-              </el-scrollbar>
+                          </el-row>
+                          <el-row>
+                            <el-col :span="24">
+                              <div class="switchGrid" >
+                                <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
+                                  justify="start" align="middle" :key="index">
+                                  <el-col :span="8">{{ Switch.paramName }}</el-col>
+                                  <el-col :span="8">
+                                    <el-switch v-model="Switch.paramValue" @change="output(false)"></el-switch>
+                                  </el-col>
+                                </el-row>
+                              </div>
+                            </el-col>
+                          </el-row>
+                          <el-row v-for="(slider, index) in process.params.filter( element => element.widget.type == 'slider')" 
+                            justify="center" :key="index">
+                            <el-col :span="labelWidth"> {{ slider.paramName }}</el-col>
+                            <el-col :span="contentWidth">
+                              <el-slider v-model="slider.paramValue" show-input @change="output(false)"
+                                show-stop="true" input-size="small" :step="slider.widget.step"
+                                :min="slider.widget.min" :max="slider.widget.max">
+                              </el-slider>
+                            </el-col>
+                          </el-row>
+                          <el-row v-for="(selecter, index) in process.params.filter( element => element.widget.type == 'selecter')"
+                            justify="center" :key="index">
+                            <el-col :span="labelWidth"> {{ selecter.paramName }}</el-col>
+                            <el-col :span="contentWidth">
+                              <el-select v-model="selecter.paramValue" placeholder="" size="small" @change="output(false)">
+                                <el-option :label="selecter.widget.selectLabels[index]" :value="option" v-for="(option, index) in selecter.widget.selectValues" :key="index"></el-option>
+                              </el-select>
+                            </el-col>
+                          </el-row>
+                        </el-space>
+                      </el-collapse-item>
+                    </div>
+                  </div> 
+              </el-collapse>
               
             </div>
             <div class="space" @click="toggle"></div>
@@ -215,14 +213,13 @@ div::-webkit-scrollbar-track {
 }  
 .primaryClass {
   max-height: 200px;
-}
-
+} 
 .el-select {
   width: 100%;
 }
 .el-collapse-item__header {
   color: white;
-}
+} 
 
 $controlZ: 50;
 .mask {
@@ -291,21 +288,27 @@ $controlZ: 50;
     .filterBar {
       width: 90%;
       height: 60px;
-      filter: contrast(1.2);
+      // filter: contrast(1.2);
       color: var(--el-text-color-primary);
     } 
     .scrollerWrapper {
       width: 90%;
+      padding: 0 2.5%;
       max-height: calc(100% - 70px); 
       z-index: 95;
+      // background: lightblue;
+      overflow: scroll; 
+      
       @media(max-width: 1000px) {
         max-height: calc(100% - 10vh - 60px);
       }
-      // @media(max-width: 490px) {
-      //   height: 70vh;
-      // }
-        
-    }
+      
+    } 
+    .scrollerWrapper::-webkit-scrollbar{
+          width: 0;
+          height: 0;
+          background-color: transparent;
+      } 
     .space {
       // background-color: #ffb444;
       width: 100%;
