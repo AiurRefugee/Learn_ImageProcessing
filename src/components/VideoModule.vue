@@ -9,10 +9,10 @@ const videoList = ref([
     {
         label: 'test',
         // value: '/src/assets/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
-        value: '/src/assets/videos/video.m4s'
+        value: '/src/assets/videos/sintel.mp4'
     }
 ])
-const videoUrl = ref('/src/assets/videos/video.m4s')
+const videoUrl = ref('/src/assets/videos/sintel.mp4')
 const videoUpload = ref(null)
 const playerIconSize = ref('40px')
 const playing = ref(false)
@@ -403,9 +403,9 @@ onUnmounted( () => {
                     } 
                     #canvasOutput {
                         display: flex;  
-                        max-width: 100%;
-                        max-height: 100%;
-                        object-fit: contain; 
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover; 
                         z-index: 1;
                     } 
                 } 
