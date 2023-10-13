@@ -27,3 +27,5 @@ coverage
 *.sln
 *.sw?
 server.js
+sintel.mp4
+dist.zip

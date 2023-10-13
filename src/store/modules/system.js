@@ -57,24 +57,26 @@ const system = {
                     if(cameraCount == 0) {
                       commit('UPDATE_DEVICESTATUS', 'No Camera Avaliable')
                       ElMessage.error('No Camera Avaliable')
+                      console.error('No Camera Avaliable')
                     }
                     console.log(`设备上的摄像头数量：${cameraCount}`);
                     commit('UPDATE_DEVICECAMERA', cameraCount) 
                   })
                   .catch(error => {
                     console.error('获取设备信息失败：', error);
-                    ElMessage({
-                        message: error,
-                        grouping: true,
-                        type: 'error',
-                    })
+                    // ElMessage({
+                    //     message: error,
+                    //     grouping: true,
+                    //     type: 'error',
+                    // })
                     commit('UPDATE_DEVICESTATUS', 'Failed to access device information')
-                    ElMessage.error('Failed to access device information')
+                    console.error('Failed to access device information')
+                    // ElMessage.error('Failed to access device information')
                   });
               } else {
                 console.error('浏览器不支持mediaDevices API');
                 commit('UPDATE_DEVICESTATUS', 'Browser does not support mediaDevices API')
-                ElMessage.error('Browser does not support mediaDevices API')
+                // ElMessage.error('Browser does not support mediaDevices API')
               }
         },
         initWorker({ commit }, param) {
