@@ -357,9 +357,9 @@ $controlZ: 50;
     position: absolute;
     right: 0;
     z-index: $controlZ;
-    overflow: hidden; 
+    overflow: visible; 
     flex-direction: column;
-    @media (max-width: 1000px) {
+    @media(orientation: portrait) {
         width: 100vw;
         height: 10vh;
         flex-direction: row;
@@ -375,10 +375,11 @@ $controlZ: 50;
         flex: 1;
         max-height: 40vh;
         flex-direction: column;
+        padding: 2% 0;
         // background-color: #ffb444;
-        @media (max-width: 1000px) {
+        @media(orientation: portrait) {
             flex-direction: row;
-            padding: 0;
+            padding: 0 2%;
         } 
  
         // color: white;
@@ -393,7 +394,7 @@ $controlZ: 50;
             color: var(--el-text-color-primary);
             text-shadow: 2px 0px 2px rgb(70, 70, 70);
             cursor: pointer;
-            @media (max-width: 1000px) {
+            @media(orientation: portrait) {
                 width: 30%;
                 font-size: 2.5vw;
             }
@@ -421,25 +422,23 @@ $controlZ: 50;
     }  
 
     .controllerWrapper {
-        width: 60%;
-        min-width: 100px;
+        width: 100%; 
         aspect-ratio: 1/1;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
         // background-color: #ffb444;
-        @media (max-width: 1000px) {
+        @media(orientation: portrait) {
             height: 80%;
             width: auto;
             aspect-ratio: 1/1;
         }
-        @media (max-width: 1000px) {
+        @media(orientation: portrait) {
             min-width: 80px;
         }
         .outSide {
-            width: 60%;
-            min-width: 80px;
+            width: 80%; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -447,7 +446,7 @@ $controlZ: 50;
             border-radius: 50%;
             aspect-ratio: 1/1;
             transition: all 0.5s ease;
-            @media (max-width: 1000px) {
+            @media(orientation: portrait) {
                 min-width: 60px;
             }
             .controller {

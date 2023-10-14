@@ -27,10 +27,9 @@ export default defineConfig({
     hmr: true,
     // host: '127.0.0.1',
     port: 1146,
-    // https: { 
-    //   key: 'mydomain.key',
-    //   cert: 'mydomain.crt',
-    // } 
-    // https: true
+    https: { 
+      key: 'mydomain.key',
+      cert: 'mydomain.crt',
+    }  
   }
 })

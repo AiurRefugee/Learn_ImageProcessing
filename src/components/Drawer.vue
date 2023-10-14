@@ -201,7 +201,7 @@ div::-webkit-scrollbar-track {
   transform: translateY(0);
   -webkit-backdrop-filter: blur(10px); 
   backdrop-filter: blur(10px);
-  @media(max-width: 1000px) {
+  @media(orientation: portrait) {
       transform: translateY(-100%);
     }
 }
@@ -210,7 +210,7 @@ div::-webkit-scrollbar-track {
     opacity: 0; 
     transform: translateX(-100%);
     backdrop-filter: blur(2px);
-    @media(max-width: 1000px) {
+    @media(orientation: portrait) {
       transform: translateY(-100%);
     }
 }  
@@ -241,7 +241,7 @@ $controlZ: 50;
 .el-col {
   display: flex;
   justify-content: flex-start;
-  @media(max-width: 1000px) {
+  @media(orientation: portrait) {
     overflow: hidden;
   }
 }
@@ -282,11 +282,14 @@ $controlZ: 50;
     // padding-left: 1%;
     // padding-right: 1%;
     
-    @media(max-width: 1000px) {     
+    @media(orientation: portrait) {     
       width: 100%;
       border-radius: 0;
       margin-left: 0;
       height: 100vh;
+    }
+    @media(max-width: 1000px) and (orientation: landscape) {
+      width: 50vw;
     }
     .filterBar {
       width: 90%;
@@ -302,7 +305,7 @@ $controlZ: 50;
       // background: lightblue;
       overflow: scroll; 
       
-      @media(max-width: 1000px) {
+      @media(orientation: portrait) {
         max-height: calc(100% - 10vh - 60px);
       }
       

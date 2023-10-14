@@ -213,7 +213,7 @@ onUnmounted( () => {
 </template>
 <style lang="scss" scoped>
 .el-input--large .el-input__wrapper {
-    @media(max-width: 1000px) {
+    @media(orientation: portrait) {
         height: 40px;
     }
 }
@@ -233,7 +233,7 @@ onUnmounted( () => {
     max-width: 30vw;
  }
 .el-button--large {
-    @media(max-width: 1000px) {
+    @media(orientation: portrait) {
         height: 40px;
     }
 }
@@ -246,7 +246,7 @@ onUnmounted( () => {
 } 
 .el-select-dropdown__item {
     max-width: 50vw;
-    @media(max-width: 1000px) {
+    @media(orientation: portrait) {
         max-width: min(50vw, 300px);
     }
 }
@@ -260,7 +260,7 @@ onUnmounted( () => {
     position: absolute;
     overflow: hidden;
     left: 0;
-    @media(max-width: 1000px) {
+    @media(orientation: portrait) {
         // padding-top: 15%;
         width: 100vw;
         height: 90vh;
@@ -273,8 +273,8 @@ onUnmounted( () => {
     //     height: 78vh;
     // }
     .inoutput {
-        $marSize: 30px;
-        $marginHorizon: 30px;
+        $marSize: 15px;
+        $marginHorizon: 15px;
         display: flex;
         flex-direction: column;
         width: 85vw;
@@ -286,9 +286,9 @@ onUnmounted( () => {
         position: relative;
         overflow: hidden;
         box-shadow: 0px 0px 5px 2px gray;
-        @media(max-width: 1000px) {
-            width: 90vw;
-            height: 90%;
+        @media(orientation: portrait) {
+            width: 90%;
+            height: 95%;
             margin: 0;
         }
         @media(max-width: 490px) {
@@ -335,12 +335,11 @@ onUnmounted( () => {
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: $marginHorizon;
-            height: 10%;
-            position: absolute;
+            // padding-top: $marginHorizon;
+            flex-grow: 1; 
             font-size: 20px;
             bottom: 0;
-            @media(max-width: 1000px) {
+            @media(orientation: portrait) {
                 font-size: 12px;
             }
             .labelItem {

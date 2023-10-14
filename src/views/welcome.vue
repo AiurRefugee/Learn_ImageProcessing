@@ -120,24 +120,12 @@ onActivated( () => {
       <div class="title">
         <h1>Learn ImageProcessing</h1>
       </div>
-      <div class="topbarIcons">
-        <el-row style="width:100%;" :gutter="2" justify="end" align="middle">
-          <el-col :span="iconWidth" class="topItem">
-            <el-link :underline="false" @click="openDialog('OpenCV')">OpenCV</el-link>
-          </el-col> 
-          <el-col :span="iconWidth" class="topItem">
-            <el-link :underline="false" @click="openDialog('Vue')">Vue</el-link>
-          </el-col>
-          <el-col :span="iconWidth + 2" class="topItem">
-            <el-link :underline="false" @click="openDialog('Element +')">Element+</el-link>
-          </el-col>
-          <el-col :span="iconWidth" class="topItem">
-            <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny" >
-            </el-switch>
-            <!-- <el-icon size="40" @click="changeTheme()"><Sunny /></el-icon> -->
-          </el-col>
-           
-        </el-row>
+      <div class="topbarIcons">  
+            <el-link :underline="false" @click="openDialog('OpenCV')">OpenCV</el-link>  
+            <el-link :underline="false" @click="openDialog('Vue')">Vue</el-link>  
+            <el-link :underline="false" @click="openDialog('Element +')">Element+</el-link> 
+            <el-switch v-model="theme" :active-action-icon="Moon" :inactive-action-icon="Sunny" /> 
+            
       </div>
       <!-- <var-divider /> -->
     </div>
@@ -145,19 +133,25 @@ onActivated( () => {
     <div class="main">
        
         <div class="centerItem" @click="navigateTo('image')">
-          <PictureFilled class="centerIcon"/>
+          <div class="centerIcon">
+            <PictureFilled />
+          </div>
           <div class="text">
             <div>Image</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('video')">
-          <VideoPlay class="centerIcon"/>
+          <div class="centerIcon">
+            <VideoPlay />
+          </div>
           <div class="text">
             <div>Video</div> 
           </div>
         </div>
         <div class="centerItem" @click="navigateTo('camera')">
-          <CameraFilled class="centerIcon"/>
+          <div class="centerIcon">
+            <CameraFilled/>
+          </div>
           <div class="text">
             <div>Camera</div> 
           </div> 
@@ -203,7 +197,16 @@ p{
   justify-content: center;
   align-items: center;
 } 
-
+h1 {
+  word-break: break-all;
+  font-size: 60px;
+  @media(max-width: 1000px) {
+    font-size: 30px;
+  }
+  @media(max-width: 400px) {
+    font-size: 25px;
+  }
+}
 .appContainer{
   display: flex;
   flex-direction: column;
@@ -222,7 +225,7 @@ p{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    @media (max-width: 1000px) {
+    @media(orientation: portrait) {
       flex-direction: column;
       max-height: 15%;
     }
@@ -233,38 +236,35 @@ p{
       font-style: italic;
       letter-spacing: 3px;
       color: var(--el-text-color-primary);
+      
       @include center();
+      align-items: flex-start;
         padding-left: 2%;
         justify-content: flex-start;
         font-weight: 900;
         font-family: math;
-      h1 {
-        font-size: 60px;
-      }
-      @media (max-width: 1000px) {
+      
+      @media(orientation: portrait) {
         font-size: 20px;
-        width: 95vw;
-        h1 {
-          font-size: 7.5vw;
-        }
-      }
+        width: 95vw; 
+      }  
       
     }
-    .topbarIcons{
-       min-width: 40%;
-       //padding-right: 2%;
-      @include center(); 
-      .topItem {
-        @include center();
+    .topbarIcons{ 
+       display: grid;
+       grid-gap: 5%;
+       grid-template-columns: 2fr 2fr 3fr 1fr;
+       grid-template-rows: 100%; 
+       padding-right: 2%;
         a {
           font-size: 20px;
           // font-family: monospace;
           font-weight: 600;
-        }
-      }
-      @media (max-width: 1000px) {
+        } 
+      @media(orientation: portrait) {
         font-size: 20px;
-        width: 100%;
+        width: 80%;
+        align-self: flex-end;
         flex-direction: column;
       }
     } 
@@ -278,11 +278,14 @@ p{
     padding-top: 5%;
     overflow: auto;
     align-items: flex-start;
-    @media(max-width: 1000px) {
+    @media(orientation: portrait) {
       flex-direction: column;  
       justify-content: space-around;
       align-items: center; 
       padding: 2% 0;
+    }
+    @media(max-width: 1000px) and (orientation: landscape) {
+      padding-top: 12%;
     }
     .centerItem {
       @include center();
@@ -293,27 +296,30 @@ p{
       flex-grow: 1;
       transition: all 0.5s ease;
       color: var(--el-text-color-primary);
-      @media (max-width: 1000px) {
+      @media(orientation: portrait) {
         width: 60vw;
         max-height: 30%;
       }
       .centerIcon { 
-        max-width: 14vw;
+        width: 14vw;
         aspect-ratio: 1/1; 
-        @media (max-width: 1000px) {  
-          max-height: 15vh;
-          max-width: 30vw;  
+        @media(orientation: portrait) {  
+          width: 23vw;
+          // max-width: 30vw;  
         }
       }
       .text{
         @include center();
         width: 100%;
         height: 50px;
-        font-size: 40px;
-        @media (max-width: 1000px) {
-            font-size: 3vh;
+        font-size: 35px;
+        @media(orientation: portrait) {
+            font-size: 20px;
             align-items: center;
             word-spacing: 5px;
+        }
+        @media(max-width: 1000px) {
+          font-size: 25px;
         }
       }
     }

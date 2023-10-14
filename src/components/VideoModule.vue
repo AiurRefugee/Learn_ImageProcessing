@@ -338,7 +338,7 @@ onUnmounted( () => {
     margin-left: 4vw;
     left: 0; 
     background-color: var(--el-bg-color);
-    @media (max-width: 1000px) {
+    @media(orientation: portrait) {
         width: 100vw;
         height: 90vh;
         padding: 0;
@@ -359,7 +359,7 @@ onUnmounted( () => {
         .tvHead {
             $boderSize: 15px;
             width: calc(85vw - $boderSize * 2);
-            height: calc(100% - 70px);
+            height: calc(100% - 50px);
             margin-top: $boderSize;
             position: relative;
             outline: $boderSize solid gray;
@@ -370,7 +370,7 @@ onUnmounted( () => {
             align-items: center;
             overflow: hidden;
             border-radius: 15px;
-            @media(max-width: 1000px) {
+            @media(orientation: portrait) {
                 width: calc(95vw - 50px);
                 height: 95%;
                 margin-top: 5%;
@@ -451,7 +451,7 @@ onUnmounted( () => {
             border: 5px solid gray;
             background-color: gray;
             border-radius: 10px;
-            @media(max-width: 1000px) { 
+            @media(orientation: portrait) { 
                 display: none;
             }
         }
