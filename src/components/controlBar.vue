@@ -227,6 +227,8 @@ function endRecord() {
 
     videoCaped.value.length = 0
 
+    
+
 }
 
 onMounted( async () => {
@@ -254,7 +256,7 @@ onActivated( () => {
         <div class="point"></div>
         <div>{{ timeString }}</div>
     </div>
-    <el-row class="controlBar">
+    <el-row class="controlBar" :style="{'background-color': curOpt == 'camera' ? 'var(--el-bg-color)' : ''}">
         <!-- <div style="color: gray;">
             {{ dark }}
         </div> -->
@@ -296,8 +298,7 @@ onActivated( () => {
                     :active-action-icon="Moon" :inactive-action-icon="Sunny" />
                 </div> 
                 <div class="spaceItem" v-if="curOpt == 'camera' && cameraCount > 1 && cameraStatus == 'Normal'" ref="refresh">
-                    <el-icon class="spaceItem" 
-                        color="white"
+                    <el-icon class="spaceItem"  
                         @click="toggleMode" :size="30" >
                         <Refresh />
                     </el-icon>
@@ -321,8 +322,7 @@ $button_Color: #ffb444;
 div{
     display: flex;
     justify-content: center;
-    align-items: center;
-    color: white;
+    align-items: center; 
     // border: 1px solid white;
 }
 $controlZ: 50;
@@ -358,6 +358,7 @@ $controlZ: 50;
     right: 0;
     z-index: $controlZ;
     overflow: visible; 
+    transition: background-color 0.8s ease-out;
     flex-direction: column;
     @media(orientation: portrait) {
         width: 100vw;
@@ -391,8 +392,8 @@ $controlZ: 50;
             justify-content: center;
             min-height: 3vh;
             font-weight: 900;
-            color: var(--el-text-color-primary);
-            text-shadow: 2px 0px 2px rgb(70, 70, 70);
+            color: var(--el-text-color-secondary);
+            // text-shadow: 2px 0px 2px var(--el-text-color-secondary);
             cursor: pointer;
             @media(orientation: portrait) {
                 width: 30%;
@@ -438,7 +439,7 @@ $controlZ: 50;
             min-width: 80px;
         }
         .outSide {
-            width: 80%; 
+            width: 70%; 
             display: flex;
             justify-content: center;
             align-items: center;
