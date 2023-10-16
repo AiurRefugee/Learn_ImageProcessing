@@ -1,21 +1,38 @@
-import cv from 'opencv.js';
 
+importScripts('opencv.js')
+console.log('cv', cv)
 
-let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
+let fgbg = null
+let fgbgParams = []
+
+function fgbgUpdate(params) {
+  if(params.length != fgbgParams.length) {
+    console.log('update')
+    return true
+  }
+  fgbgParams.map( (item, index) => {
+    if(item !== params[index]) {
+      // console.log('update')
+      return true
+    }
+  })
+
+  return false
+}
 
 function switchToRGBA(src) { 
   
   switch (src.type()) {
-    case cv.CV_8UC1: 
-    case cv.CV_32F:
+    case CV.CV_8UC1: 
+    case CV.CV_32F:
     case 5:
     case 0:
-        cv.cvtColor(src, src, cv.COLOR_GRAY2RGBA)
+        CV.cvtColor(src, src, CV.COLOR_GRAY2RGBA)
         break
-      case cv.CV_8UC3:
-        cv.cvtColor(src, src, cv.COLOR_RGB2RGBA)
+      case CV.CV_8UC3:
+        CV.cvtColor(src, src, CV.COLOR_RGB2RGBA)
         break
-      case cv.CV_8UC4:
+      case CV.CV_8UC4:
         break
     default:
       console.log(src.type())
@@ -32,10 +49,10 @@ const configs =  [
     try {
       
       let [code, dstCn] = [...params] 
-      cv.cvtColor(src, dst, code, dstCn);
+      CV.cvtColor(src, dst, code, dstCn);
       return true
     } catch(error) {  
-      
+      console.log(error)
     }
     return false
   } 
@@ -45,12 +62,12 @@ const configs =  [
   f: (src, dst, params) => {
     try {
       let [kernelSize, iterations, borderType] = [...params]
-      let M = cv.Mat.ones(kernelSize, kernelSize, cv.CV_8U);
-      let anchor = new cv.Point(-1, -1);
-      cv.erode(src, dst, M, anchor, iterations, borderType, cv.morphologyDefaultBorderValue());
+      let M = CV.Mat.ones(kernelSize, kernelSize, CV.CV_8U);
+      let anchor = new CV.Point(-1, -1);
+      CV.erode(src, dst, M, anchor, iterations, borderType, CV.morphologyDefaultBorderValue());
       return true
     } catch(error) {  
-      
+      console.log(error)
     }
     return false
   } 
@@ -60,12 +77,12 @@ const configs =  [
   f: (src, dst, params) => {
     try {
       let [kernelSize, iterations, borderType] = [...params]
-      let M = cv.Mat.ones(kernelSize, kernelSize, cv.CV_8U);
-      let anchor = new cv.Point(-1, -1);
-      cv.dilate(src, dst, M, anchor, iterations, borderType, cv.morphologyDefaultBorderValue());
+      let M = CV.Mat.ones(kernelSize, kernelSize, CV.CV_8U);
+      let anchor = new CV.Point(-1, -1);
+      CV.dilate(src, dst, M, anchor, iterations, borderType, CV.morphologyDefaultBorderValue());
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   } 
@@ -76,12 +93,12 @@ const configs =  [
     try {
       // 
       let [depth, kernel, delta, borderType] = [...params]
-      let M = cv.Mat.eye(kernel, kernel, cv.CV_32FC1)
-      let anchor = new cv.Point(-1, -1)
-      cv.filter2D(src, dst, depth, M, anchor, delta, borderType);
+      let M = CV.Mat.eye(kernel, kernel, CV.CV_32FC1)
+      let anchor = new CV.Point(-1, -1)
+      CV.filter2D(src, dst, depth, M, anchor, delta, borderType);
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   }
@@ -92,12 +109,12 @@ const configs =  [
     try {
       // 
       let [rho, theta, threshold] = [...params]
-      let lines = new cv.Mat();
+      let lines = new CV.Mat();
       switchToRGBA(src)
-      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
-      cv.Canny(src, src, 50, 200, 3);
+      CV.cvtColor(src, src, CV.COLOR_RGBA2GRAY, 0);
+      CV.Canny(src, src, 50, 200, 3);
       // You can try more different parameters
-      cv.HoughLines(src, lines, 1, Math.PI / 180,
+      CV.HoughLines(src, lines, 1, Math.PI / 180,
               30, 0, 0, 0, Math.PI);
       // draw lines
       for (let i = 0; i < lines.rows; ++i) {
@@ -109,12 +126,12 @@ const configs =  [
           let y0 = b * rho;
           let startPoint = {x: x0 - 1000 * b, y: y0 + 1000 * a};
           let endPoint = {x: x0 + 1000 * b, y: y0 - 1000 * a};
-          cv.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
+          CV.line(dst, startPoint, endPoint, [255, 0, 0, 255]);
       }
       lines.delete()
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   }
@@ -128,10 +145,10 @@ const configs =  [
       }
       try {
         // 
-        cv.threshold(src, dst, thresh, maxval, type)
+        CV.threshold(src, dst, thresh, maxval, type)
         return true
       } catch(error) { 
-        
+        console.log(error)
       }
       return false
   }
@@ -142,11 +159,11 @@ const configs =  [
     //  
     try {
       switchToRGBA(src)
-      cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
-      cv.adaptiveThreshold(dst, dst, ...params);
+      CV.cvtColor(src, dst, CV.COLOR_RGBA2GRAY, 0);
+      CV.adaptiveThreshold(dst, dst, ...params);
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   }
@@ -156,10 +173,11 @@ const configs =  [
   f: (src, dst, params) => {
     try { 
       switchToRGBA(src)
-      cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
-      cv.Canny(dst, dst, ...params); 
+      CV.cvtColor(src, dst, CV.COLOR_RGBA2GRAY, 0);
+      CV.Canny(dst, dst, ...params); 
       return true
     } catch(error) { 
+      console.log(error)
       
     } 
     return false
@@ -171,13 +189,13 @@ const configs =  [
     try {
       // 
       let [centerx, centery, angle, scale] = [...params]
-      let dsize = new cv.Size(src.rows, src.cols)
-      let center = new cv.Point(src.cols * centerx / 100, src.rows * centery / 100);
-      let M = cv.getRotationMatrix2D(center, angle, scale);
-      cv.warpAffine(src, dst, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
+      let dsize = new CV.Size(src.rows, src.cols)
+      let center = new CV.Point(src.cols * centerx / 100, src.rows * centery / 100);
+      let M = CV.getRotationMatrix2D(center, angle, scale);
+      CV.warpAffine(src, dst, M, dsize, CV.INTER_LINEAR, CV.BORDER_CONSTANT, new CV.Scalar());
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   }
@@ -187,51 +205,51 @@ const configs =  [
   f: (src, dst, params) => {
     try {
       switchToRGBA(src)
-      cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
+      CV.cvtColor(src, dst, CV.COLOR_RGBA2GRAY, 0);
 
       // get optimal size of DFT
-      let optimalRows = cv.getOptimalDFTSize(src.rows);
-      let optimalCols = cv.getOptimalDFTSize(src.cols);
-      let s0 = cv.Scalar.all(0);
-      let padded = new cv.Mat();
-      cv.copyMakeBorder(dst, padded, 0, optimalRows - dst.rows, 0,
-                        optimalCols - dst.cols, cv.BORDER_CONSTANT, s0);
+      let optimalRows = CV.getOptimalDFTSize(src.rows);
+      let optimalCols = CV.getOptimalDFTSize(src.cols);
+      let s0 = CV.Scalar.all(0);
+      let padded = new CV.Mat();
+      CV.copyMakeBorder(dst, padded, 0, optimalRows - dst.rows, 0,
+                        optimalCols - dst.cols, CV.BORDER_CONSTANT, s0);
 
-      // use cv.MatVector to distribute space for real part and imaginary part
-      let plane0 = new cv.Mat();
-      padded.convertTo(plane0, cv.CV_32F);
-      let planes = new cv.MatVector();
-      let complexI = new cv.Mat();
-      let plane1 = new cv.Mat.zeros(padded.rows, padded.cols, cv.CV_32F);
+      // use CV.MatVector to distribute space for real part and imaginary part
+      let plane0 = new CV.Mat();
+      padded.convertTo(plane0, CV.CV_32F);
+      let planes = new CV.MatVector();
+      let complexI = new CV.Mat();
+      let plane1 = new CV.Mat.zeros(padded.rows, padded.cols, CV.CV_32F);
       planes.push_back(plane0);
       planes.push_back(plane1);
-      cv.merge(planes, complexI);
+      CV.merge(planes, complexI);
 
       // in-place dft transform
-      cv.dft(complexI, complexI);
+      CV.dft(complexI, complexI);
 
       // compute log(1 + sqrt(Re(DFT(img))**2 + Im(DFT(img))**2))
-      cv.split(complexI, planes);
-      cv.magnitude(planes.get(0), planes.get(1), planes.get(0));
+      CV.split(complexI, planes);
+      CV.magnitude(planes.get(0), planes.get(1), planes.get(0));
       let mag = planes.get(0);
-      let m1 = new cv.Mat.ones(mag.rows, mag.cols, mag.type());
-      cv.add(mag, m1, mag);
-      cv.log(mag, mag);
+      let m1 = new CV.Mat.ones(mag.rows, mag.cols, mag.type());
+      CV.add(mag, m1, mag);
+      CV.log(mag, mag);
 
       // crop the spectrum, if it has an odd number of rows or columns
-      let rect = new cv.Rect(0, 0, mag.cols & -2, mag.rows & -2);
+      let rect = new CV.Rect(0, 0, mag.cols & -2, mag.rows & -2);
       mag = mag.roi(rect);
 
       // rearrange the quadrants of Fourier image
       // so that the origin is at the image center
       let cx = mag.cols / 2;
       let cy = mag.rows / 2;
-      let tmp = new cv.Mat();
+      let tmp = new CV.Mat();
 
-      let rect0 = new cv.Rect(0, 0, cx, cy);
-      let rect1 = new cv.Rect(cx, 0, cx, cy);
-      let rect2 = new cv.Rect(0, cy, cx, cy);
-      let rect3 = new cv.Rect(cx, cy, cx, cy);
+      let rect0 = new CV.Rect(0, 0, cx, cy);
+      let rect1 = new CV.Rect(cx, 0, cx, cy);
+      let rect2 = new CV.Rect(0, cy, cx, cy);
+      let rect3 = new CV.Rect(cx, cy, cx, cy);
 
       let q0 = mag.roi(rect0);
       let q1 = mag.roi(rect1);
@@ -248,13 +266,13 @@ const configs =  [
       q2.copyTo(q1);
       tmp.copyTo(q2);
 
-      // The pixel value of cv.CV_32S type image ranges from 0 to 1.
-      cv.normalize(mag, mag, 0, 1, cv.NORM_MINMAX);
+      // The pixel value of CV.CV_32S type image ranges from 0 to 1.
+      CV.normalize(mag, mag, 0, 1, CV.NORM_MINMAX);
       mag.copyTo(dst)
       padded.delete(); planes.delete(); complexI.delete(); m1.delete(); tmp.delete(); 
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   }
@@ -265,15 +283,15 @@ const configs =  [
     try {
       let [dx, ksize, delta] = [...params]
       switchToRGBA(src)
-      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0);
+      CV.cvtColor(src, src, CV.COLOR_RGBA2GRAY, 0);
       if(dx) {
-        cv.Sobel(src, dst, cv.CV_8U, 1, 0, ksize, 1,delta , cv.BORDER_DEFAULT);
+        CV.Sobel(src, dst, CV.CV_8U, 1, 0, ksize, 1,delta , CV.BORDER_DEFAULT);
       } else {
-        cv.Sobel(src, dst, cv.CV_8U, 0, 1, ksize, 1,delta , cv.BORDER_DEFAULT);
+        CV.Sobel(src, dst, CV.CV_8U, 0, 1, ksize, 1,delta , CV.BORDER_DEFAULT);
       }
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   } 
@@ -285,11 +303,11 @@ const configs =  [
     try {
       let [ksize, delta] = [...params]
       switchToRGBA(src)
-      cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0); 
-      cv.Laplacian(src, dst, cv.CV_8U, ksize, 1, delta, cv.BORDER_DEFAULT); 
+      CV.cvtColor(src, src, CV.COLOR_RGBA2GRAY, 0); 
+        CV.Laplacian(src, dst, CV.CV_8U, ksize, 1, delta, CV.BORDER_DEFAULT); 
       return true
     } catch(error) { 
-      
+      console.log(error)
     }
     return false
   } 
@@ -302,12 +320,12 @@ const configs =  [
     try {
       src.copyTo(dst)
       switchToRGBA(src)
-      cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
-      let mask = new cv.Mat();
-      let bgdModel = new cv.Mat();
-      let fgdModel = new cv.Mat();
-      let rect = new cv.Rect(startX / 100 * src.rows, startY  / 100 * src.cols, endX  / 100 * src.rows, endY  / 100 * src.cols);
-      cv.grabCut(src, mask, rect, bgdModel, fgdModel, 1, cv.GC_INIT_WITH_RECT);
+      CV.cvtColor(src, src, CV.COLOR_RGBA2RGB, 0);
+      let mask = new CV.Mat();
+      let bgdModel = new CV.Mat();
+      let fgdModel = new CV.Mat();
+      let rect = new CV.Rect(startX / 100 * src.rows, startY  / 100 * src.cols, endX  / 100 * src.rows, endY  / 100 * src.cols);
+      CV.grabCut(src, mask, rect, bgdModel, fgdModel, 1, CV.GC_INIT_WITH_RECT);
       // draw foreground
       for (let i = 0; i < src.rows; i++) {
           for (let j = 0; j < src.cols; j++) {
@@ -319,49 +337,57 @@ const configs =  [
           }
       }
       // draw grab rect
-      let color = new cv.Scalar(255, 0, 0);
-      let point1 = new cv.Point(rect.x, rect.y);
-      let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-      cv.rectangle(dst, point1, point2, color);
+      let color = new CV.Scalar(255, 0, 0);
+      let point1 = new CV.Point(rect.x, rect.y);
+      let point2 = new CV.Point(rect.x + rect.width, rect.y + rect.height);
+      CV.rectangle(dst, point1, point2, color);
       mask.delete()
       bgdModel.delete()
       fgdModel.delete()
       return true
     } catch(error) {  
-      
+      console.log(error)
     }
     return false
   } 
 },
 {
   title: 'Background Subtraction', 
-  f: (src, dst, params) => { 
+  f: (src, dst, params) => {  
+    const [ history, varThreshold, detectShadows ] = [...params]
+    console.log(history)
     try {
-      src.copyTo(dst)
-      return true
-    } catch(error) {  
-      
+      if(!fgbg || fgbgUpdate([...params])) {
+        fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
+        
+      }
+      fgbgParams = [...params]
+      // let fgbg = new CV.BackgroundSubtractorMOG2(500, 16, true); 
+      fgbg.apply(src, dst) 
+      return true 
+    } catch {
+      console.log(error)
     }
     return false
   } 
-},
-
+}
 ]
  
-const cv= new cv()
-console.log('cv', cv)
+const CV = new cv() 
+ 
 
 let errorIndexs = []
 
 self.addEventListener('message', function(e) {  
   try {  
+    
     let type = 'done'
     errorIndexs.length = 0
 
     const imageData = e.data.image; 
     // 创建 OpenCV 的 Mat 对象
-    const src = new cv.Mat(imageData.height, imageData.width, cv.CV_8UC4); 
-    const dst = new cv.Mat(imageData.height, imageData.width, cv.CV_8UC1);
+    const src = new CV.Mat(imageData.height, imageData.width, CV.CV_8UC4); 
+    const dst = new CV.Mat(imageData.height, imageData.width, CV.CV_8UC1);
 
     // 将图像数据复制到 src Mat 对象
     src.data.set(imageData.data); 
@@ -396,7 +422,7 @@ self.addEventListener('message', function(e) {
               }
             )
           } catch(error) {
-            
+            console.log(error)
             self.postMessage(
               {
                 type: 'error',
@@ -411,15 +437,17 @@ self.addEventListener('message', function(e) {
       })
 
     } else {
-      //视频处理
+      //视频图像处理
         e.data.paramsList.map( (item, index) => {  
           if(item.selected) {
             let res
             if(item.videoAvailable != false) {
+              // console.log(configs[index].title)
               res = configs[index].f(dst, dst, item.params)  
             }
-            if(!res && item.videoAvailable == false) {  
+            if(!res) {  
               type = 'error'
+              
               errorIndexs.push(item.processIndex)
             }  
             
@@ -444,7 +472,7 @@ self.addEventListener('message', function(e) {
           }
         )
       } catch(error) {
-        
+        console.log(error)
         self.postMessage(
           {
             type: 'error',
@@ -461,7 +489,8 @@ self.addEventListener('message', function(e) {
     src.delete()
     dst.delete()
   } catch(error) {
-    self.postMessage({ msg: 'loading' + error, error: 'error'})
+    console.log(error)
+    self.postMessage({ msg: 'loading' + error})
     return false
   }
 });

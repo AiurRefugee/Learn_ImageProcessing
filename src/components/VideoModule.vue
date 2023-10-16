@@ -11,10 +11,10 @@ const videoList = ref([
     {
         label: 'test',
         // value: '/src/assets/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
-        value: '/src/assets/videos/box.mp4'
+        value: '/src/assets/videos/sintel.mp4'
     }
 ])
-const videoUrl = ref('/src/assets/videos/box.mp4')
+const videoUrl = ref('/src/assets/videos/sintel.mp4')
 const videoUpload = ref(null)
 const playerIconSize = ref('40px')
 const playing = ref(false)
@@ -161,14 +161,14 @@ async function initWorker() {
         1000 / FPS)
         if(event.data.msg == 'loading') { 
             // videoLoading = false
-            console.log('loading', event.data)
+            // console.log('loading', event.data)
             return false
         }
  
         contextDraw.clearRect(0, 0, width, height) 
         contextDraw.putImageData(event.data.image, 0, 0)
         
-        console.log(event.data)
+        // console.log(event.data)
         if(event.data.type == 'error') { 
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
