@@ -252,8 +252,9 @@ onUnmounted( () => {
 }
 .imageModuleWrapper {
     display: flex;
-    width: 90vw;
-    height: 100vh;
+    width: 90dvw;
+    height: 100dvh;
+    
     background-color: var(--el-bg-color);
     justify-content: flex-start;
     align-items: center;
@@ -262,8 +263,9 @@ onUnmounted( () => {
     left: 0;
     @media(orientation: portrait) {
         // padding-top: 15%;
-        width: 100vw;
-        height: 90vh;
+        width: 100dvw;
+        
+        height: 90dvh;
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -273,13 +275,13 @@ onUnmounted( () => {
     //     height: 78vh;
     // }
     .inoutput {
-        $marSize: 15px;
-        $marginHorizon: 15px;
+        $marSize: 30px;
+        $marginHorizon: 30px;
         display: flex;
         flex-direction: column;
-        width: 85vw;
-        height: 95vh;
-        margin-left: 4vw;
+        width: 85dvw;
+        height: 95dvh;
+        margin-left: 4dvw;
         border-radius: 12px;
         justify-content: flex-start;
         align-items: center;
@@ -287,12 +289,12 @@ onUnmounted( () => {
         overflow: hidden;
         box-shadow: 0px 0px 5px 2px gray;
         @media(orientation: portrait) {
-            width: 90%;
-            height: 95%;
+            width: 90dvw;
+            height: 90%;
             margin: 0;
         }
         @media(max-width: 490px) {
-            width: 90vw;
+            width: 90dvw;
         }
         .imageArea {
             
@@ -336,7 +338,8 @@ onUnmounted( () => {
             justify-content: center;
             align-items: flex-start;
             // padding-top: $marginHorizon;
-            flex-grow: 1; 
+            height: 10%;
+            position: absolute;
             font-size: 20px;
             bottom: 0;
             @media(orientation: portrait) {

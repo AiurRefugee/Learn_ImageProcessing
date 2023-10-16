@@ -250,8 +250,8 @@ $controlZ: 50;
     // width: calc(40vw - 2*$outSize);
     // height: calc(95vh - 2*$outSize); 
     // outline: $outSize solid color-mix(in srgb, var(--el-bg-color) 30%, rgba(128, 128, 128, 0.434) 70%);
-    width: 40vw;
-    height: 95vh;
+    width: 40dvw;
+    height: 95dvh;
     border-radius: 15px;
     // box-shadow: -2px 2px 5px 2px color-mix(in srgb, var(--el-bg-color) 50%, rgba(153, 153, 153, 0.545)); 
     // border: 1px solid white;  
@@ -260,7 +260,7 @@ $controlZ: 50;
     position: absolute;
     display: flex;
     flex-direction: column;
-    transition: all 0.5s ease;
+    transition: all 0.5s ease-out;
     justify-content: flex-start;
     align-items: center;
     left: 0;
@@ -278,7 +278,7 @@ $controlZ: 50;
     );
     
     // background-color: color-mix(in srgb, var(--el-bg-color) 60%, rgba(128, 128, 128, 0.255) 20%);
-    margin-left: 4vw;
+    margin-left: 4dvw;
     // padding-left: 1%;
     // padding-right: 1%;
     
@@ -286,10 +286,10 @@ $controlZ: 50;
       width: 100%;
       border-radius: 0;
       margin-left: 0;
-      height: 100vh;
+      height: 100dvh;
     }
     @media(max-width: 1000px) and (orientation: landscape) {
-      width: 50vw;
+      width: 50dvw;
     }
     .filterBar {
       width: 90%;
@@ -298,8 +298,7 @@ $controlZ: 50;
       color: var(--el-text-color-primary);
     } 
     .scrollerWrapper {
-      width: 90%;
-      padding: 0 2.5%;
+      width: 90%; 
       max-height: calc(100% - 70px); 
       z-index: 95;
       // background: lightblue;

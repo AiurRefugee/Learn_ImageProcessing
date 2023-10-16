@@ -225,10 +225,7 @@ function endRecord() {
         recorder.value.stop()
     } 
 
-    videoCaped.value.length = 0
-
-    
-
+    videoCaped.value.length = 0 
 }
 
 onMounted( async () => {
@@ -351,8 +348,8 @@ $controlZ: 50;
     }
 }
 .controlBar {
-    width: 10vw;
-    height: 100vh;
+    width: 10dvw;
+    height: 100dvh;
     display: flex;
     position: absolute;
     right: 0;
@@ -361,8 +358,8 @@ $controlZ: 50;
     transition: background-color 0.8s ease-out;
     flex-direction: column;
     @media(orientation: portrait) {
-        width: 100vw;
-        height: 10vh;
+        width: 100dvw;
+        height: 10dvh;
         flex-direction: row;
         align-content: center;
         padding-top: 10px;
@@ -374,7 +371,7 @@ $controlZ: 50;
         width: 100%; 
         flex-wrap: wrap;
         flex: 1;
-        max-height: 40vh;
+        max-height: 40dvh;
         flex-direction: column;
         padding: 2% 0;
         // background-color: #ffb444;
@@ -387,10 +384,10 @@ $controlZ: 50;
         .spaceItem{
             width: 100%;
             flex-grow: 1;
-            font-size: 2vh;
+            font-size: 2dvh;
             display: flex;
             justify-content: center;
-            min-height: 3vh;
+            min-height: 3dvh;
             font-weight: 900;
             color: var(--el-text-color-secondary);
             // text-shadow: 2px 0px 2px var(--el-text-color-secondary);
@@ -398,11 +395,13 @@ $controlZ: 50;
             @media(orientation: portrait) {
                 width: 30%;
                 font-size: 2.5vw;
+                
             }
-            @media (max-width: 600px) {
+            @media (max-width: 600px) and (orientation: portrait){
                 width: 50%;
                 font-size: 3.5vw;
             }
+            
         }
         .active {
             color: $button_Color;
@@ -414,10 +413,11 @@ $controlZ: 50;
     }
     .spacer:last-child {
         flex-wrap: nowrap;
-        @media(max-width: 600px) {
+        @media(max-width: 600px) and (orientation: portrait) {
             display: grid;
             grid-template-columns: 1fr 1fr;
             justify-items: center;
+            grid-gap: 0 5%;
         }
 
     }  
@@ -441,13 +441,18 @@ $controlZ: 50;
         .outSide {
             width: 70%; 
             display: flex;
+            // min-width: 100px;
             justify-content: center;
             align-items: center;
             border-radius: 50%;
             border-radius: 50%;
             aspect-ratio: 1/1;
             transition: all 0.5s ease;
+            
             @media(orientation: portrait) {
+                min-width: 80px;
+            }
+            @media(max-width: 600px) {
                 min-width: 60px;
             }
             .controller {

@@ -3,6 +3,8 @@ import { onMounted, ref, computed, nextTick, onActivated, onDeactivated, onUnmou
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex';  
 
+import { DArrowLeft, VideoPlay, DArrowRight, VideoPause } from '@element-plus/icons-vue'
+
 const store = useStore()
 
 const videoList = ref([
@@ -285,37 +287,48 @@ onUnmounted( () => {
                     </div>
 
                 </div>
-                <div class="videoController" >
-                    <el-row justify="center" align="middle" style="width: 80%;">
-                        <el-col :span="3">
-                            <text>Input Source</text>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-select v-model="videoUrl" placeholder="请选择输入源" @change="play">
-                                <div class="el-select-dropdown__item" @click="upload">
-                                    <el-icon><UploadFilled/></el-icon>
-                                    <span style="margin-left: 5px;">上传视频</span>
-                                </div>
-                                <el-option :label="item.label" :value="item.value" v-for="(item, index) in videoList" :key="index"></el-option>
-                            </el-select>
-                        </el-col>
-                        <el-col :span="12" >
-                            <el-icon :size="playerIconSize" @click="antiZoom"><DArrowLeft /></el-icon>
-                            <el-icon :size="playerIconSize" v-if="!playing" @click="play"><VideoPlay /></el-icon>
-                            <el-icon :size="playerIconSize" v-else @click="play"><VideoPause /></el-icon>
+                <div class="videoController" >  
+                    <div class="videoInputSource">
+                        <text>Input Source</text>
+                        <el-select v-model="videoUrl" placeholder="请选择输入源" @change="play">
+                            <div class="el-select-dropdown__item" @click="upload">
+                                <el-icon><UploadFilled/></el-icon>
+                                <span style="margin-left: 5px;">上传视频</span>
+                            </div>
+                            <el-option :label="item.label" :value="item.value" v-for="(item, index) in videoList" :key="index"></el-option>
+                        </el-select>
 
-                            <el-icon :size="playerIconSize" @click="zoom"><DArrowRight /></el-icon>
-                        </el-col>
-                        <el-col :span="3">
-                            <text>Mask</text>
-                        </el-col>
-                        <el-col :span="3">
-                            <el-slider v-model="displayPointer" :step="0.1"></el-slider>
-                        </el-col>
-                    </el-row>
+                    </div>
+                    <div class="controllerCenter">
+                        <div class="leftright" @click="antiZoom">
+                            <!-- <DArrowLeft /> -->
+                            <el-icon :size="playerIconSize" ><DArrowLeft /></el-icon>
+                        </div >
+                        <div class="centerIcon" v-if="!playing" @click="play">
+                            <!-- <VideoPlay /> -->
+                            <el-icon :size="playerIconSize" v-if="!playing"><VideoPlay /></el-icon>
+                        </div>
+                        <div class="centerIcon" v-else @click="play">
+                            <!-- <VideoPause /> -->
+                             <el-icon :size="playerIconSize"><VideoPause /></el-icon>
+                        </div>
+                        <div class="leftright" @click="zoom">
+                            <!-- <DArrowRight /> -->
+                            <el-icon :size="playerIconSize" ><DArrowRight /></el-icon>
+                        </div>
+                        <!-- <el-icon :size="playerIconSize" @click="antiZoom"><DArrowLeft /></el-icon>
+                        <el-icon :size="playerIconSize" v-if="!playing" @click="play"><VideoPlay /></el-icon>
+                        <el-icon :size="playerIconSize" v-else @click="play"><VideoPause /></el-icon>
+
+                        <el-icon :size="playerIconSize" @click="zoom"><DArrowRight /></el-icon> -->
+                    </div>
+                    <div class="mask">
+                        <text>Mask</text>  
+                        <el-slider v-model="displayPointer" :step="0.1"></el-slider>
+                    </div> 
                 </div>
                 </div>
-            <div class="saucer"></div>
+            <!-- <div class="saucer"></div> -->
             <input type="file" style="display: none;" id="videoUpload" ref="videoUpload">
         </div>
 
@@ -324,43 +337,43 @@ onUnmounted( () => {
 <style lang="scss">
 
 .videoController .el-scrollbar {
-    max-width: 30vw;
+    max-width: 30dvw;
 }
 .videoModuleWrapper {
-    width: 86vw;
-    height: 100vh;
+    width: 86dvw;
+    height: 100dvh;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    overflow: hidden;
-    align-items: center;
+    overflow: hidden; 
     position: absolute;
-    margin-left: 4vw;
+    margin-left: 4dvw;
     left: 0; 
     background-color: var(--el-bg-color);
     @media(orientation: portrait) {
-        width: 100vw;
-        height: 90vh;
+        width: 100dvw;
+        height: 90dvh;
         padding: 0;
         margin: 0;
         flex-direction: column; 
         justify-content: center;
 
     }
-
+    $boderSize: 15px;
     .videoArea {
-        width: 85vw;
+        width: 85dvw;
         height: 95%;
         display: flex;
         flex-direction: column;
+        position: relative;
         // background-color: black;
         align-items: center;
-        justify-content: space-between;
-        .tvHead {
-            $boderSize: 15px;
-            width: calc(85vw - $boderSize * 2);
-            height: calc(100% - 50px);
-            margin-top: $boderSize;
+        justify-content: center;
+        
+        .tvHead { 
+            width: calc(85dvw - $boderSize * 2);
+            height: calc(100% - $boderSize * 2); 
+            // margin-top: $boderSize;
             position: relative;
             outline: $boderSize solid gray;
             background-color: black; 
@@ -369,15 +382,16 @@ onUnmounted( () => {
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            border-radius: 15px;
+            border-radius: 15px; 
             @media(orientation: portrait) {
-                width: calc(95vw - 50px);
-                height: 95%;
-                margin-top: 5%;
+                width: calc(95dvw - 40px);
+                height: 98%;
+                // top: 0;
+                // margin-top: 5%; 
             }
             .playerWrapper {
-                $videoMinW: 60vw;
-                $videoMinH: 30vh;
+                $videoMinW: 60dvw;
+                $videoMinH: 30dvh;
                 justify-content: center;
                 align-items: center;
                 position: relative; 
@@ -394,6 +408,7 @@ onUnmounted( () => {
                     justify-content: center;
                     align-items: center;  
                     // border-right: 2px solid white;
+                    
                     video {  
                         width: 100%;
                         height: 100%; 
@@ -405,30 +420,87 @@ onUnmounted( () => {
                         display: flex;  
                         width: 100%;
                         height: 100%;
-                        object-fit: cover; 
+                        object-fit: contain; 
                         z-index: 1;
+                        @media(max-width: 600px) {
+                            rotate: 90deg;
+                        }
                     } 
                 } 
             }
             .videoController {
                 width: 100%;
-                min-height: 10%;
+                height: 10%;
+                min-height: 50px;
                 max-height: 80px;
-                display: flex;
-                justify-content: space-around; 
-                z-index: 2;
-                bottom: 0;
+                display: grid;
+                grid-template-columns: 30% auto 30%;
+                justify-items: center;
+                align-items: center;
+                grid-auto-rows: 100%;
+                z-index: 2; 
                 padding-bottom: 5px;
                 color: white;
                 transition: all 0.5s ease;
                 background: linear-gradient(to bottom, gray 1px, black);
                 // opacity: 0.8;
                 // padding-bottom: 5px; 
-                .el-col {
+                text {
                     display: flex;
-                    justify-content: space-around;
+                    padding: 0 5%;
+                    @media(max-width: 800px) {
+                        display: none;
+                    }
+                }
+                .videoInputSource {
+                    width: 80%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    
+                }
+                .mask {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 80%; 
 
                 }
+                .controllerCenter {
+                    display: flex;
+                    width: 100%;
+                    height: 100%; 
+                    justify-content: space-around;
+                    align-items: center;
+                    min-height: 45px;
+                    svg, .el-icon {
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+                    .centerIcon {
+                        width: 45px; 
+                        aspect-ratio: 1/1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        // height: 80%; 
+                        @media(max-width: 800px) {
+                            width: 30px;
+                        }
+                    }
+                    
+                    .leftright {
+                        width: 35px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        aspect-ratio: 1/1;
+                        @media(max-width: 800px) {
+                            width: 20px;
+                        }
+                    } 
+                }
+                
                 .el-slider__bar {
                     background-color: gray;
                     border-color: white;
@@ -445,16 +517,18 @@ onUnmounted( () => {
             }
 
         }
-        .saucer {
-            width: 70vw;
-            height: 10px;
-            border: 5px solid gray;
-            background-color: gray;
-            border-radius: 10px;
-            @media(orientation: portrait) { 
-                display: none;
-            }
-        }
+        // .saucer {
+        //     width: 70dvw;
+        //     height: 10px;
+        //     position: absolute;
+        //     bottom: 0;
+        //     border: 5px solid gray;
+        //     background-color: gray;
+        //     border-radius: 10px;
+        //     @media(max-width: 1000px) { 
+        //         display: none;
+        //     }
+        // }
     }
 }
 </style>

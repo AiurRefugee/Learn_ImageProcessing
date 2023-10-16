@@ -200,7 +200,7 @@ p{
 h1 {
   word-break: break-all;
   font-size: 60px;
-  @media(max-width: 1000px) {
+  @media(max-width: 800px) {
     font-size: 30px;
   }
   @media(max-width: 400px) {
@@ -210,15 +210,15 @@ h1 {
 .appContainer{
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   justify-content: space-between;
   align-items: center;
   position: relative;
   .popup-example-block {
     padding: 20px 24px;
     width: 250px;
-    height: 100vh;
+    height: 100dvh;
   }
   .topBar{
     width: 95%; 
@@ -230,7 +230,7 @@ h1 {
       max-height: 15%;
     }
     .title{ 
-      min-height: 8vh;
+      min-height: 8dvh;
       font-size: 50px;
       padding-right: 1%;
       font-style: italic;
@@ -246,7 +246,7 @@ h1 {
       
       @media(orientation: portrait) {
         font-size: 20px;
-        width: 95vw; 
+        width: 95dvw; 
       }  
       
     }
@@ -272,7 +272,7 @@ h1 {
   .main{
     display: flex;
     // background-color: blue;
-    width: 100vw;
+    width: 100dvw;
     flex-grow: 1; 
     justify-content: center;
     padding-top: 5%;
@@ -297,15 +297,15 @@ h1 {
       transition: all 0.5s ease;
       color: var(--el-text-color-primary);
       @media(orientation: portrait) {
-        width: 60vw;
+        width: 60dvw;
         max-height: 30%;
       }
       .centerIcon { 
-        width: 14vw;
+        width: 14dvw;
         aspect-ratio: 1/1; 
         @media(orientation: portrait) {  
-          width: 23vw;
-          // max-width: 30vw;  
+          width: 23dvw;
+          // max-width: 30dvw;  
         }
       }
       .text{
