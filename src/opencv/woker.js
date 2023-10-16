@@ -1,5 +1,8 @@
 import cv from 'opencv.js';
 
+
+let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
+
 function switchToRGBA(src) { 
   
   switch (src.type()) {
@@ -283,7 +286,7 @@ const configs =  [
       let [ksize, delta] = [...params]
       switchToRGBA(src)
       cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY, 0); 
-        cv.Laplacian(src, dst, cv.CV_8U, ksize, 1, delta, cv.BORDER_DEFAULT); 
+      cv.Laplacian(src, dst, cv.CV_8U, ksize, 1, delta, cv.BORDER_DEFAULT); 
       return true
     } catch(error) { 
       
@@ -329,10 +332,23 @@ const configs =  [
     }
     return false
   } 
-}
+},
+{
+  title: 'Background Subtraction', 
+  f: (src, dst, params) => { 
+    try {
+      src.copyTo(dst)
+      return true
+    } catch(error) {  
+      
+    }
+    return false
+  } 
+},
+
 ]
  
-const cv.= new cv()
+const cv= new cv()
 console.log('cv', cv)
 
 let errorIndexs = []
@@ -395,7 +411,7 @@ self.addEventListener('message', function(e) {
       })
 
     } else {
-      //视频图像处理
+      //视频处理
         e.data.paramsList.map( (item, index) => {  
           if(item.selected) {
             let res
@@ -444,8 +460,8 @@ self.addEventListener('message', function(e) {
     
     src.delete()
     dst.delete()
-  } catch {
-    self.postMessage({ msg: 'loading'})
+  } catch(error) {
+    self.postMessage({ msg: 'loading' + error, error: 'error'})
     return false
   }
 });

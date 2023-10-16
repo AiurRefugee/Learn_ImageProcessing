@@ -11,10 +11,10 @@ const videoList = ref([
     {
         label: 'test',
         // value: '/src/assets/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
-        value: '/src/assets/videos/sintel.mp4'
+        value: '/src/assets/videos/box.mp4'
     }
 ])
-const videoUrl = ref('/src/assets/videos/sintel.mp4')
+const videoUrl = ref('/src/assets/videos/box.mp4')
 const videoUpload = ref(null)
 const playerIconSize = ref('40px')
 const playing = ref(false)
@@ -27,6 +27,8 @@ const videoModuleWrapper = ref(null)
 const displayPointer = ref(50) 
 let videoLoading = false 
 let contextRead, contextDraw
+
+
 
 
 const curOpt = computed( () => store.getters.currentOption )
@@ -159,12 +161,14 @@ async function initWorker() {
         1000 / FPS)
         if(event.data.msg == 'loading') { 
             // videoLoading = false
+            console.log('loading', event.data)
             return false
         }
  
         contextDraw.clearRect(0, 0, width, height) 
         contextDraw.putImageData(event.data.image, 0, 0)
         
+        console.log(event.data)
         if(event.data.type == 'error') { 
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
@@ -270,8 +274,8 @@ onUnmounted( () => {
 <template>
     <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <div class="videoArea" >
-            <div class="tvHead">
-                <div class="playerWrapper" @click="play">
+            <div class="tvHead"  @click="play">
+                <div class="playerWrapper">
                     <div class="videoCanvasWrapper" v-if="curOpt == 'video'">
                         <!-- <div class="videoWrapper" :style="{ 
                             'width': `${displayPointer}%`,

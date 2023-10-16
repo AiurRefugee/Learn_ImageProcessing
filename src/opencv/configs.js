@@ -88,7 +88,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   steps: [],
   primaryClass: '图像变换',
   secondrayClass: '颜色空间变换',
-  selected: true,
+  selected: false,
   imageAvailable: true,
   params: [
     {
@@ -1105,6 +1105,58 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
     }
     return false
   } 
+},
+{ 
+  title: 'Background Subtraction',
+  primaryClass: '图像识别',
+  secondrayClass: '物体检测',
+  selected: true,
+  imageAvailable: false,
+  videoAvailable: true,
+  params: [
+    {
+      paramName: 'history',
+      paramValue: 500,
+      paramDesc: 'varThreshold',
+      widget: {
+        type: 'slider',
+        min: 300,
+        max: 800
+      }
+    }, {
+      paramName: 'varThreshold', 
+      paramValue: 16,
+      paramDesc: 'Threshold on the squared distance between the pixel and the sample to decide whether a pixel is close to that sample. This parameter does not affect the background update.',
+      widget: {
+        type: 'slider',
+          min: 12,
+          max: 20
+        }
+    },
+    {
+      paramName: 'detectShadows', 
+      paramValue: true,
+      paramDesc: 'If true, the algorithm will detect shadows and mark them. It decreases the speed a bit, so if you do not need this feature, set the parameter to false.',
+      widget: {
+        type: 'switch'
+        }
+    }
+  ],
+  f: (title, src, dst, params) => {
+    console.log(params)
+    let [faces, classifier ] = [...params]
+    try {  
+      // start processing.
+      cap.read(frame);
+      fgbg.apply(frame, fgmask);
+      cv.imshow('canvasOutput', fgmask);
+      // schedule the next one.
+      let delay = 1000/FPS - (Date.now() - begin);
+      setTimeout(processVideo, delay);
+    } catch (err) {
+        utils.printError(err);
+    }
+  }  
 }
 // {
 //   title: 'Face Detection',
