@@ -151,7 +151,8 @@ async function takePhoto() {
         try{
         // ctx.value.getContext('2d').clearRect(0, 0, ctx.value.width, ctx.value.height)
             if(curOpt.value == 'image') {
-                $bus.emit('outputImage', true)
+                console.log('control photo')
+                $bus.emit('photo')
                 return true
             }
             await nextTick() 
@@ -253,10 +254,8 @@ onActivated( () => {
         <div class="point"></div>
         <div>{{ timeString }}</div>
     </div>
-    <el-row class="controlBar" :style="{'background-color': curOpt == 'camera' ? 'var(--el-bg-color)' : ''}">
-        <!-- <div style="color: gray;">
-            {{ dark }}
-        </div> -->
+    <div class="controlBar" :style="{'background-color': curOpt == 'camera' ? 'var(--el-bg-color)' : ''}">
+        
         <div class="spacer" > 
             <div class="spaceItem" v-for="(item, index) in options" :key="index" @click="control(item)">
                 <div :class="{active: curOpt == item}">{{ item }}</div>
@@ -274,7 +273,6 @@ onActivated( () => {
             </div>
         </div>
         <div class="spacer"> 
-                <!-- <div class="spaceItem" v-if="curOpt == 'camera' && cameraStatus == 'Normal' && cameraCount > 1"> -->
 
                 <div class="spaceItem">  
                     <el-Switch  
@@ -298,19 +296,14 @@ onActivated( () => {
                     <el-icon class="spaceItem"  
                         @click="toggleMode" :size="30" >
                         <Refresh />
-                    </el-icon>
-
-                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
-                    <!-- {{ 'curOpt:' + curOpt }} -->
-                    <!-- {{ 'cameraNum:' + cameraCount }}   -->
-                    <!-- {{ 'cameraStatus:' + cameraStatus }} -->
+                    </el-icon> 
                 </div> 
                 <div v-else></div>
                 <div class="spaceItem" @click="toggleDrawer">
                     <el-icon :size="30"  ><MoreFilled /></el-icon>
                 </div>
             </div> 
-    </el-row>
+        </div>
 
 
 </template>
@@ -433,11 +426,9 @@ $controlZ: 50;
         @media(orientation: portrait) {
             height: 80%;
             width: auto;
+            min-height: 80px;
             aspect-ratio: 1/1;
-        }
-        @media(orientation: portrait) {
-            min-width: 80px;
-        }
+        } 
         .outSide {
             width: 70%; 
             display: flex;

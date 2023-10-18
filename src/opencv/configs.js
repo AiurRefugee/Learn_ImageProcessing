@@ -23,6 +23,41 @@ export const classification = [
   ]
 }] 
 
+export const srcs = [
+  {
+      name: "Lena",
+      value: '/src/assets/imgs/Lena.png'
+  },
+  {
+      name: "line",
+      value: '/src/assets/imgs/line.png'
+  },
+  {
+      name: "girl",
+      value: '/src/assets/imgs/girl.jpeg'
+  },
+  {
+      name: "milkyWay",
+      value: '/src/assets/imgs/milkyWay.jpg'
+  },
+  {
+      name: "gang",
+      value: '/src/assets/imgs/gang.webp'
+  },
+  {
+      name: "gundam",
+      value: '/src/assets/imgs/gundam.jpeg'
+  },
+  {
+      name: "trans",
+      value: '/src/assets/imgs/trans.webp'
+  },
+  {
+      name: "car",
+      value: '/src/assets/imgs/car.webp'
+  }
+]
+
 /*  
   title: 'example',
   primaryClass: 'example',
@@ -622,7 +657,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   ],
   primaryClass: "图像分割",
   secondrayClass: "边界分割",
-  selected: false,
+  selected: true,
   imageAvailable: true,
   params: [
     {

@@ -5,6 +5,7 @@ export default class EventBus{
     }
     emit(eventName, data) {
         if (this.events[eventName]) {
+            console.log(this,this.events[eventName])
             this.events[eventName].forEach(function(fn) {
                 fn(data);
             });

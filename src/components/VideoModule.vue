@@ -32,7 +32,7 @@ let contextRead, contextDraw
 
 
 const curOpt = computed( () => store.getters.currentOption )
-const processConfigs = computed( () => store.getters.processConfigs ) 
+const processConfigs = computed( () => store.getters.processConfigs.filter(item => item.videoAvailable != false) ) 
 const worker = computed( () => store.getters.worker)
 const configs = computed( () => {
     return processConfigs.value.map( (item, index) => {
@@ -154,22 +154,18 @@ async function init() {
 
 async function initWorker() {
     await nextTick()
+    // worker.value.postMessage( {
+    //     type: 'update'
+    // })
     worker.value.onmessage = function(event) { 
         // console.log('message')
         videoLoading = false
         interval = setTimeout(processVideo,
         1000 / FPS)
-        if(event.data.msg == 'loading') { 
-            // videoLoading = false
-            // console.log('loading', event.data)
-            return false
-        }
- 
-        contextDraw.clearRect(0, 0, width, height) 
-        contextDraw.putImageData(event.data.image, 0, 0)
-        
+
         // console.log(event.data)
-        if(event.data.type == 'error') { 
+        if(event.data.type == 'processError') { 
+            // console.log('processError')
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
                 ElMessage({
@@ -177,13 +173,24 @@ async function initWorker() {
                     grouping: true,
                     type: 'error',
                 })
-            })
-            // ElMessage({
-            //     message: `${item.title}参数错误.`,
-            //     grouping: true,
-            //     type: 'error',
-            // })
-        } 
+            }) 
+        }  else if (event.data.type == 'error') { 
+            console.log('error', event.data.indexs)
+            ElMessage({
+                message: `something went wrong`,
+                grouping: true,
+                type: 'error',
+                duration: 1000
+            }) 
+            event.data.indexs.map(item => {
+                processConfigs.value[item].selected = false 
+            }) 
+        }
+ 
+        contextDraw.clearRect(0, 0, width, height) 
+        contextDraw.putImageData(event.data.image, 0, 0)
+        
+        
         
 
     };

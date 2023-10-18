@@ -22,7 +22,7 @@ const curOpt = computed( () => store.getters.currentOption )
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 const worker = computed( () => store.getters.worker)
 
-const processConfigs = computed( () => store.getters.processConfigs )
+const processConfigs = computed( () => store.getters.processConfigs.filter(item => item.videoAvailable != false) )
 const configs = computed( () => {
     return processConfigs.value.map( (item, index) => {
         return {
@@ -104,14 +104,22 @@ function initWorker() {
         interval = setTimeout(processVideo,
         1000 / FPS)
         // Message.close()
-        if(event.data.msg == 'loading') {  
-            return false
+        if(event.data.msg == 'error') {  
+            event.data.indexs.map(item => {
+                processConfigs.value[item].selected = false 
+            })
+            ElMessage({
+                message: `something went wrong`,
+                grouping: true,
+                type: 'error',
+                duration: 1000
+            }) 
         }
         // vloading.value = false 
         contextDraw.clearRect(0, 0, width, height) 
         contextDraw.putImageData(event.data.image, 0, 0)
 
-        if(event.data.type == 'error') { 
+        if(event.data.type == 'processError') { 
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
                 ElMessage({

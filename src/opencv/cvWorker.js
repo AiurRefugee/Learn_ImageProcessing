@@ -1,6 +1,6 @@
 
 importScripts('opencv.js')
-console.log('cv', cv)
+// console.log('cv', cv)
 
 let fgbg = null
 let fgbgParams = []
@@ -355,7 +355,7 @@ const configs =  [
   title: 'Background Subtraction', 
   f: (src, dst, params) => {  
     const [ history, varThreshold, detectShadows ] = [...params]
-    console.log(history)
+    // console.log(history)
     try {
       if(!fgbg || fgbgUpdate([...params])) {
         fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
@@ -377,14 +377,21 @@ const CV = new cv()
  
 
 let errorIndexs = []
+let type = ''
+var imageData 
 
 self.addEventListener('message', function(e) {  
+
+  type = 'done'
+  if(e.data.type == 'update') {
+    // fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
+    // return;
+  }
   try {  
-    
-    let type = 'done'
+     
     errorIndexs.length = 0
 
-    const imageData = e.data.image; 
+    imageData = e.data.image; 
     // 创建 OpenCV 的 Mat 对象
     const src = new CV.Mat(imageData.height, imageData.width, CV.CV_8UC4); 
     const dst = new CV.Mat(imageData.height, imageData.width, CV.CV_8UC1);
@@ -397,42 +404,31 @@ self.addEventListener('message', function(e) {
       //图片图像处理
       e.data.paramsList.map( (item, index) => {   
         if(item.selected) { 
-          let res
-          if(item.imageAvailable != false) {
-            res = configs[index].f(dst, dst, item.params)  
-          }
-          if(!res && item.videoAvailable == false) {  
-            type = 'error'
+          let res = configs[index].f(dst, dst, item.params)   
+          if(!res) {  
+            type = 'processError'
             errorIndexs.push(item.processIndex)
-          }  
-          // Mat转ImageData
-          try {
-            switchToRGBA(dst)
-            let imageProcessed =  new ImageData(
-              new Uint8ClampedArray(dst.data),
-              dst.cols,
-              dst.rows
-            )
-            self.postMessage(
-              {
-                type: type,
-                indexs: errorIndexs,
-                image: imageProcessed,
-                inputType: e.data.type
-              }
-            )
-          } catch(error) {
-            console.log(error)
-            self.postMessage(
-              {
-                type: 'error',
-                indexs: [e.data.paramsList.findLastIndex(item => item.selected)],
-                image: imageData,
-                inputType: e.data.type
-              }
-            )
-          }
-          
+          } else {
+            // Mat转ImageData
+            try {
+              switchToRGBA(dst)
+              imageData =  new ImageData(
+                new Uint8ClampedArray(dst.data),
+                dst.cols,
+                dst.rows
+              ) 
+            } catch(error) {
+              console.log('error')
+              errorIndexs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+              imageData = e.data.image
+              type = 'error'
+            }
+            self.postMessage({
+              type: type,
+              indexs: errorIndexs,
+              image: imageData, 
+            }) 
+          } 
         } 
       })
 
@@ -440,14 +436,9 @@ self.addEventListener('message', function(e) {
       //视频图像处理
         e.data.paramsList.map( (item, index) => {  
           if(item.selected) {
-            let res
-            if(item.videoAvailable != false) {
-              // console.log(configs[index].title)
-              res = configs[index].f(dst, dst, item.params)  
-            }
+            let res = configs[index].f(dst, dst, item.params)  
             if(!res) {  
-              type = 'error'
-              
+              type = 'processError' 
               errorIndexs.push(item.processIndex)
             }  
             
@@ -458,41 +449,32 @@ self.addEventListener('message', function(e) {
       // Mat转ImageData
       try {
         switchToRGBA(dst)
-        let imageProcessed =  new ImageData(
+        imageData =  new ImageData(
           new Uint8ClampedArray(dst.data),
           dst.cols,
           dst.rows
-        )
-        self.postMessage(
-          {
-            type: type,
-            indexs: errorIndexs,
-            image: imageProcessed,
-            inputType: e.data.type
-          }
-        )
+        ) 
       } catch(error) {
         console.log(error)
-        self.postMessage(
-          {
-            type: 'error',
-            indexs: [e.data.paramsList.findLastIndex(item => item.selected)],
-            image: imageData,
-            inputType: e.data.type
-          }
-        )
-      }
-    }
-    
-
-    
+        
+        errorIndexs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        imageData = e.data.image
+        type = 'error'
+        
+      } 
+      self.postMessage({ 
+        type: type,
+        indexs: errorIndexs,
+        image: imageData
+      }) 
+    } 
     src.delete()
     dst.delete()
   } catch(error) {
-    console.log(error)
-    self.postMessage({ msg: 'loading' + error})
-    return false
+    console.log(error) 
+    
   }
+  
 });
 
 

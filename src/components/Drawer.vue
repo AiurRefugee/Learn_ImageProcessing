@@ -22,7 +22,11 @@ const maxCollapseNum = ref(window.innerWidth >= 600 ? 5 : 2)
 const classNames = ref(classification)
 const drawerSwitch = computed( () => store.getters.drawerSwitch )
 const curOpt = computed( () => store.getters.currentOption )
-const configs = computed( () => store.getters.processConfigs) 
+const configs = computed( () => {
+  return curOpt.value == 'image' ? store.getters.processConfigs.filter( item => item.imageAvailable != false) : 
+    store.getters.processConfigs.filter( item => item.videoAvailable != false)
+ 
+}) 
 
 
 function output(isSwitch, processIndex) {  
@@ -123,13 +127,18 @@ onUnmounted( () => {
                           <el-row>
                             <el-col :span="24">
                               <div class="switchGrid" >
-                                <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
+                                <div class="switchItem" v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')" :key="index">
+                                  {{ Switch.paramName }}
+                                  <el-switch v-model="Switch.paramValue" @change="output(false, processIndex)"></el-switch>
+
+                                </div>
+                                <!-- <el-row v-for="(Switch, index) in process.params.filter( element => element.widget.type == 'switch')"
                                   justify="start" align="middle" :key="index">
                                   <el-col :span="8">{{ Switch.paramName }}</el-col>
                                   <el-col :span="8">
                                     <el-switch v-model="Switch.paramValue" @change="output(false, processIndex)"></el-switch>
-                                  </el-col>
-                                </el-row>
+                                  </el-col> 
+                                </el-row>-->
                               </div>
                             </el-col>
                           </el-row>
@@ -323,9 +332,15 @@ $controlZ: 50;
     .switchGrid {
       width: 100%;
       display: grid;
-      grid-template-columns: repeat(2, 50%);
+      grid-template-columns: 1fr 1fr 1fr; 
+      // padding: 0 2%;
       grid-column-gap: 20px;
       overflow: auto;
+      .switchItem {
+        display: flex;
+        widows: 100%;
+        justify-content: space-between;
+      }
     }
 } 
 

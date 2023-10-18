@@ -19,13 +19,10 @@ const system = {
         UPDATE_DEVICESTATUS: (state, param) => {
             state.deviceStatus = param
         },
-        SET_WEBWORKER: (state, param) => {
-          if(!state.worker) {
-            state.worker = new Worker('/src/opencv/cvWorker.js')
-            // state.worker.onmessage = function(event) {
-            //   console.log(event.data);
-            // };
-          }
+        SET_WEBWORKER: (state) => {
+          console.log('new Worker')
+          state.worker = new Worker('/src/opencv/cvWorker.js')
+          let test = new Worker('/src/opencv/testWorker.js', {type: 'module'})
         },
         CHANGE_THEME: (state, param) => {
           console.log('param', param)
@@ -79,8 +76,8 @@ const system = {
                 // ElMessage.error('Browser does not support mediaDevices API')
               }
         },
-        initWorker({ commit }, param) {
-          commit('SET_WEBWORKER', param)
+        initWorker({ commit }) {
+          commit('SET_WEBWORKER')
         },
         change_Theme({ commit }, param) {
           commit('CHANGE_THEME', param)
