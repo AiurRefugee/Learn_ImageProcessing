@@ -1,9 +1,14 @@
-
+ 
 importScripts('opencv.js')
-// console.log('cv', cv)
+
+
+ 
+// console.log('cv',new cv())
 
 let fgbg = null
 let fgbgParams = []
+let msg = ''
+
 
 function fgbgUpdate(params) {
   if(params.length != fgbgParams.length) {
@@ -356,8 +361,13 @@ const configs =  [
   f: (src, dst, params) => {  
     const [ history, varThreshold, detectShadows ] = [...params]
     // console.log(history)
-    try {
-      if(!fgbg || fgbgUpdate([...params])) {
+    try { 
+      while(!fgbg) {
+        try {
+          fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
+        } catch {}
+      }
+      if(fgbgUpdate([...params])) {
         fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
         
       }
@@ -365,8 +375,10 @@ const configs =  [
       // let fgbg = new CV.BackgroundSubtractorMOG2(500, 16, true); 
       fgbg.apply(src, dst) 
       return true 
-    } catch {
+    } catch(error) { 
       console.log(error)
+      fgbg.delete();
+      msg = '输入尺寸过大'
     }
     return false
   } 
@@ -374,57 +386,55 @@ const configs =  [
 ]
  
 const CV = new cv() 
- 
+  
+// while(!CV.BackgroundSubtractorMOG2) {
+//   // console.log(fgbg)
+//   try {
+    
+//   } catch {
+
+//   }
+// }
 
 let errorIndexs = []
-let type = ''
+let type = 'done'
 var imageData 
 
-self.addEventListener('message', function(e) {  
-
-  type = 'done'
-  if(e.data.type == 'update') {
-    // fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
-    // return;
-  }
-  try {  
-     
-    errorIndexs.length = 0
-
-    imageData = e.data.image; 
+function process(e) {
+  try {   
     // 创建 OpenCV 的 Mat 对象
-    const src = new CV.Mat(imageData.height, imageData.width, CV.CV_8UC4); 
-    const dst = new CV.Mat(imageData.height, imageData.width, CV.CV_8UC1);
+    const src = new CV.Mat(imageData.height, imageData.width, CV.CV_8UC4);  
 
     // 将图像数据复制到 src Mat 对象
     src.data.set(imageData.data); 
-    src.copyTo(dst)
+    // src.copyTo(dst)
 
     if(e.data.type == 'image') {
       //图片图像处理
       e.data.paramsList.map( (item, index) => {   
-        if(item.selected) { 
-          let res = configs[index].f(dst, dst, item.params)   
+        if(item.selected && item.imageAvailable) { 
+          let res = configs[index].f(src, src, item.params)   
           if(!res) {  
             type = 'processError'
             errorIndexs.push(item.processIndex)
           } else {
             // Mat转ImageData
             try {
-              switchToRGBA(dst)
+              switchToRGBA(src)
               imageData =  new ImageData(
-                new Uint8ClampedArray(dst.data),
-                dst.cols,
-                dst.rows
+                new Uint8ClampedArray(src.data),
+                src.cols,
+                src.rows
               ) 
             } catch(error) {
               console.log('error')
-              errorIndexs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+              errorIndexs = Array.from(new Array(e.data.paramsList.length).keys())
               imageData = e.data.image
               type = 'error'
             }
             self.postMessage({
               type: type,
+              msg: msg,
               indexs: errorIndexs,
               image: imageData, 
             }) 
@@ -435,8 +445,8 @@ self.addEventListener('message', function(e) {
     } else {
       //视频图像处理
         e.data.paramsList.map( (item, index) => {  
-          if(item.selected) {
-            let res = configs[index].f(dst, dst, item.params)  
+          if(item.selected && item.videoAvailable != false) {
+            let res = configs[index].f(src, src, item.params)  
             if(!res) {  
               type = 'processError' 
               errorIndexs.push(item.processIndex)
@@ -448,33 +458,46 @@ self.addEventListener('message', function(e) {
 
       // Mat转ImageData
       try {
-        switchToRGBA(dst)
+        switchToRGBA(src)
         imageData =  new ImageData(
-          new Uint8ClampedArray(dst.data),
-          dst.cols,
-          dst.rows
+          new Uint8ClampedArray(src.data),
+          src.cols,
+          src.rows
         ) 
       } catch(error) {
         console.log(error)
         
-        errorIndexs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        errorIndexs = Array.from(new Array(e.data.paramsList.length).keys())
         imageData = e.data.image
         type = 'error'
         
       } 
       self.postMessage({ 
         type: type,
+        msg: msg,
         indexs: errorIndexs,
         image: imageData
       }) 
     } 
     src.delete()
-    dst.delete()
+    // dst.delete()
   } catch(error) {
     console.log(error) 
-    
+    self.postMessage({ 
+      type: 'loading',
+      msg: msg,
+      indexs: errorIndexs,
+      image: imageData
+    }) 
   }
-  
+}
+
+self.addEventListener('message', function(e) {   
+  type = 'done'
+  msg = ''
+  errorIndexs.length = 0
+  imageData = e.data.image;  
+  process(e)  
 });
 
 

@@ -27,7 +27,7 @@ let dst = new cv.Mat()
 let width, height, interval
 
 const worker = computed( () => store.getters.worker)
-const processConfigs = computed( () => store.getters.processConfigs.filter(item => item.imageAvailable != false) )
+const processConfigs = computed( () => store.getters.processConfigs)
 
 const configs = computed( () => {
     let res = processConfigs.value.map( (item, index) => {
@@ -77,7 +77,7 @@ function drawImage() {
     canvasDraw.height = height
     let contextDraw = canvasDraw.getContext('2d')
     contextDraw.clearRect(0, 0, width, height) 
-    console.log(width, height)
+    // console.log(width, height)
     let image = document.getElementById('imageInput')
     // 将图像绘制到 canvas 上
     contextDraw.drawImage(image, 0, 0); 
@@ -90,7 +90,7 @@ const processImage = () =>  {
     let imageData = drawImage()
     // 获取图像数据
     
-    console.log(width, height)
+    // console.log(width, height)
     worker.value.postMessage({
         image: imageData,
         paramsList: configs.value,
@@ -103,7 +103,7 @@ function initWorker() {
     worker.value.onmessage = function(event) { 
         // console.log('message')
         loading.value = false  
-        // console.log(event.data)
+        console.log(event.data.type)
         if(event.data.type == 'processError') { 
             // console.log('processError')
             event.data.indexs.map(item => {
@@ -147,7 +147,7 @@ function initSize() {
     let image = document.getElementById('imageInput')
     width = image.width
     height = image.height
-    console.log(width, height)
+    // console.log(width, height)
 }
 
 function selectChange() {

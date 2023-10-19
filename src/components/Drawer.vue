@@ -335,11 +335,13 @@ $controlZ: 50;
       grid-template-columns: 1fr 1fr 1fr; 
       // padding: 0 2%;
       grid-column-gap: 20px;
+      align-items: center;
       overflow: auto;
       .switchItem {
         display: flex;
         widows: 100%;
         justify-content: space-between;
+        align-items: center;
       }
     }
 } 

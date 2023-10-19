@@ -22,7 +22,7 @@ const curOpt = computed( () => store.getters.currentOption )
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 const worker = computed( () => store.getters.worker)
 
-const processConfigs = computed( () => store.getters.processConfigs.filter(item => item.videoAvailable != false) )
+const processConfigs = computed( () => store.getters.processConfigs )
 const configs = computed( () => {
     return processConfigs.value.map( (item, index) => {
         return {
@@ -58,8 +58,8 @@ async function init() {
             { video:
                 {
                     facingMode: faceMode.value,
-                    width: 3840,
-                    height: 2560 
+                    width: 2560,
+                    height: 1440 
                 },
                 audio: false
             }
@@ -91,6 +91,10 @@ async function init() {
         }   
         initVideo()
     } catch(error) {
+        ElMessage({
+                type: 'error',
+                message: 'something went wrong'
+            })
         release()
         console.log(error)
     }
@@ -116,6 +120,12 @@ function initWorker() {
             }) 
         }
         // vloading.value = false 
+
+        if(!contextDraw || !contextRead) {
+            contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+            contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })
+        }
+
         contextDraw.clearRect(0, 0, width, height) 
         contextDraw.putImageData(event.data.image, 0, 0)
 
@@ -123,7 +133,7 @@ function initWorker() {
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
                 ElMessage({
-                    message: `${processConfigs.value[item].title}参数错误或不支持视频处理.`,
+                    message: `${processConfigs.value[item].title} 发生错误。${event.data.msg}.`,
                     grouping: true,
                     type: 'error',
                 })
@@ -141,11 +151,16 @@ function initVideo() {
     cameraOutput.value.height = height  
     contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
     contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+    contextRead.clearRect(0, 0, width, height)
     contextDraw.clearRect(0, 0, width, height)
     if(!interval) {
         try {  
             processVideo() 
         } catch(error) {
+            ElMessage({
+                type: 'error',
+                message: 'something went wrong'
+            })
             release()
             console.log(error)
         }
@@ -155,6 +170,10 @@ function initVideo() {
 function processVideo() {
     // console.log('processing Camera')  
         // console.log('camera processing') 
+        if(!contextRead || !contextDraw) {
+            contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+            contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+        }
         contextRead.clearRect(0, 0, width, height) 
         // 将图像绘制到 canvas 上
         contextRead.drawImage(cameraInput.value, 0, 0); 

@@ -657,7 +657,7 @@ We use the function: cv.cvtColor (src, dst, code, dstCn = 0)`,
   ],
   primaryClass: "图像分割",
   secondrayClass: "边界分割",
-  selected: true,
+  selected: false,
   imageAvailable: true,
   params: [
     {
@@ -1145,7 +1145,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
   title: 'Background Subtraction',
   primaryClass: '图像识别',
   secondrayClass: '物体检测',
-  selected: true,
+  selected: false,
   imageAvailable: false,
   videoAvailable: true,
   params: [

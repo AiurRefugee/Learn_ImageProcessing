@@ -7,6 +7,8 @@ import { DArrowLeft, VideoPlay, DArrowRight, VideoPause } from '@element-plus/ic
 
 const store = useStore()
 
+const suffixList = ['mp4', 'm4s', 'avi']
+
 const videoList = ref([
     {
         label: 'test',
@@ -22,7 +24,7 @@ const videoInput = ref(null)
 const size = ref(Object)
 const canvasOutput = ref(null)
 const canvasRead = ref(null)
-const FPS = 30; 
+const FPS = 60; 
 const videoModuleWrapper = ref(null) 
 const displayPointer = ref(50) 
 let videoLoading = false 
@@ -32,7 +34,7 @@ let contextRead, contextDraw
 
 
 const curOpt = computed( () => store.getters.currentOption )
-const processConfigs = computed( () => store.getters.processConfigs.filter(item => item.videoAvailable != false) ) 
+const processConfigs = computed( () => store.getters.processConfigs) 
 const worker = computed( () => store.getters.worker)
 const configs = computed( () => {
     return processConfigs.value.map( (item, index) => {
@@ -48,11 +50,13 @@ const configs = computed( () => {
 let width, height, duration 
 let interval = null
 
-async function play() { 
-    if(!playing.value && videoInput.value.src != ''){
+// flag true 播放 false 暂停
+async function play(flag) { 
+    if(flag && videoInput.value.src != ''){
         try {
+
             await videoInput.value.play()
-            playing.value = !playing.value
+            playing.value = true
              
             try {  
                 processVideo() 
@@ -70,10 +74,10 @@ async function play() {
             })
         }
 
-    } else {
+    } else if(!flag && videoInput.value.src != '') {
         try {
             await videoInput.value.pause()
-            playing.value = !playing.value
+            playing.value = false
             clearTimeout(interval)
             interval = null
         } catch(error) {
@@ -92,14 +96,19 @@ async function play() {
  
 
 function processVideo() {   
-    if(playing.value) {
+    if(playing.value) { 
         console.log('processing Video')   
+        if(!contextRead || !contextDraw) {
+            contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+            contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+        }
+        
         contextRead.clearRect(0, 0, width, height) 
         // 将图像绘制到 canvas 上
         contextRead.drawImage(videoInput.value, 0, 0); 
         // 获取图像数据
         let imageData = contextRead.getImageData(0, 0, width, height);  
-        // console.log(configs.value)
+        // console.log(imageData.width, imageData.height)
         worker.value.postMessage({
             image: imageData,
             paramsList: configs.value,
@@ -133,16 +142,25 @@ function upload() {
 async function fileChange() {
     console.log('fileChange')
     const file = videoUpload.value.files[0]
-    if(file) {
+    if(file) { 
         const fileName = file.name
-        const url = URL.createObjectURL(file)
-        videoInput.value.src = url
-        videoList.value.push({
-            label: fileName,
-            value: url
-        })
-        videoUrl.value = url
-        videoInput.value.load()
+        const suffix = fileName.split('.').pop()
+        if(suffixList.indexOf(suffix) != -1) {
+            const url = URL.createObjectURL(file)
+            videoInput.value.src = url
+            videoList.value.push({
+                label: fileName,
+                value: url
+            })
+            videoUrl.value = url
+            videoInput.value.load()
+        } else {
+            ElMessage({
+                type: 'error',
+                message: '输入格式不支持'
+            })
+        }
+        
     } 
 }
 
@@ -169,7 +187,7 @@ async function initWorker() {
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
                 ElMessage({
-                    message: `${processConfigs.value[item].title}参数错误或不支持视频处理.`,
+                    message: `${processConfigs.value[item].title} 发生错误。${event.data.msg}`,
                     grouping: true,
                     type: 'error',
                 })
@@ -186,7 +204,10 @@ async function initWorker() {
                 processConfigs.value[item].selected = false 
             }) 
         }
- 
+        
+        if(!contextDraw) {
+            contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
+        }
         contextDraw.clearRect(0, 0, width, height) 
         contextDraw.putImageData(event.data.image, 0, 0)
         
@@ -200,8 +221,8 @@ async function initWorker() {
 function initVideo() {
     let video = document.getElementById('videoInput') 
     duration = video.duration
-    width = video.videoWidth
-    height = video.videoHeight
+    width = Math.min(video.videoWidth, 2560)
+    height = Math.min(video.videoHeight, 1440)
     videoInput.value.width = width
     videoInput.value.height = height
     canvasOutput.value.width = width
@@ -226,10 +247,11 @@ onMounted( async () => {
         videoInput.value.addEventListener('loadedmetadata', async () => {
             console.log('metaData Loaded')
             initVideo()
+            play(false)
         })  
         videoUpload.value.addEventListener( "change", fileChange)   
         // document.body.style.setProperty('--el-text-color-primary', 'white')
-        window.addEventListener('resize', reSize)
+        // window.addEventListener('resize', reSize)
     }
 })
 
@@ -252,6 +274,9 @@ onDeactivated( () => {
     playing.value = false
     videoLoading = false
     try{
+        if(!contextDraw) {
+            contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
+        }
         contextDraw.clearRect(0, 0, width, height)
     } catch {
         
@@ -267,6 +292,9 @@ onUnmounted( () => {
     playing.value = false
     videoLoading = false
     try{
+        if(!contextDraw) {
+            contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
+        }
         contextDraw.clearRect(0, 0, width, height)
     } catch {
         
@@ -281,7 +309,7 @@ onUnmounted( () => {
 <template>
     <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <div class="videoArea" >
-            <div class="tvHead"  @click="play">
+            <div class="tvHead"  @click="play(!playing)">
                 <div class="playerWrapper">
                     <div class="videoCanvasWrapper" v-if="curOpt == 'video'">
                         <!-- <div class="videoWrapper" :style="{ 
@@ -301,7 +329,7 @@ onUnmounted( () => {
                 <div class="videoController" >  
                     <div class="videoInputSource">
                         <text>Input Source</text>
-                        <el-select v-model="videoUrl" placeholder="请选择输入源" @change="play">
+                        <el-select v-model="videoUrl" placeholder="请选择输入源" @change="play(false)">
                             <div class="el-select-dropdown__item" @click="upload">
                                 <el-icon><UploadFilled/></el-icon>
                                 <span style="margin-left: 5px;">上传视频</span>
@@ -315,11 +343,11 @@ onUnmounted( () => {
                             <!-- <DArrowLeft /> -->
                             <el-icon :size="playerIconSize" ><DArrowLeft /></el-icon>
                         </div >
-                        <div class="centerIcon" v-if="!playing" @click="play">
+                        <div class="centerIcon" v-if="!playing" @click="play(true)">
                             <!-- <VideoPlay /> -->
-                            <el-icon :size="playerIconSize" v-if="!playing"><VideoPlay /></el-icon>
+                            <el-icon :size="playerIconSize" v-if="!playing" ><VideoPlay/></el-icon>
                         </div>
-                        <div class="centerIcon" v-else @click="play">
+                        <div class="centerIcon" v-else @click="play(false)">
                             <!-- <VideoPause /> -->
                              <el-icon :size="playerIconSize"><VideoPause /></el-icon>
                         </div>
@@ -423,9 +451,13 @@ onUnmounted( () => {
                     video {  
                         width: 100%;
                         height: 100%; 
-                        position: absolute;
+                        // position: absolute;
                         left: 0;
-                        z-index: 1;display: none;
+                        max-width: 2560px;
+                        max-height: 1440px;
+                        object-fit: contain;
+                        z-index: 1;
+                        display: none;
                     } 
                     #canvasOutput {
                         display: flex;  
