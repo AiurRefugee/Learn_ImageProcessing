@@ -282,9 +282,9 @@ onUnmounted( () => {
 
 </script>
 <template>
-     <div class="errorDiv">
+     <!-- <div class="errorDiv">
         errorMessage: {{ errorContent }}
-    </div>
+    </div> -->
     <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <div class="videoArea" >
             <div class="tvHead"  @click="play(!playing)">

@@ -273,9 +273,10 @@ onUnmounted(() => {
 
 </script>
 <template>
-    <div class="errorDiv">
+    <!-- errorInfo -->
+    <!-- <div class="errorDiv">
         <p>errorMessage: {{ errorContent }}</p>
-    </div>
+    </div> -->
     <div ref="cameraWrapper" class="cameraWrapper">
         <video ref="cameraInput" id="cameraInput" ></video>
         <canvas ref="cameraOutput" id="cameraOutput"></canvas>
