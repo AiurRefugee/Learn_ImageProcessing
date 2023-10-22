@@ -1,13 +1,18 @@
  
-importScripts('opencv.js')
+importScripts('opencv.js') 
 
-
- 
 // console.log('cv',new cv())
 
 let fgbg = null
 let fgbgParams = []
 let msg = ''
+let haarcascade_eye = null //眼检测器
+let haarcascade_frontalface_default = null // 脸检测器
+
+
+let errorIndexs = []
+let type = 'done'
+var imageData 
 
 
 function fgbgUpdate(params) {
@@ -382,23 +387,87 @@ const configs =  [
     }
     return false
   } 
+},
+{
+  title: 'Haar-cascade Detection',
+  f: async (src, dst, params) => { 
+    if(haarcascade_eye === null) {
+      haarcascade_eye = await loadFile('haarcascade_eye.xml')
+    }
+    if(haarcascade_frontalface_default === null) { 
+        haarcascade_frontalface_default = await loadFile('haarcascade_frontalface_default.xml') 
+    } 
+    try {  
+      let gray = new CV.Mat(); 
+      // switchToRGBA(src)
+      CV.cvtColor(src, gray, CV.COLOR_RGBA2GRAY, 0);
+      let faces = new CV.RectVector();
+      let eyes = new CV.RectVector();
+      let faceCascade = new CV.CascadeClassifier();
+      let eyeCascade = new CV.CascadeClassifier();
+      
+      // load pre-trained classifiers
+      faceCascade.load('haarcascade_frontalface_default.xml');
+      eyeCascade.load('haarcascade_eye.xml'); 
+      // detect faces
+      let msize = new CV.Size(0, 0);
+      faceCascade.detectMultiScale(gray, faces, 1.1, 3, 0, msize, msize);
+      console.log(faces)
+      for (let i = 0; i < faces.size(); ++i) {
+          let roiGray = gray.roi(faces.get(i));
+          let roiSrc = src.roi(faces.get(i));
+          let point1 = new CV.Point(faces.get(i).x, faces.get(i).y);
+          let point2 = new CV.Point(faces.get(i).x + faces.get(i).width,
+                                    faces.get(i).y + faces.get(i).height);
+          CV.rectangle(src, point1, point2, [255, 0, 0, 255]);
+          // detect eyes in face ROI
+          eyeCascade.detectMultiScale(roiGray, eyes);
+          for (let j = 0; j < eyes.size(); ++j) {
+              let point1 = new CV.Point(eyes.get(j).x, eyes.get(j).y);
+              let point2 = new CV.Point(eyes.get(j).x + eyes.get(j).width,
+                                        eyes.get(j).y + eyes.get(j).height);
+              CV.rectangle(roiSrc, point1, point2, [0, 0, 255, 255]);
+          }
+          roiGray.delete(); roiSrc.delete();
+      }  
+      gray.delete(); faceCascade.delete();
+      eyeCascade.delete(); faces.delete(); eyes.delete();
+      return true
+    } catch(error) {
+      console.log(error)
+    }
+    return false
+
+  }
 }
 ]
  
 const CV = new cv() 
-  
-// while(!CV.BackgroundSubtractorMOG2) {
-//   // console.log(fgbg)
-//   try {
     
-//   } catch {
 
-//   }
-// }
+function loadFile(url) {
+  return new Promise( (res, rej) => {
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.arrayBuffer();
+      })
+      .then(data => { 
+        let u8Data = new Uint8Array(data);   
+        CV.FS_createDataFile("/", url, u8Data, true, false, false); 
+        res(u8Data) 
+      })
+      .catch(error => {
+        console.log(error)
+        res(error)
+      });
+  })
+}
 
-let errorIndexs = []
-let type = 'done'
-var imageData 
+
+
 
 function process(e) {
   try {   
@@ -410,10 +479,11 @@ function process(e) {
     // src.copyTo(dst)
 
     if(e.data.type == 'image') {
-      //图片图像处理
+      //图片图像处理 
       e.data.paramsList.map( (item, index) => {   
         if(item.selected && item.imageAvailable) { 
           let res = configs[index].f(src, src, item.params)   
+          console.log(res) 
           if(!res) {  
             type = 'processError'
             errorIndexs.push(item.processIndex)
@@ -431,14 +501,14 @@ function process(e) {
               errorIndexs = Array.from(new Array(e.data.paramsList.length).keys())
               imageData = e.data.image
               type = 'error'
-            }
-            self.postMessage({
-              type: type,
-              msg: msg,
-              indexs: errorIndexs,
-              image: imageData, 
-            }) 
+            } 
           } 
+          self.postMessage({
+            type: type,
+            msg: msg,
+            indexs: errorIndexs,
+            image: imageData, 
+          }) 
         } 
       })
 

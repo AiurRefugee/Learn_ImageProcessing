@@ -41,7 +41,7 @@ const status = computed( () => store.getters.cameraStatus)
 const theme = computed( 
   {
     get() {
-      console.log(store.getters.theme)
+      // console.log(store.getters.theme)
       return store.getters.theme
     }, 
     set(val) {

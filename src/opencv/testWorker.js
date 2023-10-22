@@ -1,10 +1,8 @@
-var Module = {
-  // https://emscripten.org/docs/api_reference/module.html#Module.onRuntimeInitialized
-  onRuntimeInitialized() {
-    console.log('opencv is ready')
-  }
-};
+importScripts('opencv.js')  
 
-import cv from './opencv.js'
-console.log(cv)
- 
+async function loadCV() { 
+  console.log(cv)
+  let CV = new cv(); 
+}
+
+// loadCV()

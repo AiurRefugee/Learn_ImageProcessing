@@ -1,3 +1,3 @@
-export function person(name) {
-    this.name = name
-}
+ 
+ const cv = '123'
+export default cv

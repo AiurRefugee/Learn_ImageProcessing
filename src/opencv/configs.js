@@ -1192,49 +1192,17 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
         utils.printError(err);
     }
   }  
+},
+{
+  title: 'Haar-cascade Detection',
+  theory: `Here we will deal with detection. OpenCV already contains many pre-trained classifiers for face, eyes, smile etc. Those XML files are stored in opencv/data/haarcascades/ folder. Let's create a face and eye detector with OpenCV.`,
+  primaryClass: '图像识别',
+  secondrayClass: '物体检测',
+  selected: true,
+  imageAvailable: true,
+  videoAvailable: false,
+  params: [ 
+  ]
 }
-// {
-//   title: 'Face Detection',
-//   primaryClass: '图像识别',
-//   secondrayClass: '物体检测',
-//   selected: false,
-//   imageAvailable: true,
-//   params: [
-//     {
-//       paramName: 'faces',
-//       paramValue: new cv.RectVector(),
-//       paramDesc: '',
-//       widget: {
-//         type: null
-//       }
-//     }, {
-//       paramName: 'classifier', 
-//       paramValue: new cv.CascadeClassifier(),
-//       paramDesc: '',
-//       widget: {
-//         type: null
-//       }
-//     }
-//   ],
-//   f: (title, src, dst, params) => {
-//     console.log(params)
-//     let [faces, classifier ] = [...params]
-//     try {
-//       classifier.load('haarcascade_frontalface_default.xml');
-//       cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0);
-//       // detect faces. 
-//       classifier.detectMultiScale(dst, faces, 1.1, 3, 0);
-//       // draw faces.
-//       for (let i = 0; i < faces.size(); ++i) {
-//           let face = faces.get(i);
-//           let point1 = new cv.Point(face.x, face.y);
-//           let point2 = new cv.Point(face.x + face.width, face.y + face.height);
-//           cv.rectangle(dst, point1, point2, [255, 0, 0, 255]);
-//       }
-//     } catch(error) {
-//       console.log(error)
-//     }
-//   } 
-// }
 ]
 

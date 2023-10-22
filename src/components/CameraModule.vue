@@ -9,6 +9,7 @@ const cameraOutput = ref(null)
 const FPS = 30;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
+const errorContent = ref('')
 const vloading = ref(true)
 let cameraVideoLoading = false
 let contextRead, contextDraw
@@ -37,39 +38,41 @@ let width, height, mediaStream
 let interval = null
 
 
-async function toggleMode () {
+function toggleMode () {
     cameraWrapper.value.animate([
-            {transform: 'rotateY(0)'},
-            {transform: 'rotateY(360deg)'},
-        ], 800)
-        camerSwitch.value = !camerSwitch.value
-        await nextTick()
-        await init()
+        {transform: 'rotateY(0)'},
+        {transform: 'rotateY(360deg)'},
+    ], 800)
+    camerSwitch.value = !camerSwitch.value 
+    initCamera()
 }
  
-async function init() {
-    try {
-        await nextTick()
-        if(!curOpt.value) {
-            store.dispatch('set_currentOption', 'camera')
+async function initCamera() {
+    try { 
+        
+        if(mediaStream) {
+            release() 
         }
-        release() 
-        mediaStream = await navigator.mediaDevices.getUserMedia(
-            { video:
-                {
-                    facingMode: faceMode.value,
-                    width: 2560,
-                    height: 1440 
-                },
-                audio: false
-            }
-        ) 
+        while(!mediaStream) {
+            // console.log('gettingCamera')
+            mediaStream = await navigator.mediaDevices.getUserMedia(
+                { video:
+                    {
+                        facingMode: faceMode.value,
+                        width: 1920,
+                        height: 1080 
+                    },
+                    audio: false
+                }
+            ) 
+        }
         let settings = mediaStream.getVideoTracks()[0].getSettings();
+        console.log(mediaStream)
         switch(screen.orientation.type) {
             case 'landscape-primary':
             case 'landscape-secondary':
-                width = Math.max(settings.width, settings.height);
-                height = Math.min(settings.width, settings.height);  
+                width = Math.min(settings.width, settings.height, 2560);
+                height = Math.min(settings.width, settings.height, 1440);  
                 console.log(width, height)
                 break;
             case 'portrait-primary':
@@ -79,30 +82,34 @@ async function init() {
                 console.log(width, height)
                 break;
             default: 
-                width = 3840
-                height = 2560
+                width = 1920
+                height = 1080
         }
         
         
         // console.log(settings.width, settings.height)
         cameraInput.value.srcObject = mediaStream 
+        cameraInput.value.play()
         if(interval) {
             clearTimeout(interval)
         }   
         initVideo()
     } catch(error) {
-        ElMessage({
-                type: 'error',
-                message: 'something went wrong'
-            })
+        // ElMessage({
+        //         type: 'error',
+        //         message: 'something went wrong',
+        //         grouping: true
+        //     })
         release()
+        errorContent.value = error.toString()
         console.log(error)
     }
 
 } 
  
 
-function initWorker() {
+async function initWorker() {
+    await nextTick()
     worker.value.onmessage = function(event) { 
         // console.log('onMessage')
         interval = setTimeout(processVideo,
@@ -112,12 +119,14 @@ function initWorker() {
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false 
             })
-            ElMessage({
-                message: `something went wrong`,
-                grouping: true,
-                type: 'error',
-                duration: 1000
-            }) 
+            // ElMessage({
+            //     message: `something went wrong`,
+            //     grouping: true,
+            //     type: 'error',
+            //     duration: 1000
+            // }) 
+            console.log(error)
+            errorContent.value = error.toString()
         }
         // vloading.value = false 
 
@@ -157,12 +166,14 @@ function initVideo() {
         try {  
             processVideo() 
         } catch(error) {
-            ElMessage({
-                type: 'error',
-                message: 'something went wrong'
-            })
+            // ElMessage({
+            //     type: 'error',
+            //     message: 'something went wrong',
+            //     grouping: true
+            // })
             release()
             console.log(error)
+            errorContent.value = error.toString()
         }
     }
 }
@@ -170,21 +181,29 @@ function initVideo() {
 function processVideo() {
     // console.log('processing Camera')  
         // console.log('camera processing') 
-        if(!contextRead || !contextDraw) {
-            contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
-            contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+        try {
+            
+            if(!contextRead || !contextDraw) {
+                contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+                contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+            }
+            contextRead.clearRect(0, 0, width, height) 
+            // 将图像绘制到 canvas 上
+            contextRead.drawImage(cameraInput.value, 0, 0); 
+            // 获取图像数据
+            let imageData = contextRead.getImageData(0, 0, width, height);  
+            // console.log('postMessage')
+            worker.value.postMessage({
+                image: imageData,
+                paramsList: configs.value,
+                type: 'camera'
+            }); // 发送图像数据给 Web Worker
+            // console.log('processingCamera')
+        } catch(error) {
+            console.log(error)
+            initCamera()
+            errorContent.value = error.toString()
         }
-        contextRead.clearRect(0, 0, width, height) 
-        // 将图像绘制到 canvas 上
-        contextRead.drawImage(cameraInput.value, 0, 0); 
-        // 获取图像数据
-        let imageData = contextRead.getImageData(0, 0, width, height);  
-        // console.log('postMessage')
-        worker.value.postMessage({
-            image: imageData,
-            paramsList: configs.value,
-            type: 'camera'
-        }); // 发送图像数据给 Web Worker
           
 }
 
@@ -198,12 +217,15 @@ function release() {
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
     } 
-    console.log('clear')
+    // console.log('clear')
     clearTimeout(interval) 
     interval = null  
 }
 
-async function cameraModuleInit() {
+function cameraModuleInit() {
+    if(!curOpt.value) {
+        store.dispatch('set_currentOption', 'camera')
+    }
     Message = ElMessage({ 
         message: 'Module is loading.',
         duration: 1000
@@ -214,28 +236,26 @@ async function cameraModuleInit() {
         // 你可以根据设备的方向来旋转视频元素
         console.log('orientation:', screen.orientation.type) 
         if(curOpt.value == 'camera') {
-            await init()
+            await initCamera()
         }
-    }); 
-    await nextTick()
+    });  
     initWorker()
-    await nextTick()
-    await init()  
+    initCamera()  
 }
 
-onMounted( async () => { 
+onMounted(() => { 
     console.log('camera onMounted')   
     store.dispatch('set_currentOption', 'camera')
-    if(!interval) { 
-        await cameraModuleInit()
+    if(!interval) {
+        cameraModuleInit()
     }
 
 })
 
-onActivated( async () => {
+onActivated( () => {
     console.log('camera onActivated')  
     if(!interval) { 
-        await cameraModuleInit()
+        cameraModuleInit()
     }
 })
 
@@ -253,8 +273,11 @@ onUnmounted(() => {
 
 </script>
 <template>
+    <div class="errorDiv">
+        <p>errorMessage: {{ errorContent }}</p>
+    </div>
     <div ref="cameraWrapper" class="cameraWrapper">
-        <video ref="cameraInput" id="cameraInput" autoplay></video>
+        <video ref="cameraInput" id="cameraInput" ></video>
         <canvas ref="cameraOutput" id="cameraOutput"></canvas>
         <canvas id="canvasRead" ref="canvasRead" style="display: none;"></canvas>
     </div>
@@ -268,6 +291,18 @@ onUnmounted(() => {
     transform: rotateY(360deg); /* 360度旋转，一周 */
     }
 } 
+.errorDiv {
+    position: fixed;
+    width: 40vw;
+    height: 60px;
+    top: 2%;
+    z-index: 100;
+    border-radius: 15px;
+    color: var(--el-text-color-primary);
+    display: flex;
+    justify-content: center;
+    background-color: var(--el-bg-color);
+}
 .cameraWrapper {
     width: 100vw;
     height: 100vh;

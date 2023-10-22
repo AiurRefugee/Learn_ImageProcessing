@@ -28,6 +28,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
+// 根据当前时间设置theme
+store.dispatch('change_Theme', new Date().getHours() >= 17 ? true : false)
+
 app.provide('$bus', $bus)
 
 app.use(store)

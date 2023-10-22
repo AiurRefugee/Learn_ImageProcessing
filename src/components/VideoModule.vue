@@ -52,20 +52,19 @@ let interval = null
 
 // flag true 播放 false 暂停
 async function play(flag) { 
-    if(flag && videoInput.value.src != ''){
-        try {
-
-            await videoInput.value.play()
-            playing.value = true
-             
-            try {  
-                processVideo() 
-            } catch(error) {
-                console.log(error)
-            } 
-        } catch(error) {
-            playing.value = false
-
+    if(videoInput.value.src != ''){
+        try { 
+            if(flag) {
+                await videoInput.value.play()
+                playing.value = true
+                processVideo()  
+            } else {
+                await videoInput.value.pause()
+                playing.value = false
+                clearTimeout(interval)
+                interval = null
+            }
+        } catch(error) { 
             console.log(error)
             ElMessage({
                 message: `${error}.`,
@@ -74,22 +73,7 @@ async function play(flag) {
             })
         }
 
-    } else if(!flag && videoInput.value.src != '') {
-        try {
-            await videoInput.value.pause()
-            playing.value = false
-            clearTimeout(interval)
-            interval = null
-        } catch(error) {
-            playing.value = true
-            console.log(error)
-            ElMessage({
-                message: `${error}.`,
-                grouping: true,
-                type: 'error',
-            })
-        }
-    }
+    } 
 
 
 }
@@ -100,7 +84,7 @@ function processVideo() {
         console.log('processing Video')   
         if(!contextRead || !contextDraw) {
             contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
-            contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
+            contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
         }
         
         contextRead.clearRect(0, 0, width, height) 
@@ -164,9 +148,8 @@ async function fileChange() {
     } 
 }
 
-async function init() {  
-    console.log('video Init') 
-    await nextTick()  
+function init() {  
+    console.log('video Init')  
     store.dispatch('set_currentOption', 'video')  
 }
 
@@ -242,8 +225,8 @@ onMounted( async () => {
     console.log('video onMounted') 
     store.dispatch('set_currentOption', 'video')
     if(!interval) {
-        await initWorker() 
-        await init()
+        initWorker() 
+        init()
         videoInput.value.addEventListener('loadedmetadata', async () => {
             console.log('metaData Loaded')
             initVideo()
@@ -256,15 +239,7 @@ onMounted( async () => {
 })
 
 onActivated(  async () => {
-    console.log('video Activated') 
-    // if(!interval) {
-    //     await initWorker() 
-    //     await init()
-    //     videoInput.value.addEventListener('loadedmetadata', init)  
-    //     videoUpload.value.addEventListener( "change", fileChange)   
-    //     // document.body.style.setProperty('--el-text-color-primary', 'white')
-    //     window.addEventListener('resize', reSize)
-    // }
+    console.log('video Activated')  
     
 })
 
@@ -307,6 +282,9 @@ onUnmounted( () => {
 
 </script>
 <template>
+     <div class="errorDiv">
+        errorMessage: {{ errorContent }}
+    </div>
     <div ref="videoModuleWrapper" class="videoModuleWrapper"> 
         <div class="videoArea" >
             <div class="tvHead"  @click="play(!playing)">
@@ -375,6 +353,18 @@ onUnmounted( () => {
 </template>
 <style lang="scss">
 
+.errorDiv {
+    position: fixed;
+    width: 40vw;
+    height: 60px;
+    top: 2%;
+    z-index: 100;
+    border-radius: 15px;
+    color: var(--el-text-color-primary);
+    display: flex;
+    justify-content: center;
+    background-color: var(--el-bg-color);
+}
 .videoController .el-scrollbar {
     max-width: 30dvw;
 }

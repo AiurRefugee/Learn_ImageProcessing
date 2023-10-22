@@ -12,7 +12,7 @@ const $bus = inject('$bus')
 $bus.on('outputImage', outputImage)
 $bus.on('photo', photo)
 
-const imageUrl = ref('/src/assets/imgs/gundam.jpeg')
+const imageUrl = ref('/src/assets/imgs/Lena.png')
 const imageUrlList = ref([])
 const loading = ref(true)
 const showViewer = ref(false)
@@ -109,7 +109,7 @@ function initWorker() {
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
                 ElMessage({
-                    message: `${processConfigs.value[item].title}参数错误或不支持视频处理.`,
+                    message: `${processConfigs.value[item].title}参数错误或不支持处理图片.`,
                     grouping: true,
                     type: 'error',
                 })
