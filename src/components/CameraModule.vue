@@ -59,8 +59,8 @@ async function initCamera() {
                 { video:
                     {
                         facingMode: faceMode.value,
-                        width: 1920,
-                        height: 1080 
+                        width: 2560,
+                        height: 1440 
                     },
                     audio: false
                 }
@@ -71,19 +71,19 @@ async function initCamera() {
         switch(screen.orientation.type) {
             case 'landscape-primary':
             case 'landscape-secondary':
-                width = Math.min(settings.width, settings.height, 2560);
-                height = Math.min(settings.width, settings.height, 1440);  
+                width = Math.min(settings.width, 2560);
+                height = Math.min(settings.height, 1440);  
                 console.log(width, height)
                 break;
             case 'portrait-primary':
             case 'portrait-secondary':
-                width = Math.min(settings.width, settings.height);
-                height = Math.max(settings.width, settings.height); 
+                width = Math.min(settings.width, 2560);
+                height = Math.min(settings.height, 1440); 
                 console.log(width, height)
                 break;
             default: 
-                width = 1920
-                height = 1080
+                width = 2560
+                height = 1440
         }
         
         
