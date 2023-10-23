@@ -1,7 +1,7 @@
 import { configs  } from "@/opencv/configs.js"
 const options = {
     state: {
-        drawerSwitch: true,
+        drawerSwitch: false,
         processConfigs: [...configs]
        
     },

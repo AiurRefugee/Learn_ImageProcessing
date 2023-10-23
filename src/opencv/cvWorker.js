@@ -22,7 +22,7 @@ function fgbgUpdate(params) {
   }
   fgbgParams.map( (item, index) => {
     if(item !== params[index]) {
-      // console.log('update')
+      console.log('update')
       return true
     }
   })
@@ -411,8 +411,7 @@ const configs =  [
       eyeCascade.load('haarcascade_eye.xml'); 
       // detect faces
       let msize = new CV.Size(0, 0);
-      faceCascade.detectMultiScale(gray, faces, 1.1, 3, 0, msize, msize);
-      console.log(faces)
+      faceCascade.detectMultiScale(gray, faces, 1.1, 3, 0, msize, msize); 
       for (let i = 0; i < faces.size(); ++i) {
           let roiGray = gray.roi(faces.get(i));
           let roiSrc = src.roi(faces.get(i));
@@ -421,13 +420,13 @@ const configs =  [
                                     faces.get(i).y + faces.get(i).height);
           CV.rectangle(src, point1, point2, [255, 0, 0, 255]);
           // detect eyes in face ROI
-          eyeCascade.detectMultiScale(roiGray, eyes);
-          for (let j = 0; j < eyes.size(); ++j) {
-              let point1 = new CV.Point(eyes.get(j).x, eyes.get(j).y);
-              let point2 = new CV.Point(eyes.get(j).x + eyes.get(j).width,
-                                        eyes.get(j).y + eyes.get(j).height);
-              CV.rectangle(roiSrc, point1, point2, [0, 0, 255, 255]);
-          }
+          // eyeCascade.detectMultiScale(roiGray, eyes);
+          // for (let j = 0; j < eyes.size(); ++j) {
+          //     let point1 = new CV.Point(eyes.get(j).x, eyes.get(j).y);
+          //     let point2 = new CV.Point(eyes.get(j).x + eyes.get(j).width,
+          //                               eyes.get(j).y + eyes.get(j).height);
+          //     CV.rectangle(roiSrc, point1, point2, [0, 0, 255, 255]);
+          // }
           roiGray.delete(); roiSrc.delete();
       }  
       gray.delete(); faceCascade.delete();

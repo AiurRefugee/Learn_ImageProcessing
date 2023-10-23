@@ -1198,7 +1198,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
   theory: `Here we will deal with detection. OpenCV already contains many pre-trained classifiers for face, eyes, smile etc. Those XML files are stored in opencv/data/haarcascades/ folder. Let's create a face and eye detector with OpenCV.`,
   primaryClass: '图像识别',
   secondrayClass: '物体检测',
-  selected: true,
+  selected: false,
   imageAvailable: true,
   videoAvailable: false,
   params: [ 

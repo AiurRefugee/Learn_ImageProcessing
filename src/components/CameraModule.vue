@@ -6,7 +6,7 @@ const store = useStore()
 const cameraInput = ref(null)
 const canvasRead = ref(null) 
 const cameraOutput = ref(null)
-const FPS = 30;
+const FPS = 60;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
 const errorContent = ref('')
@@ -59,8 +59,8 @@ async function initCamera() {
                 { video:
                     {
                         facingMode: faceMode.value,
-                        width: 2560,
-                        height: 1440 
+                        width: {exact: 320},
+                        height: {exact: 240} 
                     },
                     audio: false
                 }
@@ -71,19 +71,19 @@ async function initCamera() {
         switch(screen.orientation.type) {
             case 'landscape-primary':
             case 'landscape-secondary':
-                width = Math.min(settings.width, 2560);
-                height = Math.min(settings.height, 1440);  
+                width = Math.min(settings.width, 640);
+                height = Math.min(settings.height, 480);  
                 console.log(width, height)
                 break;
             case 'portrait-primary':
             case 'portrait-secondary':
-                width = Math.min(settings.width, 2560);
-                height = Math.min(settings.height, 1440); 
+                width = Math.min(settings.width, 640);
+                height = Math.min(settings.height, 480); 
                 console.log(width, height)
                 break;
             default: 
-                width = 2560
-                height = 1440
+                width = 640
+                height = 480
         }
         
         
@@ -328,7 +328,7 @@ onUnmounted(() => {
         height: 100vh; 
         display: flex; 
         // display: none;
-        // background-color: gray;
+        background-color: var(--el-bg-color);
         object-fit: cover;
         z-index: 1;  
      }

@@ -224,6 +224,7 @@ async function reSize() {
 onMounted( async () => {
     console.log('video onMounted') 
     store.dispatch('set_currentOption', 'video')
+    await nextTick()
     if(!interval) {
         initWorker() 
         init()
@@ -371,14 +372,14 @@ onUnmounted( () => {
 .videoModuleWrapper {
     width: 86dvw;
     height: 100dvh;
-    display: flex;
+    display: flex; 
     justify-content: center;
     align-items: center;
     overflow: hidden; 
     position: absolute;
     margin-left: 4dvw;
     left: 0; 
-    background-color: var(--el-bg-color);
+    // background-color: var(--el-bg-color);
     @media(orientation: portrait) {
         width: 100dvw;
         height: 90dvh;

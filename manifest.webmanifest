@@ -15,9 +15,8 @@
   ],
   "shortcuts": [
     {
-      "name": "dawn",
-      "url": "/dawn.png",
-      "type": "image/png"
+      "name": "ProcessImage",
+      "url": "imageProcessing/image"
     }
   ]
 

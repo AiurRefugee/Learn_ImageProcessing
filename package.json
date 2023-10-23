@@ -25,6 +25,7 @@
     "opencv4js": "^3.4.3",
     "sass": "^1.64.2",
     "simple-web-worker": "^1.2.0",
+    "sortablejs": "^1.15.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
     "vue-worker": "^1.2.1",
