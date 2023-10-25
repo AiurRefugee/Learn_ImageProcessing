@@ -300,6 +300,7 @@ onUnmounted( () => {
     height: 100dvh;
     
     background-color: var(--el-bg-color);
+    transition: background-color 0.5s ease-in;
     justify-content: flex-start;
     align-items: center;
     position: absolute;

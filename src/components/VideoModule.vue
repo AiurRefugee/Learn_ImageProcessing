@@ -379,7 +379,8 @@ onUnmounted( () => {
     position: absolute;
     margin-left: 4dvw;
     left: 0; 
-    // background-color: var(--el-bg-color);
+    background-color: var(--el-bg-color);
+    transition: background-color 0.5s ease-in;
     @media(orientation: portrait) {
         width: 100dvw;
         height: 90dvh;

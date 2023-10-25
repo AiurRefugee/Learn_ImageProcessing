@@ -32,7 +32,7 @@ const curOpt = computed( () => store.getters.currentOption )
 const cameraCount = computed(() => store.getters.cameraNum)
 const cameraStatus = computed( () => store.getters.cameraStatus) 
 const theme = computed( 
-  {
+{
     get() {
       console.log(store.getters.theme)
       return store.getters.theme
@@ -254,7 +254,7 @@ onActivated( () => {
         <div class="point"></div>
         <div>{{ timeString }}</div>
     </div>
-    <div class="controlBar" :style="{'background-color': curOpt == 'camera' ? 'var(--el-bg-color)' : ''}">
+    <div class="controlBar" :style="{'background-color': curOpt == 'camera' ? 'var(--el-bg-color)' : 'transparent'}">
         
         <div class="spacer" > 
             <div class="spaceItem" v-for="(item, index) in options" :key="index" @click="control(item)">
@@ -348,7 +348,7 @@ $controlZ: 50;
     right: 0;
     z-index: $controlZ;
     overflow: visible; 
-    transition: background-color 0.8s ease-out;
+    transition: background-color 0.5s ease-in;
     flex-direction: column;
     @media(orientation: portrait) {
         width: 100dvw;

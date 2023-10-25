@@ -45,6 +45,11 @@ const configs = computed(() => {
       );
 });
 
+function openDialog(list) {
+  infoList.value = list 
+  infoVisible.value = true
+}
+
 function output() {
   if (curOpt.value == "image") { 
       $bus.emit("outputImage"); 
@@ -74,7 +79,7 @@ onMounted( async () => {
   // console.log('test'. filtredConfigs.value)
   console.log("onMounted");
   await nextTick()
-  console.log(configs.value)
+  // console.log(configs.value)
   var el = document.getElementById('col');
     //设置配置
     var ops = {
@@ -85,7 +90,7 @@ onMounted( async () => {
           let item = configs.value.splice(event.oldIndex, 1)[0]
           configs.value.splice(event.newIndex, 0, item)
           await nextTick()
-          console.log(configs.value)
+          // console.log(configs.value)
           output()
         }
       };

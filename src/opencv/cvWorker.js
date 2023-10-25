@@ -16,18 +16,19 @@ var imageData
 
 
 function fgbgUpdate(params) {
+  let res = true
   if(params.length != fgbgParams.length) {
     console.log('update')
     return true
-  }
-  fgbgParams.map( (item, index) => {
-    if(item !== params[index]) {
+  } 
+  for(let i = 0; i < fgbgParams.length; i++) {
+    if(fgbgParams[i] != params[i]) {
+      res = true
       console.log('update')
-      return true
+      break
     }
-  })
-
-  return false
+  } 
+  return res
 }
 
 function switchToRGBA(src) { 
@@ -366,24 +367,23 @@ const configs =  [
   f: (src, dst, params) => {  
     const [ history, varThreshold, detectShadows ] = [...params]
     // console.log(history)
-    try { 
-      while(!fgbg) {
-        try {
-          fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
-        } catch {}
-      }
+    try {  
       if(fgbgUpdate([...params])) {
-        fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
-        
+        while(!fgbg) {
+          try {
+            fgbg = new CV.BackgroundSubtractorMOG2(history, varThreshold, detectShadows); 
+          } catch {}
+        } 
+        fgbgParams = [...params] 
       }
-      fgbgParams = [...params]
+      
       // let fgbg = new CV.BackgroundSubtractorMOG2(500, 16, true); 
       fgbg.apply(src, dst) 
       return true 
     } catch(error) { 
       console.log(error)
       fgbg.delete();
-      msg = '输入尺寸过大'
+      // msg = '输入尺寸过大'
     }
     return false
   } 

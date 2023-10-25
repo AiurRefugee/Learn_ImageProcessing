@@ -1145,7 +1145,7 @@ kernel=⎡⎣⎢⎢0101−41010⎤⎦⎥⎥`,
   title: 'Background Subtraction',
   primaryClass: '图像识别',
   secondrayClass: '物体检测',
-  selected: false,
+  selected: true,
   imageAvailable: false,
   videoAvailable: true,
   params: [

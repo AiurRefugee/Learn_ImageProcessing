@@ -140,6 +140,7 @@
 
  html {
     background-color: var(--el-bg-color);
+    transition: background-color 0.5s ease-in;
  }
  
  html[dark] {

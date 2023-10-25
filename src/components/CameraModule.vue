@@ -2,6 +2,8 @@
 import { onMounted, ref, computed, watch, nextTick, onUnmounted, onActivated, onDeactivated, inject} from 'vue'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'; 
+import { useRouter } from 'vue-router';
+const router = useRouter()
 const store = useStore()
 const cameraInput = ref(null)
 const canvasRead = ref(null) 
@@ -9,9 +11,12 @@ const cameraOutput = ref(null)
 const FPS = 60;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
-const errorContent = ref('')
-const vloading = ref(true)
-let cameraVideoLoading = false
+const errorContent = ref('') 
+
+//摄像头分辨率
+let widthConfig = 1920
+let heightConfig = 1440
+ 
 let contextRead, contextDraw
 let Message
 
@@ -46,54 +51,56 @@ function toggleMode () {
     camerSwitch.value = !camerSwitch.value 
     initCamera()
 }
+
+//根据屏幕方向计算width, height
+function calWidthByOrientation() { 
+    let orientation = screen.orientation.type 
+    let w = orientation == 'landscape-primary' || orientation == 'landscape-secondary' ? widthConfig : heightConfig
+    let h = orientation == 'landscape-primary' || orientation == 'landscape-secondary' ? heightConfig : widthConfig
+    let res = {
+        facingMode: faceMode.value,
+        width: { ideal: w },
+        height: { ideal: h }
+    } 
+    return res
+}
  
 async function initCamera() {
-    try { 
-        
+    try {  
         if(mediaStream) {
             release() 
-        }
-        while(!mediaStream) {
+        } 
             // console.log('gettingCamera')
-            mediaStream = await navigator.mediaDevices.getUserMedia(
-                { video:
-                    {
-                        facingMode: faceMode.value,
-                        width: {exact: 320},
-                        height: {exact: 240} 
-                    },
-                    audio: false
-                }
-            ) 
+        mediaStream = await navigator.mediaDevices.getUserMedia(
+            {   video: calWidthByOrientation(),
+                audio: false
+            }
+        )   
+        if(mediaStream) {
+            let settings = mediaStream.getVideoTracks()[0].getSettings();
+            console.log('mediaStream', mediaStream) 
+            let orientation = screen.orientation.type
+            if(orientation == 'landscape-primary' || orientation == 'landscape-secondary') {
+                width = Math.max(settings.width, settings.height)
+                height = Math.min(settings.width, settings.height)
+            } else {
+                width = Math.min(settings.width, settings.height)
+                height = Math.max(settings.width, settings.height)
+            }
+             
+            cameraInput.value.srcObject = mediaStream  
+            cameraInput.value.play()
+            if(interval) {
+                clearTimeout(interval)
+            }   
+            initVideoSize()
+        } else {
+            router.push({
+                path: `/noCamera/CameraError`,
+                replace: true
+            })
+            return false
         }
-        let settings = mediaStream.getVideoTracks()[0].getSettings();
-        console.log(mediaStream)
-        switch(screen.orientation.type) {
-            case 'landscape-primary':
-            case 'landscape-secondary':
-                width = Math.min(settings.width, 640);
-                height = Math.min(settings.height, 480);  
-                console.log(width, height)
-                break;
-            case 'portrait-primary':
-            case 'portrait-secondary':
-                width = Math.min(settings.width, 640);
-                height = Math.min(settings.height, 480); 
-                console.log(width, height)
-                break;
-            default: 
-                width = 640
-                height = 480
-        }
-        
-        
-        // console.log(settings.width, settings.height)
-        cameraInput.value.srcObject = mediaStream 
-        cameraInput.value.play()
-        if(interval) {
-            clearTimeout(interval)
-        }   
-        initVideo()
     } catch(error) {
         // ElMessage({
         //         type: 'error',
@@ -113,8 +120,7 @@ async function initWorker() {
     worker.value.onmessage = function(event) { 
         // console.log('onMessage')
         interval = setTimeout(processVideo,
-        1000 / FPS)
-        // Message.close()
+        1000 / FPS) 
         if(event.data.msg == 'error') {  
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false 
@@ -127,8 +133,7 @@ async function initWorker() {
             // }) 
             console.log(error)
             errorContent.value = error.toString()
-        }
-        // vloading.value = false 
+        } 
 
         if(!contextDraw || !contextRead) {
             contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
@@ -153,7 +158,9 @@ async function initWorker() {
     };
 }
 
-function initVideo() {   
+function initVideoSize() {   
+    cameraInput.value.width = width
+    cameraInput.value.height = height
     canvasRead.value.width = width
     canvasRead.value.height = height  
     cameraOutput.value.width = width
@@ -187,6 +194,7 @@ function processVideo() {
                 contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
                 contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
             }
+            // contextDraw.clearRect(0, 0, width, height) 
             contextRead.clearRect(0, 0, width, height) 
             // 将图像绘制到 canvas 上
             contextRead.drawImage(cameraInput.value, 0, 0); 
@@ -196,7 +204,7 @@ function processVideo() {
             worker.value.postMessage({
                 image: imageData,
                 paramsList: configs.value,
-                type: 'camera'
+                type: 'video'
             }); // 发送图像数据给 Web Worker
             // console.log('processingCamera')
         } catch(error) {
@@ -207,8 +215,7 @@ function processVideo() {
           
 }
 
-function release() {
-    cameraVideoLoading = false
+function release() { 
     // if(Message) {
     //     Message.close()
     // }
@@ -312,25 +319,25 @@ onUnmounted(() => {
     align-items: center;
     overflow: hidden;
     background-color: var(--el-bg-color);
-     #cameraInput {
-        // display: none; 
+     #cameraInput { 
         width: 100vw;
         position: absolute;
-        z-index: 0;
-        opacity: 0;
+        // z-index: 999;
+        // opacity: 0.5;
+        filter: brightness(1.5);
         display: none;
         height: 100vh; 
-        object-fit: cover; 
-        orientation: landscape;
+        object-fit: contain;  
      }
      #cameraOutput {
         width: 100vw;
         height: 100vh; 
-        display: flex; 
+        // display: flex; 
+        // opacity: 0.5;
         // display: none;
         background-color: var(--el-bg-color);
         object-fit: cover;
-        z-index: 1;  
+        // z-index: 1;  
      }
      // animation: rotate360 1s linear;
 }

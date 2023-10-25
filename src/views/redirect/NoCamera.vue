@@ -1,17 +1,19 @@
 <script setup>
+import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute() 
 function goBack() {
     router.push('/')
 }
+const info = ref(route.params.info)
 </script>
 <template>
     <div class="appContainer">
         <div class="wrapper">
             <el-result
                 icon="error"
-                title="No Camera Avaliable"
+                :title="info"
                 sub-title="Please go back home"
             >
                 <template #extra>
