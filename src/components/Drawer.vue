@@ -32,7 +32,7 @@ const dragIndex = ref(-1);
 const contentWidth = ref(24 - labelWidth.value);
 const selectedProcessions = ref([]);
 
-const maxCollapseNum = ref(window.innerWidth >= 600 ? 5 : 2);
+const maxCollapseNum = ref(2);
 const classNames = ref(classification);
 const drawerSwitch = computed(() => store.getters.drawerSwitch);
 const curOpt = computed(() => store.getters.currentOption);
@@ -69,7 +69,7 @@ function calVis(process) {
 
 async function reSize() {
   console.log("resize");
-  maxCollapseNum.value = window.innerWidth >= 600 ? 5 : 2;
+  maxCollapseNum.value = window.innerWidth >= 600 ? 3 : 2;
   // if(curOpt.value == 'video') {
   //     playing.value = false
   //    await init()

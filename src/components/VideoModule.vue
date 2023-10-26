@@ -13,10 +13,10 @@ const videoList = ref([
     {
         label: 'test',
         // value: '/src/assets/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
-        value: '/src/assets/videos/ghost.mp4'
+        value: '/src/assets/videos/sintel.mp4'
     }
 ])
-const videoUrl = ref('/src/assets/videos/ghost.mp4')
+const videoUrl = ref('/src/assets/videos/sintel.mp4')
 const videoUpload = ref(null)
 const playerIconSize = ref('40px')
 const playing = ref(false)
@@ -50,8 +50,11 @@ let width, height, duration
 
 // flag true 播放 false 暂停
 async function play(flag) { 
-    if(videoInput.value.src != ''){
-        try { 
+    if(curOpt.value != 'video' || !videoInput.value) {
+        return false
+    } 
+    try { 
+        if(videoInput.value.src != ''){
             if(flag) {
                 await videoInput.value.play()
                 playing.value = true
@@ -60,15 +63,10 @@ async function play(flag) {
                 await videoInput.value.pause()
                 playing.value = false 
             }
-        } catch(error) { 
-            console.log(error)
-            ElMessage({
-                message: `${error}.`,
-                grouping: true,
-                type: 'error',
-            })
         }
-
+        
+    } catch(error) { 
+        console.log(error) 
     } 
 
 
@@ -195,11 +193,12 @@ async function initWorker() {
 }  
 
 //初始化视频大小
-function initVideo() {
-    let video = document.getElementById('videoInput') 
-    duration = video.duration
-    width = video.videoWidth
-    height = video.videoHeight
+async function initVideo() {
+    // let video = document.getElementById('videoInput') 
+    await nextTick()
+    duration = videoInput.value.duration
+    width = videoInput.value.videoWidth
+    height = videoInput.value.videoHeight
     canvasOutput.value.width = width
     canvasOutput.value.height = height
     canvasRead.value.width = width
@@ -258,8 +257,11 @@ onDeactivated( () => {
     } 
 })
 
-onUnmounted( () => {
+onUnmounted( async () => {
     console.log('video onUnmounted') 
+    store.dispatch('set_currentOption', 'none')
+    await nextTick()
+    console.log(curOpt.value)
     playing.value = false 
     try{
         if(!contextDraw) {
@@ -267,7 +269,7 @@ onUnmounted( () => {
         }
         contextDraw.clearRect(0, 0, width, height)
     } catch {
-        
+
     } 
 })
 
@@ -285,7 +287,7 @@ onUnmounted( () => {
                             'width': `${displayPointer}%`,
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
                             }"> -->
-                            <video ref="videoInput" :src="videoUrl" id="videoInput" poster="./Lena.png"
+                            <video ref="videoInput" :src="videoUrl" id="videoInput" poster
                                 loop crossorigin="true">
                             </video>
 

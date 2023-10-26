@@ -12,10 +12,11 @@ const FPS = 60;
 const camerSwitch = ref(false)
 const cameraWrapper = ref(null) 
 const errorContent = ref('') 
+const loading = ref(false)
 
 //摄像头分辨率
-let widthConfig = 1080
-let heightConfig = 810
+let widthConfig = 960
+let heightConfig = 640
  
 let contextRead, contextDraw
 let Message
@@ -46,32 +47,26 @@ function toggleMode () {
     cameraWrapper.value.animate([
         {transform: 'rotateY(0)'},
         {transform: 'rotateY(360deg)'},
-    ], 800)
+    ], 1200)
     camerSwitch.value = !camerSwitch.value 
     initCamera()
 }
 
-//根据屏幕方向计算width, height
-function calWidthByOrientation() { 
-    let orientation = screen.orientation.type 
-    let w = orientation == 'landscape-primary' || orientation == 'landscape-secondary' ? widthConfig : heightConfig
-    let h = orientation == 'landscape-primary' || orientation == 'landscape-secondary' ? heightConfig : widthConfig
-    let res = {
-        facingMode: faceMode.value,
-        width: { ideal: w },
-        height: { ideal: h }
-    } 
-    return res
-}
  
 async function initCamera() {
+    loading.value = true
+    console.log('cameraInit')
     try {  
         if(mediaStream) {
             release() 
         } 
-            // console.log('gettingCamera')
+        // console.log('gettingCamera')
         mediaStream = await navigator.mediaDevices.getUserMedia(
-            {   video: calWidthByOrientation(),
+            {   video: {
+                facingMode: faceMode.value,
+                    width: widthConfig,
+                    height: heightConfig,
+                },
                 audio: false
             }
         )   
@@ -88,22 +83,26 @@ async function initCamera() {
             }
              
             cameraInput.value.srcObject = mediaStream  
+            
             cameraInput.value.play() 
+            
             initVideoSize()
         } else {
+            loading.value = false
             router.push({
                 path: `/noCamera/CameraError`,
                 replace: true
             })
             return false
         }
-    } catch(error) {
-        // ElMessage({
-        //         type: 'error',
-        //         message: 'something went wrong',
-        //         grouping: true
-        //     })
+    } catch(error) { 
+        loading.value = false
         release()
+        router.push({
+                path: `/noCamera/CameraError`,
+                replace: true
+            })
+            return false
         errorContent.value = error.toString()
         console.log(error)
     }
@@ -164,47 +163,42 @@ function initVideoSize() {
     contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
     contextRead.clearRect(0, 0, width, height)
     contextDraw.clearRect(0, 0, width, height)
-    try {  
-        processVideo() 
-    } catch(error) {
-        // ElMessage({
-        //     type: 'error',
-        //     message: 'something went wrong',
-        //     grouping: true
-        // })
-        release()
-        console.log(error)
-        errorContent.value = error.toString()
-    }
+    setTimeout(() => {
+        loading.value = false
+    }, 1000)
 }
 
 function processVideo() {
-    // console.log('processing Camera')  
-        // console.log('camera processing') 
-        try {
-            
-            if(!contextRead || !contextDraw) {
-                contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
-                contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
-            }
-            // contextDraw.clearRect(0, 0, width, height) 
-            contextRead.clearRect(0, 0, width, height) 
-            // 将图像绘制到 canvas 上
-            contextRead.drawImage(cameraInput.value, 0, 0); 
-            // 获取图像数据
-            let imageData = contextRead.getImageData(0, 0, width, height);  
-            // console.log('postMessage')
-            worker.value.postMessage({
-                image: imageData,
-                paramsList: configs.value,
-                type: 'video'
-            }); // 发送图像数据给 Web Worker
-            // console.log('processingCamera')
-        } catch(error) {
-            console.log(error)
-            initCamera()
-            errorContent.value = error.toString()
+    if(curOpt.value != 'camera' || !cameraInput.value) {
+        return false
+    }
+    try {
+        
+        if(!contextRead || !contextDraw) {
+            contextRead = canvasRead.value.getContext('2d', { willReadFrequently: true })  
+            contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
         }
+        // contextDraw.clearRect(0, 0, width, height) 
+        contextDraw.clearRect(0, 0, width, height)
+        contextRead.clearRect(0, 0, width, height) 
+        // 将图像绘制到 canvas 上
+        contextRead.drawImage(cameraInput.value, 0, 0); 
+
+        // 获取图像数据
+        let imageData = contextRead.getImageData(0, 0, width, height);  
+        // console.log('postMessage')
+        worker.value.postMessage({
+            image: imageData,
+            paramsList: configs.value,
+            type: 'video'
+        }); // 发送图像数据给 Web Worker
+        // console.log('processingCamera')
+    } catch(error) { 
+        console.log(error) 
+        errorContent.value = error.toString()
+        initCamera()
+        return false
+    }
           
 }
 
@@ -220,7 +214,8 @@ function release() {
     // console.log('clear')  
 }
 
-function cameraModuleInit() {
+async function cameraModuleInit() {
+    
     if(!curOpt.value) {
         store.dispatch('set_currentOption', 'camera')
     }
@@ -238,7 +233,14 @@ function cameraModuleInit() {
         }
     });  
     initWorker()
-    initCamera()  
+    await initCamera()  
+    try {  
+        processVideo() 
+    } catch(error) { 
+        release()
+        console.log(error)
+        errorContent.value = error.toString()
+    }
 }
 
 onMounted(() => { 
@@ -259,6 +261,7 @@ onDeactivated( () => {
 
 onUnmounted(() => {
     console.log('camera onUnmounted')
+    store.dispatch('set_currentOption', '')
     release()
 })
 
@@ -271,7 +274,7 @@ onUnmounted(() => {
     </div> -->
     <div ref="cameraWrapper" class="cameraWrapper">
         <video ref="cameraInput" id="cameraInput" ></video>
-        <canvas ref="cameraOutput" id="cameraOutput"></canvas>
+        <canvas ref="cameraOutput" id="cameraOutput" :style="{'opacity': loading ? '0' : '1'}"></canvas>
         <canvas id="canvasRead" ref="canvasRead" style="display: none;"></canvas>
     </div>
 </template>
@@ -317,6 +320,7 @@ onUnmounted(() => {
      #cameraOutput {
         width: 100vw;
         height: 100vh; 
+        // transition: all 0.8s ease-out;
         // display: flex; 
         // opacity: 0.5;
         // display: none;

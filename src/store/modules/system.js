@@ -21,7 +21,7 @@ const system = {
         },
         SET_WEBWORKER: (state) => {
           console.log('new Worker')
-          state.worker = new Worker('/src/opencv/cvWorker.js')
+          state.worker = new Worker('/src/opencv/worker.js')
           // let test = new Worker('/src/opencv/testWorker.js')
         },
         CHANGE_THEME: (state, param) => {

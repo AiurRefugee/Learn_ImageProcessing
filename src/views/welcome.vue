@@ -3,7 +3,7 @@ import { onMounted, onActivated, ref, watch, nextTick, computed} from 'vue'
 import { useRouter } from 'vue-router'; 
 import { useStore } from 'vuex'; 
 import { Sunny, Moon } from '@element-plus/icons-vue'
-
+const curOpt = computed( () => store.getters.currentOption ) 
 
 // import { useDark, useToggle } from '@vueuse/core' 
 
@@ -93,6 +93,8 @@ function navigateTo(option) {
 onMounted(() => {   
   console.log('onMounted') 
   store.dispatch('systemInit') 
+  store.dispatch('set_currentOption', 'none')
+  console.log('welcome', curOpt.value)
   // console.log(dark.value) 
 })
 
