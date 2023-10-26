@@ -3,7 +3,7 @@ const getters = {
     cameraNum: state => state.system.cameraNum,
     cameraStatus: state => state.system.deviceStatus,
     drawerSwitch: state => state.options.drawerSwitch,
-    processConfigs: state => state.options.processConfigs,
+    processConfigs: state => state.options.processConfigs, 
     worker: state => state.system.worker,
     theme: state => state.system.theme
 }

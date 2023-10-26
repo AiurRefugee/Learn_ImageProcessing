@@ -13,8 +13,7 @@ event.waitUntil(
         '/src/assets/imgs/girl.jpeg',
         '/src/assets/imgs/car.webp',
         '/src/assets/imgs/vue.png',
-        '/src/assets/icons/refresh.svg',
-        '/src/assets/videos/video.m4s',
+        '/src/assets/icons/refresh.svg', 
         '/src/assets/icons/logo.ico'
 
     ]);

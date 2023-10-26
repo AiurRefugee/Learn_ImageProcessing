@@ -33,18 +33,18 @@ let contextRead, contextDraw
 
 
 
-const curOpt = computed( () => store.getters.currentOption )
-const processConfigs = computed( () => store.getters.processConfigs) 
+const curOpt = computed( () => store.getters.currentOption ) 
 const worker = computed( () => store.getters.worker)
+const processConfigs = computed( () => store.getters.processConfigs)
+
 const configs = computed( () => {
-    return processConfigs.value.map( (item, index) => {
-        return {
-            selected: item.selected,
-            videoAvailable: item.videoAvailable,
-            processIndex: index,
-            params: item.params.map( item => item.paramValue)
-        }
-    })  
+    return processConfigs.value.map( (item, index) => ({ 
+        title: item.title,
+        index: item.index,
+        selected: item.selected,
+        videoAvailable: item.videoAvailable, 
+        params: item.params.map( item => item.paramValue) 
+    })) 
 })
 
 let width, height, duration 
@@ -296,7 +296,7 @@ onUnmounted( () => {
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
                             }"> -->
                             <video ref="videoInput" :src="videoUrl" id="videoInput" poster
-                                loop crossorigin="true" muted>
+                                loop crossorigin="true">
                             </video>
 
                         <!-- </div> -->

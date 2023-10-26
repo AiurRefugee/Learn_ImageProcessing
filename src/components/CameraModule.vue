@@ -14,8 +14,8 @@ const cameraWrapper = ref(null)
 const errorContent = ref('') 
 
 //摄像头分辨率
-let widthConfig = 1920
-let heightConfig = 1440
+let widthConfig = 1080
+let heightConfig = 810
  
 let contextRead, contextDraw
 let Message
@@ -28,16 +28,16 @@ const curOpt = computed( () => store.getters.currentOption )
 const faceMode = computed( () => camerSwitch.value ? "user" : "environment" )
 const worker = computed( () => store.getters.worker)
 
-const processConfigs = computed( () => store.getters.processConfigs )
+const processConfigs = computed( () => store.getters.processConfigs)
+
 const configs = computed( () => {
-    return processConfigs.value.map( (item, index) => {
-        return {
-            selected: item.selected,
-            videoAvailable: item.videoAvailable,
-            processIndex: index,
-            params: item.params.map( item => item.paramValue)
-        }
-    })  
+    return processConfigs.value.map( (item, index) => ({ 
+        title: item.title,
+        index: item.index,
+        selected: item.selected,
+        videoAvailable: item.videoAvailable, 
+        params: item.params.map( item => item.paramValue) 
+    })) 
 })
 let width, height, mediaStream
 let interval = null

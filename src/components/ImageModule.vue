@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref, computed, watch, onDeactivated, onActivated, onUnmounted, nextTick, inject} from 'vue'
-import cv from 'opencv.js';
 import { ElMessage } from 'element-plus';
 import { useStore } from 'vuex';  
 import { srcs } from '@/opencv/configs.js' 
@@ -21,9 +20,7 @@ const imageOutSrc = ref(null)
 const imageInput = ref(null) // <img>
 const fileInput = ref(null) // <input>
 const imageOutput = ref(null) // <canvas></canvas> 
-const srcList = ref(srcs)
-let src
-let dst = new cv.Mat()
+const srcList = ref(srcs) 
 let width, height, interval
 
 const worker = computed( () => store.getters.worker)
@@ -32,9 +29,10 @@ const processConfigs = computed( () => store.getters.processConfigs)
 const configs = computed( () => {
     let res = processConfigs.value.map( (item, index) => {
         return {
+            title: item.title,
+            index: item.index,
             selected: item.selected,
-            imageAvailable: item.imageAvailable,
-            processIndex: index,
+            imageAvailable: item.imageAvailable, 
             params: item.params.map( item => item.paramValue)
         }
     })   
@@ -45,6 +43,7 @@ const configs = computed( () => {
 async function outputImage() {  
     // let image = document.getElementById('imageInput')  
     imageUrlList.value.length = 0 
+    await nextTick()
     try { 
         processImage() 
           
@@ -86,11 +85,11 @@ function drawImage() {
     return imageData
 }
 
-const processImage = () =>  {
+const processImage = async () =>  {
     let imageData = drawImage()
     // 获取图像数据
-    
-    // console.log(width, height)
+    await nextTick()
+    // console.log(configs.value)
     worker.value.postMessage({
         image: imageData,
         paramsList: configs.value,
@@ -109,7 +108,7 @@ function initWorker() {
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false
                 ElMessage({
-                    message: `${processConfigs.value[item].title}参数错误或不支持处理图片.`,
+                    message: `${configs.value[item].title}发生错误.`,
                     grouping: true,
                     type: 'error',
                 })
@@ -118,7 +117,7 @@ function initWorker() {
             console.log('error', event.data.indexs)
             
             event.data.indexs.map(item => {
-                processConfigs.value[item].selected = false 
+                configs.value[item].selected = false 
             }) 
             ElMessage({
                 message: `something went wrong`,
@@ -133,7 +132,7 @@ function initWorker() {
         canvasDraw.height = height
         let contextDraw = canvasDraw.getContext('2d')
         contextDraw.clearRect(0, 0, width, height) 
-        console.log(event.data.image.width, event.data.image.height)
+        // console.log(event.data.image.width, event.data.image.height)
         contextDraw.putImageData(event.data.image, 0, 0)
         imageUrlList.value.push(canvasDraw.toDataURL())
         

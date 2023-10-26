@@ -2,7 +2,10 @@ import { configs  } from "@/opencv/configs.js"
 const options = {
     state: {
         drawerSwitch: true,
-        processConfigs: [...configs]
+        processConfigs: configs.map((item, index) => ({
+            ...item,
+            index
+        })), 
        
     },
     mutations: {
@@ -19,7 +22,14 @@ const options = {
         UPDATE_PROCESSPARAMS: (state, param) => {
             let [processIndex, paramIndex, value] = [...param] 
             state.processConfigs[processIndex].params[paramIndex] = value
+        },
+        RESORT_CONFIG: (state, param) => {
+            let [oldIndex, newIndex] = [...param]
+            let item = state.processConfigs.splice(oldIndex, 1)[0]  
+            state.processConfigs.splice(newIndex, 0, item)
+            console.log(state.processConfigs.map(item => item.title))
         }
+
 
         // UPDATE_DEVICESTATUS: (state, param) => {
         //     state.deviceStatus = param
@@ -31,10 +41,10 @@ const options = {
         },
         set_totalConfigs({ commit }, param) {
             commit('processConfigs', param)
+        },
+        resort_Config({commit}, param) {
+            commit('RESORT_CONFIG', param)
         }
-        // set_deviceStatus({ commit }, param) {
-        //     commit('UPDATE_DEVICESTATUS', param)
-        // }
 
     }
 }
