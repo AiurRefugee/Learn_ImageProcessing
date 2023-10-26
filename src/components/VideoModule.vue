@@ -13,10 +13,10 @@ const videoList = ref([
     {
         label: 'test',
         // value: '/src/assets/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
-        value: '/src/assets/videos/sintel.mp4'
+        value: '/src/assets/videos/ghost.mp4'
     }
 ])
-const videoUrl = ref('/src/assets/videos/sintel.mp4')
+const videoUrl = ref('/src/assets/videos/ghost.mp4')
 const videoUpload = ref(null)
 const playerIconSize = ref('40px')
 const playing = ref(false)
@@ -26,8 +26,7 @@ const canvasOutput = ref(null)
 const canvasRead = ref(null)
 const FPS = 60; 
 const videoModuleWrapper = ref(null) 
-const displayPointer = ref(50) 
-let videoLoading = false 
+const displayPointer = ref(50)  
 let contextRead, contextDraw
 
 
@@ -47,8 +46,7 @@ const configs = computed( () => {
     })) 
 })
 
-let width, height, duration 
-let interval = null
+let width, height, duration  
 
 // flag true 播放 false 暂停
 async function play(flag) { 
@@ -60,9 +58,7 @@ async function play(flag) {
                 processVideo()  
             } else {
                 await videoInput.value.pause()
-                playing.value = false
-                clearTimeout(interval)
-                interval = null
+                playing.value = false 
             }
         } catch(error) { 
             console.log(error)
@@ -159,10 +155,8 @@ async function initWorker() {
     //     type: 'update'
     // })
     worker.value.onmessage = function(event) { 
-        // console.log('message')
-        videoLoading = false
-        interval = setTimeout(processVideo,
-        1000 / FPS)
+        // console.log('message') 
+        processVideo()
 
         // console.log(event.data)
         if(event.data.type == 'processError') { 
@@ -204,10 +198,8 @@ async function initWorker() {
 function initVideo() {
     let video = document.getElementById('videoInput') 
     duration = video.duration
-    width = Math.min(video.videoWidth, 2560)
-    height = Math.min(video.videoHeight, 1440)
-    videoInput.value.width = width
-    videoInput.value.height = height
+    width = video.videoWidth
+    height = video.videoHeight
     canvasOutput.value.width = width
     canvasOutput.value.height = height
     canvasRead.value.width = width
@@ -224,19 +216,27 @@ async function reSize() {
 onMounted( async () => {
     console.log('video onMounted') 
     store.dispatch('set_currentOption', 'video')
-    await nextTick()
-    if(!interval) {
-        initWorker() 
-        init()
-        videoInput.value.addEventListener('loadedmetadata', async () => {
-            console.log('metaData Loaded')
-            initVideo()
-            play(false)
-        })  
-        videoUpload.value.addEventListener( "change", fileChange)   
-        // document.body.style.setProperty('--el-text-color-primary', 'white')
-        // window.addEventListener('resize', reSize)
-    }
+    await nextTick() 
+    initWorker() 
+    init()
+    videoInput.value.addEventListener('loadedmetadata', async () => {
+        console.log('metaData Loaded')
+        initVideo()
+        play(false)
+    })  
+    videoInput.value.addEventListener("play", function() {
+      console.log("视频开始播放");
+      play(true)
+    });
+
+    // 添加暂停事件监听器
+    videoInput.value.addEventListener("pause", function() {
+      console.log("视频已暂停");
+      play(false)
+    });
+    videoUpload.value.addEventListener( "change", fileChange)   
+    // document.body.style.setProperty('--el-text-color-primary', 'white')
+    // window.addEventListener('resize', reSize) 
 })
 
 onActivated(  async () => {
@@ -247,8 +247,7 @@ onActivated(  async () => {
 onDeactivated( () => {
     console.log('video onDeactivated')
     // document.body.style.setProperty('--el-text-color-primary', 'black')
-    playing.value = false
-    videoLoading = false
+    playing.value = false 
     try{
         if(!contextDraw) {
             contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
@@ -256,17 +255,12 @@ onDeactivated( () => {
         contextDraw.clearRect(0, 0, width, height)
     } catch {
         
-    }
-    if(interval) {
-        clearTimeout(interval)
-        interval = null
     } 
 })
 
 onUnmounted( () => {
     console.log('video onUnmounted') 
-    playing.value = false
-    videoLoading = false
+    playing.value = false 
     try{
         if(!contextDraw) {
             contextDraw = canvasOutput.value.getContext('2d', { willReadFrequently: true })
@@ -274,10 +268,6 @@ onUnmounted( () => {
         contextDraw.clearRect(0, 0, width, height)
     } catch {
         
-    }
-    if(interval) {
-        clearTimeout(interval)
-        interval = null
     } 
 })
 
@@ -295,7 +285,7 @@ onUnmounted( () => {
                             'width': `${displayPointer}%`,
                             'border-right': displayPointer != 0 ? '2px solid #ffffff42' : ''
                             }"> -->
-                            <video ref="videoInput" :src="videoUrl" id="videoInput" poster
+                            <video ref="videoInput" :src="videoUrl" id="videoInput" poster="./Lena.png"
                                 loop crossorigin="true">
                             </video>
 

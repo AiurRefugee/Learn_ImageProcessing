@@ -59,8 +59,7 @@ function toggle() {
   store.dispatch("toggle_currentOption");
 }
 
-function calVis(process) {
-  console.log(curOpt.value)
+function calVis(process) { 
   if(curOpt.value == 'image') {
     return process.imageAvailable != false
   } else {

@@ -39,8 +39,7 @@ const configs = computed( () => {
         params: item.params.map( item => item.paramValue) 
     })) 
 })
-let width, height, mediaStream
-let interval = null
+let width, height, mediaStream 
 
 
 function toggleMode () {
@@ -89,10 +88,7 @@ async function initCamera() {
             }
              
             cameraInput.value.srcObject = mediaStream  
-            cameraInput.value.play()
-            if(interval) {
-                clearTimeout(interval)
-            }   
+            cameraInput.value.play() 
             initVideoSize()
         } else {
             router.push({
@@ -119,8 +115,7 @@ async function initWorker() {
     await nextTick()
     worker.value.onmessage = function(event) { 
         // console.log('onMessage')
-        interval = setTimeout(processVideo,
-        1000 / FPS) 
+        processVideo()
         if(event.data.msg == 'error') {  
             event.data.indexs.map(item => {
                 processConfigs.value[item].selected = false 
@@ -169,19 +164,17 @@ function initVideoSize() {
     contextDraw = cameraOutput.value.getContext('2d', { willReadFrequently: true })
     contextRead.clearRect(0, 0, width, height)
     contextDraw.clearRect(0, 0, width, height)
-    if(!interval) {
-        try {  
-            processVideo() 
-        } catch(error) {
-            // ElMessage({
-            //     type: 'error',
-            //     message: 'something went wrong',
-            //     grouping: true
-            // })
-            release()
-            console.log(error)
-            errorContent.value = error.toString()
-        }
+    try {  
+        processVideo() 
+    } catch(error) {
+        // ElMessage({
+        //     type: 'error',
+        //     message: 'something went wrong',
+        //     grouping: true
+        // })
+        release()
+        console.log(error)
+        errorContent.value = error.toString()
     }
 }
 
@@ -224,9 +217,7 @@ function release() {
         tracks.forEach(track => track.stop()); // 停止每个轨道的捕获
         mediaStream = null; // 清空媒体流对象
     } 
-    // console.log('clear')
-    clearTimeout(interval) 
-    interval = null  
+    // console.log('clear')  
 }
 
 function cameraModuleInit() {
@@ -253,17 +244,11 @@ function cameraModuleInit() {
 onMounted(() => { 
     console.log('camera onMounted')   
     store.dispatch('set_currentOption', 'camera')
-    if(!interval) {
-        cameraModuleInit()
-    }
-
+    cameraModuleInit()
 })
 
 onActivated( () => {
-    console.log('camera onActivated')  
-    if(!interval) { 
-        cameraModuleInit()
-    }
+    console.log('camera onActivated')   
 })
 
 

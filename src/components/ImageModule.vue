@@ -117,7 +117,7 @@ function initWorker() {
             console.log('error', event.data.indexs)
             
             event.data.indexs.map(item => {
-                configs.value[item].selected = false 
+                processConfigs.value[item].selected = false 
             }) 
             ElMessage({
                 message: `something went wrong`,
