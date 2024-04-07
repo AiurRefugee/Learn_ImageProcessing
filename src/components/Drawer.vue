@@ -144,7 +144,7 @@ onUnmounted(() => {
                 :id="`colItem${processIndex}`"
               > 
                 <div
-                  style="padding: 5px 0"
+                  style="padding: 8px 0"
                   v-if="
                     (selectedProcessions.length == 0 ||
                       selectedProcessions.indexOf(process.secondrayClass) !=
@@ -156,29 +156,26 @@ onUnmounted(() => {
                     :title="process.title"
                   >
                     <el-space :size="10" direction="vertical" fill>
-                      <el-row align="middle" justify="start">
-                        <el-col :span="5">
+                      <div class="switchGrid">
+                        <div class="switchItem">
                           <text style="width: 50px">{{
                             process.selected ? "On" : "Off"
                           }}</text>
-                          <el-switch
+                           <el-switch
                             v-model="process.selected"
                             @change="output(true, process.selected)"
                           ></el-switch>
-                        </el-col>
-
-                        <el-col
-                          :span="19"
-                          style="display: flex; justify-content: flex-end"
-                        >
+                        </div> 
+                        <div></div>
+                        <div style="display: flex;justify-content: flex-end;">
                           <el-link
                             :underline="false"
                             @click="openDialog(process)"
                           >
                             <el-icon><View /></el-icon>Learn More
                           </el-link>
-                        </el-col>
-                      </el-row>
+                        </div>
+                      </div>
                       <el-row>
                         <el-col :span="24">
                           <div class="switchGrid">
@@ -292,7 +289,7 @@ div::-webkit-scrollbar-track {
   transition: all 0.5s ease;
 }
 .el-slider {
-  width: calc(100% - 20px);
+  // width: calc(100% - 20px);
   padding-left: 10px;
 }
 .el-select-dropdown__item {
@@ -434,6 +431,7 @@ $controlZ: 50;
     .switchItem {
       display: flex;
       widows: 100%;
+      padding-right: 5%;
       justify-content: space-between;
       align-items: center;
     }

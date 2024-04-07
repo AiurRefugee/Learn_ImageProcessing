@@ -32,7 +32,7 @@ onActivated( async () => {
     <el-dialog
         v-model="props.infoVisible"
         title="Details"  
-        width="80vw" 
+        width="60vw" 
         align-center
         destroy-on-close
         @close="close" 

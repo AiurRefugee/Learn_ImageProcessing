@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, computed, nextTick} from 'vue'
-import ControlBar from '@/components/ControlBar.vue';
+import ControlBar from '@/components/controlBar.vue';
 import CameraModule from '@/components/CameraModule.vue';
 import ImageModule from '@/components/ImageModule.vue';
 import VideoModule from '@/components/VideoModule.vue';

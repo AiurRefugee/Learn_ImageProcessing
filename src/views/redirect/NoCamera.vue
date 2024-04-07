@@ -4,7 +4,10 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute() 
 function goBack() {
-    router.push('/')
+    router.push({
+            path: `/`,
+            replace: true
+        })
 }
 const info = ref(route.params.info)
 </script>

@@ -392,13 +392,13 @@ $controlZ: 50;
             }
             @media (max-width: 600px) and (orientation: portrait){
                 width: 50%;
-                font-size: 3.5vw;
+                font-size: 15px;
             }
             
         }
         .active {
             color: $button_Color;
-            transform: scale(1.5);
+            transform: scale(1.2);
             transition: all 0.2s ease-in-out;
         }   
         
