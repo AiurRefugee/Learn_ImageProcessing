@@ -347,16 +347,16 @@ $controlZ: 50;
     position: absolute;
     right: 0;
     z-index: $controlZ;
-    overflow: visible; 
+    overflow: visible;  
     transition: background-color 0.5s ease-in;
     flex-direction: column;
     @media(orientation: portrait) {
         width: 100dvw;
-        height: 10dvh;
+        height: 12dvh;
         flex-direction: row;
         align-content: center;
         padding-top: 10px;
-        padding-bottom: 15px;
+        padding-bottom: 30px;
         top: null;
         bottom: 0;
     }

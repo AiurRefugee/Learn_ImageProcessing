@@ -405,15 +405,15 @@ onUnmounted(async () => {
   transition: background-color 0.5s ease-in;
   @media (orientation: portrait) {
     width: 100dvw;
-    height: 90dvh;
+    height: 88dvh;
     padding: 0;
     margin: 0;
     flex-direction: column;
     justify-content: center;
   }
-  $boderSize: 15px;
+  $boderSize: 5px;
   .videoArea {
-    width: 85dvw;
+    width: 90dvw;
     height: 95%;
     display: flex;
     flex-direction: column;
@@ -423,7 +423,7 @@ onUnmounted(async () => {
     justify-content: center;
 
     .tvHead {
-      width: calc(85dvw - $boderSize * 2);
+      width: 100%;
       height: calc(100% - $boderSize * 2);
       // margin-top: $boderSize;
       position: relative;
@@ -434,7 +434,7 @@ onUnmounted(async () => {
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      border-radius: 15px;
+      border-radius: 25px;
       @media (orientation: portrait) {
         width: calc(95dvw - 40px);
         height: 98%;
@@ -510,6 +510,7 @@ onUnmounted(async () => {
         }
         .videoInputSource {
           width: 80%;
+          padding-left: 15%;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -570,19 +571,7 @@ onUnmounted(async () => {
           color: white;
         }
       }
-    }
-    // .saucer {
-    //     width: 70dvw;
-    //     height: 10px;
-    //     position: absolute;
-    //     bottom: 0;
-    //     border: 5px solid gray;
-    //     background-color: gray;
-    //     border-radius: 10px;
-    //     @media(max-width: 1000px) {
-    //         display: none;
-    //     }
-    // }
+    } 
   }
 }
 </style>
