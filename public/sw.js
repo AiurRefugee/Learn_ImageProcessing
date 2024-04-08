@@ -2,8 +2,7 @@ const baseUrl = '/'
 self.addEventListener('install', function(event) {
   event.waitUntil(
       caches.open('v1').then(function(cache) {
-        return cache.addAll([ 
-            '/imgs/element-plus-logo.svg', 
+        return cache.addAll([  
             '/imgs/Lena.png',
             '/imgs/line.png', 
             '/imgs/milkyWay.jpg',
