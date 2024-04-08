@@ -58,7 +58,7 @@ const iconTextSize = computed( () => {
     return 'large'
   }
 })
-const size = ref('50%')
+const size = ref('70%')
 
 function openDialog(title) {
   dialogItem.value = dialogContent.value[title]
