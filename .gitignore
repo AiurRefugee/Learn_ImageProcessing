@@ -8,8 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-.DS_Store
-dist
+.DS_Store 
 dist-ssr
 coverage
 *.local
@@ -24,8 +23,6 @@ coverage
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
-*.sw?
-server.js
-sintel.mp4
+*.sln 
+server.js 
 dist.zip
