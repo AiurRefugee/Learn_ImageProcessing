@@ -20,17 +20,17 @@ const dialogItem = ref({})
 const dialogContent = ref({
   'OpenCV': {
     title: 'OpenCV',
-    imgSrc: 'src/assets/imgs/opencv.png',
+    imgSrc: '/Icons/opencv.png',
     content: 'OpenCV (Open Source Computer Vision Library: http://opencv.org) is an open-source library that includes several hundreds of computer vision algorithms. The document describes the so-called OpenCV 2.x API, which is essentially a C++ API, as opposed to the C-based OpenCV 1.x API (C API is deprecated and not tested with "C" compiler since OpenCV 2.4 releases)'
   },
   'Vue': {
     title: 'Vue',
-    imgSrc: 'src/assets/imgs/logo.svg',
+    imgSrc: '/Icons/logo.svg',
     content: 'Vue 是一个框架，也是一个生态。其功能覆盖了大部分前端开发常见的需求。但 Web 世界是十分多样化的，不同的开发者在 Web 上构建的东西可能在形式和规模上会有很大的不同。考虑到这一点，Vue 的设计非常注重灵活性和“可以被逐步集成”这个特点。',
   },
   "Element +": {
     title: 'Element +',
-    imgSrc: 'src/assets/imgs/element-plus-logo.svg',
+    imgSrc: '/Icons/element-plus-logo.svg',
     content: '据官方介绍，Element Plus是首个使用 TypeScript + Vue 3.2 开发，提供完整的类型定义文档的Composition API 重构的组件库。由于 Vue 3.0 进行了大版本升级，Element 作为其生态的组件库希望借此机会丢掉历史包袱，所以开发团队对 Element 进行了一次深度重构。换句话说，Element Plus的诞生正是基于Vue3重写了每一行代码。'
   }
 })
