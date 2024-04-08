@@ -28,35 +28,35 @@ export const classification = [
 export const srcs = [
   {
     name: "Lena",
-    value: "/src/assets/imgs/Lena.png",
+    value: "/imgs/Lena.png",
   },
   {
     name: "line",
-    value: "/src/assets/imgs/line.png",
+    value: "/imgs/line.png",
   },
   {
     name: "girl",
-    value: "/src/assets/imgs/girl.jpeg",
+    value: "/imgs/girl.jpeg",
   },
   {
     name: "milkyWay",
-    value: "/src/assets/imgs/milkyWay.jpg",
+    value: "/imgs/milkyWay.jpg",
   },
   {
     name: "gang",
-    value: "/src/assets/imgs/gang.webp",
+    value: "/imgs/gang.webp",
   },
   {
     name: "gundam",
-    value: "/src/assets/imgs/gundam.jpeg",
+    value: "/imgs/gundam.jpeg",
   },
   {
     name: "trans",
-    value: "/src/assets/imgs/trans.webp",
+    value: "/imgs/trans.webp",
   },
   {
     name: "car",
-    value: "/src/assets/imgs/car.webp",
+    value: "/imgs/car.webp",
   },
 ];
 

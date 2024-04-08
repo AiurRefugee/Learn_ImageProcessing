@@ -25,11 +25,11 @@ const suffixList = ["mp4", "m4s", "avi"];
 const videoList = ref([
   {
     label: "test",
-    // value: '/src/assets/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
-    value: "/src/assets/videos/sintel.mp4",
+    // value: '/videos/Ghostrunner 2023.08.19 - 15.28.32.02.mp4'
+    value: "/videos/sintel.mp4",
   },
 ]);
-const videoUrl = ref("/src/assets/videos/sintel.mp4");
+const videoUrl = ref("/videos/sintel.mp4");
 const videoUpload = ref(null);
 const playerIconSize = ref("40px");
 const playing = ref(false);

@@ -11,7 +11,7 @@ const $bus = inject('$bus')
 $bus.on('outputImage', outputImage)
 $bus.on('photo', photo)
 
-const imageUrl = ref('/src/assets/imgs/Lena.png')
+const imageUrl = ref('/imgs/Lena.png')
 const imageUrlList = ref([])
 const loading = ref(true)
 const showViewer = ref(false)

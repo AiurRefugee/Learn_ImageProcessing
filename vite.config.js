@@ -24,13 +24,13 @@ export default defineConfig({
     }
   },
   server: {
-    host: ['127.0.0.1'],
+    host: '0.0.0.0',
     hmr: true,
     // host: '127.0.0.1',
     port: 1146,
-    https: { 
-      key: 'mydomain.key',
-      cert: 'mydomain.crt',
-    }  
+    // https: { 
+    //   key: 'mydomain.key',
+    //   cert: 'mydomain.crt',
+    // }  
   }
 })
