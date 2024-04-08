@@ -5,42 +5,18 @@ self.addEventListener('install', function(event) {
         return cache.addAll([ 
             '/imgs/element-plus-logo.svg', 
             '/imgs/Lena.png',
-            '/imgs/line.png',
-            '/imgs/logo.svg',
+            '/imgs/line.png', 
             '/imgs/milkyWay.jpg',
-            '/imgs/gundam.jpeg',
-            '/imgs/opencv.png',
+            '/imgs/gundam.jpeg', 
             '/imgs/trans.webp',
             '/imgs/gang.webp',
             '/imgs/girl.jpeg',
-            '/imgs/car.webp',
-            '/imgs/vue.png',
-            '/icons/logo.ico', 
+            '/imgs/car.webp',  
   
             '/opencv/worker.js',
             '/opencv/opencv.js',
             '/opencv/haarcascade_frontalface_default.xml',
             '/opencv/haarcascade_eye.xml',
-  
-            '/serviceWorker.js',
-            '/sw.js',
-  
-            '/assets/CameraModule-cc1b9724.css',
-            '/assets/CameraModule-d5a07f2b.js',
-            '/assets/ImageModule-019c4444.js',
-            '/assets/ImageModule-a23667d2.css',
-            '/assets/ImageProcessing-00bd7d84.css',
-            '/assets/ImageProcessing-93e5f477.js',
-            '/assets/index-6835fe3c.js',
-            '/assets/index-32539650.css',
-            '/assets/NoCamera-455afb62.js',
-            '/assets/NoCamera-acbd8978.css',
-            '/assets/VideoModule-540875f5.css',
-            '/assets/VideoModule-664642a7.js',
-            '/assets/welcome-8e2d9fb1.js',
-            '/assets/welcome-694e3202.css',
-
-           '/index.html', 
              
         ]);
       })
